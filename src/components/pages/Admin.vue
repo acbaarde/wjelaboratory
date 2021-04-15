@@ -1,14 +1,19 @@
 <template>
-    <h1>ADMIN</h1>    
+    <v-container>
+        <h1 v-if="user">Hi {{user.username}}</h1>
+        <h1 v-else>Please login!</h1>
+    </v-container>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
     name: 'Admin',
-    async created(){
-        const res = await this.$guest.get('api/users');
-        console.log(res);
+    computed: {
+        ...mapGetters(['user'])
     }
+    
 }
 </script>
 

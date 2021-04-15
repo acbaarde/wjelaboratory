@@ -15,6 +15,19 @@ export default {
   components: {
     appNav: AppBar
   },
+  created(){
+        const form_data = new FormData();
+        form_data.append('access_token', localStorage.getItem('token'));
+
+        this.$guest.post('/api/users/getUser', form_data)
+        .then(res => {
+            // console.log(res.data);
+            this.$store.dispatch('user', res.data);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
 
 };
 </script>

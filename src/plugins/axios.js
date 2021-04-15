@@ -2,13 +2,13 @@ import Vue from 'vue';
 import Axios from 'axios';
 
 const guest = Axios.create({
-    baseURL: 'http://localhost/myapp_api/',
+    baseURL: 'http://localhost:88/myapp_api',
     headers: {
         "Content-type": "application/x-www-form-urlencoded"
     },
     auth: {
         username: 'admin',
-        password: '12345'
+        password: 'admin'
     }
 });
 

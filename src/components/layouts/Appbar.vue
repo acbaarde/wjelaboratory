@@ -6,8 +6,8 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn to='/' v-if="user">
-        <span>Admin</span>
+      <v-btn to='/home' v-if="user">
+        <span>HOME</span>
       </v-btn>
       <div v-else>
         <v-btn to="/signin" text small>

@@ -31,12 +31,12 @@ export default {
     computed: {
         ...mapGetters(['user'])
     },
-    created(){
+    // created(){
         
-        if(this.user != ''){
-            this.$router.push('/');
-        }
-    },
+    //     if(this.user != ''){
+    //         this.$router.push('/');
+    //     }
+    // },
     data(){
         return {
             is_valid: false,

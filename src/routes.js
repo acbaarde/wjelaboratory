@@ -4,6 +4,7 @@ import Admin from './components/pages/Admin';
 import Signin from './components/pages/Signin';
 import Signup from './components/pages/Signup';
 import Login from './components/pages/Login';
+import Home from './components/pages/Home';
 
 Vue.use(VueRouter);
 
@@ -27,6 +28,11 @@ const router = new VueRouter({
             path: '/login',
             component: Login,
             name: 'Login'
+        },
+        {
+            path: '/home',
+            component: Home,
+            name: 'Home'
         }
     ],
     mode: 'history'

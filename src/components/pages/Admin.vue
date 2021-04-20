@@ -1,21 +1,28 @@
 <template>
-    <v-container v-if="user">
-        <h1>{{user.username}}</h1>
-    </v-container>
-    <v-container v-else>
-        <h1>PLEASE LOGIN</h1>
-    </v-container>
+<v-container>
+    <h1>ADMIN</h1>
+    <v-btn block @click="logout()">
+    LOGOUT
+  </v-btn>
+  </v-container>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+// import { mapGetters } from 'vuex';
 export default {
     name: 'Admin',
-    computed: {
-        ...mapGetters(['user'])
-        // this.user = this.$store.getters.user
+    beforeCreate: function(){
+        if(!this.$session.exists()){
+            this.$router.push('/login');
+        }
+    },
+    methods:{
+        logout(){
+            this.$session.destroy();
+            console.log(this.$session.destroy());
+            this.$router.push('/login');
+        }
     }
-    
 }
 </script>
 

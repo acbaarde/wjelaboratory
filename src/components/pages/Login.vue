@@ -1,6 +1,6 @@
 <template>
-    <v-container fluid v-if="!user">
-        <v-card class="mx-auto" max-width="400" elevation="2">
+    <v-container fluid>
+        <!-- <v-card class="my-16 mx-auto" max-width="400" elevation="2">
             <v-card-title class="justify-center"><h3>LOGIN FORM</h3></v-card-title>
             <v-card-text class="justify-center">
                 <v-container>
@@ -19,24 +19,18 @@
                     
                 </v-container>
             </v-card-text>
-        </v-card>
+        </v-card> -->
     </v-container>
-    <h1 v-else>LOGIN</h1>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 export default {
     name: 'Login',
-    computed: {
-        ...mapGetters(['user'])
-    },
-    // created(){
-        
-    //     if(this.user != ''){
-    //         this.$router.push('/');
-    //     }
-    // },
+    beforeCreate: function(){
+        if(this.$session.exists()){
+            this.$router.push('/');
+        }
+    }, 
     data(){
         return {
             is_valid: false,
@@ -57,12 +51,14 @@ export default {
 
                 this.$guest.post('/login', form_data)
                 .then(res => {
-                    console.log(res.data);
                     this.msg = res.data.message;
                     if(res.data.status == true){
                         this.type = 'success';
-                        localStorage.setItem('token', res.data.access_token);
-                        this.$store.dispatch('user', res.data);
+                        // localStorage.setItem('token', res.data.access_token);
+                        // this.$store.dispatch('user', res.data);
+                        console.log(res.data.access_token);
+                        this.$session.start();
+                        this.$session.set('jwt', res.data.access_token);
                         this.$router.push('/');
                     }else{
                         this.type = 'error';

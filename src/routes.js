@@ -1,38 +1,25 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Admin from './components/pages/Admin';
-import Signin from './components/pages/Signin';
-import Signup from './components/pages/Signup';
 import Login from './components/pages/Login';
-import Home from './components/pages/Home';
+import Dashboard from './components/pages/Dashboard';
 
 Vue.use(VueRouter);
+
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+};
 
 const router = new VueRouter({
     routes: [{
             path: '/',
-            component: Admin,
-            name: 'Admin'
-        },
-        {
-            path: '/signin',
-            component: Signin,
-            name: 'Signin'
-        },
-        {
-            path: '/signup',
-            component: Signup,
-            name: 'Signup'
+            component: Dashboard,
+            name: 'Dashboard'
         },
         {
             path: '/login',
             component: Login,
             name: 'Login'
-        },
-        {
-            path: '/home',
-            component: Home,
-            name: 'Home'
         }
     ],
     mode: 'history'

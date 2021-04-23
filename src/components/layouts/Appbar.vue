@@ -9,12 +9,17 @@
       <v-btn text small rounded><span>REPORTS</span></v-btn>
       <v-btn text small rounded><span>UTILITIES</span></v-btn> -->
 
-      <v-btn v-for="(title, index) in mod_titles" :key="index" text small rounded>
-        <span>{{title.mod_name1}}</span>
-      </v-btn>
+      <!-- <v-btn v-for="(title, index) in mod_menus" :key="index" text small> -->
+        <!-- <span>{{title.menu_title}}</span> -->
+      <!-- </v-btn> -->
+      <appbar-menu :menu_title='"TEST"' :sub_menus=test />
 
-      <appbar-menu :btntitle='"REPORTS"' :items=reports />
-      <appbar-menu :btntitle='"UTILITIES"' :items=utilities />
+      <div v-for="(menu, index) in mod_menus" :key="index">
+        <appbar-menu :menu_title=menu.menu_title :sub_menus=menu.sub_menu />
+      </div>
+
+      <!-- <appbar-menu :btntitle='"REPORTS"' :items=reports /> -->
+      
     </v-app-bar>
 </template>
 <script>
@@ -32,21 +37,21 @@ export default {
     data() {
       return{
         brand: process.env.VUE_APP_APPNAME,
-        utilities: [
-                { title: 'User Account' },
+        test: [
+                { menu_title: 'test' },
             ],
-        reports: [
-          { title: 'Bacteriology', },
-          { title: 'Hematology', }
-        ],
-        mod_titles: []
+        // reports: [
+        //   { title: 'Bacteriology', },
+        //   { title: 'Hematology', }
+        // ],
+        mod_menus: []
       }
     },
     created(){
-        this.$guest.get('/api/menu/getAllModule')
+        this.$guest.get('/api/menu/modMenu')
         .then(res => {
-            console.log(res.data);
-            this.mod_titles = res.data;
+            console.log(res.data.menu);
+            this.mod_menus = res.data.menu;
         })
         .catch((err) => {
             console.log(err);

@@ -3,7 +3,7 @@ import App from './App.vue';
 import vuetify from './plugins/vuetify';
 import router from './routes';
 import { guest } from './plugins/axios';
-import store from './plugins/vuex';
+import store from './plugins/store';
 import VueSession from 'vue-session';
 
 Vue.config.productionTip = false;

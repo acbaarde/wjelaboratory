@@ -2,14 +2,14 @@
     <v-navigation-drawer
       v-model="drawer"
       permanent
-      expand-on-hover
+      
       app
     >
       <v-list-item class="px-2">
         <v-list-item-avatar>
           <v-img src="https://randomuser.me/api/portraits/men/85.jpg"></v-img>
         </v-list-item-avatar>
-        <v-list-item-title>{{ fullname }}</v-list-item-title>
+        <v-list-item-title>{{ $session.get('user-session') }}</v-list-item-title>
       </v-list-item>
 
       <v-divider></v-divider>
@@ -78,13 +78,13 @@ export default {
         }
     },
     computed: {
-      fullname() {
-        return this.$store.getters.user.firstname + ' ' + this.$store.getters.user.lastname
-      }
+      // fullname() {
+      //   return this.$store.getters.user.firstname + ' ' + this.$store.getters.user.lastname
+      // }
     },
     created(){
-      const context = {self: this,jwt_token: this.$session.get('jwt')}
-      this.$store.dispatch('storeUser', context);
+      // const context = {self: this,jwt_token: this.$session.get('jwt')}
+      // this.$store.dispatch('storeUser', context);
 
       this.$guest.get('/api/menu/modMenu')
         .then(res => {

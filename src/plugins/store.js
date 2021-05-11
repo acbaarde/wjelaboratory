@@ -30,6 +30,8 @@ const store = new Vuex.Store({
             .then(res => {
                 state.commit('userLogin', res.data);
                 context.self.$session.start();
+                context.self.$session.set('user-session', res.data.username);
+                context.self.$session.set('userid-session', res.data.id);
                 context.self.$session.set('jwt', res.data.access_token);
                 context.self.$router.push('/');
             })

@@ -109,16 +109,24 @@
 
         </v-data-table>
     </v-flex>
+
+
   </v-card>
 
   
 </template>
 
 <script>
+
 export default {
   name: 'Appointments',
+
   data(){
         return{
+            snackbar: false,
+            snackbartext: '',
+            snackbartimeout: -1,
+            snackbarcolor: '',
             search: '',
             dialog: false,
             itemIndex: -1,
@@ -130,6 +138,7 @@ export default {
                 { text: 'Age', align: 'center', value: 'age', filterable: false  },
                 { text: 'Gender', align: 'center', value: 'gender', filterable: false  },
                 { text: 'Created date', align: 'center', value: 'created_at', filterable: false  },
+                { text: 'Last Checkup', align: 'center', value: 'last_checkup', filterable: false  },
                 { text: 'Actions', align: 'center', value: 'actions', filterable: false  },
             ],
             table_items: [],
@@ -166,15 +175,15 @@ export default {
     //   console.log(item.id)
     // }
 
-    loaditems(){
-      this.$guest.get('/api/patient/getPatients')
+    async loaditems(){
+      await this.$guest.get('/api/patient/getPatients')
       .then(res => {
         this.table_items = res.data
       })
       .catch(err =>{ console.log(err) })
     },  
 
-    btn_save(){
+    async btn_save(){
       const form_data = new FormData();
       form_data.append('id', this.patient.id)
       form_data.append('firstname', this.patient.firstname)
@@ -186,7 +195,7 @@ export default {
       form_data.append('address', this.patient.address)
 
       if(this.itemIndex == -1){
-        this.$guest.post('/api/patient/insertPatient', form_data)
+        await this.$guest.post('/api/patient/insertPatient', form_data)
         .then(res => {
           console.log(res.data)
           this.loaditems()
@@ -194,7 +203,7 @@ export default {
         })
         .catch(err => { console.log(err) })
       }else{
-        this.$guest.post('/api/patient/updatePatient', form_data)
+        await this.$guest.post('/api/patient/updatePatient', form_data)
         .then(res => {
           console.log(res.data)
           this.loaditems()
@@ -213,6 +222,7 @@ export default {
     
     btn_delete(item){
       console.log(item)
+      this.snackbar = true
     },
 
     getItemId(item){

@@ -106,6 +106,7 @@
 </template>
 
 <script>
+
 export default {
     name: 'User_accounts',
     data(){

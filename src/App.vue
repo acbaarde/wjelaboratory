@@ -1,11 +1,7 @@
 <template>
 
   <v-app>
-    
-  
-      <!-- <app-nav v-if="$session.has('user-session')"></app-nav> -->
-    
-    <Navbar v-if="$session.has('user-session')"/>
+    <Navbar v-if="$session.has('user-session')" />
     <v-main>
       
       <v-container fluid>
@@ -16,12 +12,10 @@
 </template>
 
 <script>
-// import Nav from './components/layouts/Nav';
 import Navbar from './components/layouts/Navbar';
 export default {
   name: 'App',
   components: {
-    // appNav: Nav,
     Navbar
   },
   beforeCreate: function(){

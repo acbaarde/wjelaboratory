@@ -5,6 +5,9 @@ import router from './routes';
 import { guest } from './plugins/axios';
 // import store from './plugins/store';
 import VueSession from 'vue-session';
+// import Print from 'vue-print-nb';
+
+// Vue.use(Print);
 
 Vue.config.productionTip = false;
 

@@ -3,9 +3,12 @@ import VueRouter from 'vue-router';
 import Login from './components/pages/Login';
 import Dashboard from './components/pages/Dashboard';
 import Appointments from './components/pages/Appointments.vue';
+import Releasing_form from './components/pages/Appointments/Releasing_form.vue';
 import Patient_form from './components/pages/Appointments/Patient_form';
 import User_accounts from './components/pages/utilities/User_accounts';
 import Data_maintenance from './components/pages/utilities/Data_maintenance';
+import Hematology from './components/pages/Reports/Hematology';
+import Fecalysis from './components/pages/Reports/Fecalysis';
 
 Vue.use(VueRouter);
 
@@ -26,12 +29,17 @@ const router = new VueRouter({
             name: 'Login'
         },
         {
-            path: '/appointments',
+            path: '/appointments/view',
             component: Appointments,
             name: 'Appointments'
         },
         {
-            path: '/appointments/patient',
+            path: '/appointments/releasing',
+            component: Releasing_form,
+            name: 'Releasing_form'
+        },
+        {
+            path: '/appointments/view/patient',
             component: Patient_form,
             name: 'Patient_form'
         },
@@ -43,7 +51,17 @@ const router = new VueRouter({
         {
             path: '/utilities/datamaintenance',
             component: Data_maintenance,
-            name: 'Data Maintenance'
+            name: 'Data_maintenance'
+        },
+        {
+            path: '/hematology',
+            component: Hematology,
+            name: 'Hematology'
+        },
+        {
+            path: '/fecalysis',
+            component: Fecalysis,
+            name: 'Fecalysis'
         },
     ],
     mode: 'history'

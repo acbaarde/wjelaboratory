@@ -3,7 +3,13 @@
       <v-app-bar flat app dense>
           <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
           <v-app-bar-title>
-              <!-- <span>NAVBAR</span> -->
+              <!-- <span>{{ navbartitle }}</span> -->
+                <v-breadcrumbs :items="items">
+                    <template v-slot:divider>
+                        <v-icon>mdi-chevron-right</v-icon>
+                    </template>
+                </v-breadcrumbs>
+
           </v-app-bar-title>
 
           <v-spacer></v-spacer>
@@ -115,12 +121,12 @@
                     <v-list-item-title>{{ dashboard }}</v-list-item-title>
                 </v-list-item>
 
-                <v-list-item link to='/appointments'>
+                <!-- <v-list-item link to='/appointments'>
                     <v-list-item-icon>
                         <v-icon>mdi-point-of-sale</v-icon>
                     </v-list-item-icon>
                     <v-list-item-title>{{ appointments }}</v-list-item-title>
-                </v-list-item>
+                </v-list-item> -->
 
                 <v-list-group v-for="(menu,index) in mod_menus" :key="index" :value="false" :prepend-icon="menu.menu_icon" no-action>
                     
@@ -180,7 +186,7 @@ export default {
             drawer: false,
             mod_menus: [],
             dashboard: "Dashboard",
-            appointments: "Appointments"
+            // appointments: "Appointments"
         }
     },
 
@@ -188,10 +194,24 @@ export default {
       this.$guest.get('/api/menu/modMenu')
         .then(res => {
             this.mod_menus = res.data.menu;
+            // console.log(this.mod_menus)
         })
         .catch((err) => {
             console.log(err);
         });
+    },
+
+    computed:{
+        items(){
+            const routeItems = []
+            const routeArray = this.$route.path.split('/')
+            routeArray.forEach(element => {
+                if(element != ''){
+                    routeItems.push({ text: element[0].toUpperCase() + element.substring(1) })
+                }
+            })
+            return routeItems.length > 0 ? routeItems : [{ text: 'Dashboard' }]
+        }  
     },
 
     methods: {

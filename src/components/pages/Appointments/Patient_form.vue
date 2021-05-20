@@ -395,7 +395,7 @@ export default {
           await this.$guest.post('/api/appointment/insertAppointment', form_data)
           .then(res => {
             console.log(res.data)
-            this.$router.push({ path: '/appointments/patient', query: { id: this.$route.query.id, stat: res.data.stat, cdate: res.data.cdate } })
+            this.$router.push({ name: 'Patient_form', query: { id: this.$route.query.id, stat: res.data.stat, cdate: res.data.cdate } })
             
             this.refreshPage()
           })
@@ -405,7 +405,7 @@ export default {
           await this.$guest.post('/api/appointment/updateAppointment', form_data)
           .then(res => {
             console.log(res.data)
-            this.$router.push({ path: '/appointments/patient', query: { id: this.$route.query.id, stat: res.data.stat, cdate: res.data.cdate } })
+            this.$router.push({ name: 'Patient_form', query: { id: this.$route.query.id, stat: res.data.stat, cdate: res.data.cdate } })
             
             this.refreshPage()
          })

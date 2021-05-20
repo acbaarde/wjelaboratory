@@ -3,7 +3,7 @@
     <!-- <customTable :table_search="search" :table_header="table_header" :table_items="table_items" :btn_items="btn_items" @btn_event="btn_event"/> -->
     <v-flex md12 class="ma-2">
       <v-data-table dense flat disable-sort 
-        :items-per-page="10"
+        :items-per-page="15"
         :headers="table_header"
         :items="table_items"
         :search="search">

@@ -6,12 +6,23 @@ import { guest } from './plugins/axios';
 // import store from './plugins/store';
 import VueSession from 'vue-session';
 // import Print from 'vue-print-nb';
+import VueMask from 'v-mask';
+
+// import { BootstrapVue } from 'bootstrap-vue';
+// import 'bootstrap/dist/css/bootstrap.css';
+// import 'bootstrap-vue/dist/bootstrap-vue.css';
+
+import MyFormData from "./scipts/formdata";
 
 // Vue.use(Print);
 
 Vue.config.productionTip = false;
 
-Vue.use(VueSession);
+// Vue.use(BootstrapVue);
+
+Vue.use(VueSession, { persist: true });
+Vue.use(MyFormData)
+Vue.use(VueMask)
 
 new Vue({
     vuetify,

@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import  Data_table from '../../layouts/Data_table';
+import  Data_table from '../../components/Data_table';
 export default {
     name: 'Data_maintenance',
     components:{ customTable: Data_table },

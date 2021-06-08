@@ -2,6 +2,10 @@
   <v-card>
     <!-- <customTable :table_search="search" :table_header="table_header" :table_items="table_items" :btn_items="btn_items" @btn_event="btn_event"/> -->
     <v-flex md12 class="ma-2">
+      <v-overlay :value="overlay">
+        <v-progress-circular indeterminate size="70"></v-progress-circular>
+      </v-overlay>
+
       <v-data-table dense flat disable-sort 
         :items-per-page="15"
         :headers="table_header"
@@ -77,10 +81,10 @@
             </template>
 
             <template v-slot:[`item.status`]="{ item }">
-                <v-chip v-if="item.status == 'P'" color="warning" small dark link @click="getItemId(item)">
-                  PENDING
+                <v-chip v-if="item.status == 'P'" color="green" small dark link @click="getItemId(item)">
+                  ONGOING
                 </v-chip>
-                <v-chip v-else-if="item.status == 'F'"  color="green" small dark link @click="getItemId(item)">
+                <v-chip v-else-if="item.status == 'F'"  color="warning" small dark link @click="getItemId(item)">
                   FOR PRINT
                 </v-chip>
                 <v-chip v-else-if="item.status == 'C'"  color="info" small dark link @click="getItemId(item)">
@@ -123,6 +127,7 @@ export default {
 
   data(){
         return{
+            overlay: false,
             snackbar: false,
             snackbartext: '',
             snackbartimeout: -1,
@@ -138,7 +143,7 @@ export default {
                 { text: 'Age', align: 'center', value: 'age', filterable: false  },
                 { text: 'Gender', align: 'center', value: 'gender', filterable: false  },
                 { text: 'Created date', align: 'center', value: 'created_at', filterable: false  },
-                { text: 'Last Checkup', align: 'center', value: 'last_checkup', filterable: false  },
+                // { text: 'Last Checkup', align: 'center', value: 'last_checkup', filterable: false  },
                 { text: 'Actions', align: 'center', value: 'actions', filterable: false  },
             ],
             table_items: [],
@@ -158,6 +163,11 @@ export default {
             }
         }
     },
+  beforeCreate: function(){
+      if(!this.$session.has('user-session')){
+          this.$router.push('/login');
+      }
+  },
 
   created(){
     this.loaditems()
@@ -176,26 +186,29 @@ export default {
     // }
 
     async loaditems(){
+      this.overlay = true
       await this.$guest.get('/api/patient/getPatients')
       .then(res => {
         this.table_items = res.data
+        this.overlay = false
       })
       .catch(err =>{ console.log(err) })
     },  
 
     async btn_save(){
-      const form_data = new FormData();
-      form_data.append('id', this.patient.id)
-      form_data.append('firstname', this.patient.firstname)
-      form_data.append('lastname', this.patient.lastname)
-      form_data.append('middlename', this.patient.middlename)
-      form_data.append('age', this.patient.age)
-      form_data.append('gender', this.patient.gender)
-      form_data.append('contact', this.patient.contact)
-      form_data.append('address', this.patient.address)
+      let data = {
+        id: this.patient.id,
+        firstname: this.patient.firstname,
+        lastname: this.patient.lastname,
+        middlename: this.patient.middlename,
+        age: this.patient.age,
+        gender: this.patient.gender,
+        contact: this.patient.contact,
+        address: this.patient.address
+      }
 
       if(this.itemIndex == -1){
-        await this.$guest.post('/api/patient/insertPatient', form_data)
+        await this.$guest.post('/api/patient/insertPatient', this.$form_data.generate(data))
         .then(res => {
           console.log(res.data)
           this.loaditems()
@@ -203,7 +216,7 @@ export default {
         })
         .catch(err => { console.log(err) })
       }else{
-        await this.$guest.post('/api/patient/updatePatient', form_data)
+        await this.$guest.post('/api/patient/updatePatient', this.$form_data.generate(data))
         .then(res => {
           console.log(res.data)
           this.loaditems()

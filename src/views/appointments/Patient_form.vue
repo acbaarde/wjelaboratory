@@ -17,12 +17,16 @@
           </v-row>
 
           <v-row no-gutters class="pt-3">
-            <v-col cols="9" class="pa-0 mt-2 pr-2">
+            <v-col cols="7" class="pa-0 mt-2 pr-2">
               <v-text-field dense readonly hide-details label="Address" v-model="patient_info.address"></v-text-field>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col cols="3" class="pa-0">
+            <!-- <v-col cols="3" class="pa-0">
               <v-text-field dense outlined readonly hide-details label="Status" color="orange" v-model="patient_status"></v-text-field>
+            </v-col> -->
+            <v-col cols="5" class="text-right">
+              <v-btn color="primary" class="mr-2" @click="btnsave()">SAVE</v-btn>
+              <v-btn color="error" @click="btncancel()">CANCEL</v-btn>
             </v-col>
           </v-row>
         </v-col>
@@ -36,10 +40,10 @@
               <v-select v-model="physician_selected.value" @change="physician_changed()" :items="physicians" hide-details item-text="text" item-value="value" label="Physician" :prefix="physicianprefix"></v-select>
             </v-col>
             
-            <v-col cols="2" class="pa-0 pr-2">
+            <v-col cols="3" class="pa-0 pr-2">
               <v-select v-model="discount_selected.value" @change="discount_changed()" :items="discount" hide-details item-text="text" item-value="value" label="Discount type"></v-select>
             </v-col>
-            <v-col v-if="cols == 5" cols="3" class="pa-0 pr-2">
+            <v-col v-if="cols == 4" cols="3" class="pa-0 pr-2">
               <v-text-field hide-details label="Remarks" v-model="discount_rmks"></v-text-field>
             </v-col>
             <v-col cols="2">
@@ -48,13 +52,14 @@
           </v-row>
 
           <v-row no-gutters class="pt-3">
-            <v-col cols="6">
-              <v-btn color="primary" class="mr-2" @click="btnsave()">SAVE</v-btn>
-              <v-btn color="error" @click="btncancel()">CANCEL</v-btn>
+            <v-col cols="3" class="pr-2">
+              <v-btn color="green" dark class="mr-2" @click="btnpost()" :disabled="btndisabled">POST</v-btn>
             </v-col>
-
             <v-col cols="3" class="pr-2">
               <v-text-field dense outlined hide-details filled @keypress="cash_keypress()" label="Cash" type="number" v-model="patient_info.totalcash" placeholder="0.00"></v-text-field>
+            </v-col>
+            <v-col cols="3" class="pr-2">
+              <v-text-field dense outlined readonly hide-details filled label="Balance" v-model="totalbalance" placeholder="0.00"></v-text-field>
             </v-col>
             <v-col cols="3">
               <v-text-field dense outlined readonly hide-details filled label="Total Fee" v-model="totalfee" placeholder="0.00"></v-text-field>
@@ -150,7 +155,7 @@ export default {
         comboboxvalue: [],
         tab: 0,
         loading: false,
-        cols: 8,
+        cols: 7,
         readonly: true,
         tab_headers: [],
         default_tab_headers: [],
@@ -165,9 +170,14 @@ export default {
         ],
         patient_info: {
           id: '', appointment_id: 0, firstname: '',lastname: '',middlename: '', age: '', gender: '', 
-          status: '', contact: '', address: '', totalcash: 0, totalfee: 0, physician_id: 0
+          status: '', contact: '', address: '', totalcash: 0, totalfee: 0, totalbalance: 0, physician_id: 0
         },
       }
+    },
+    beforeCreate: function(){
+        if(!this.$session.has('user-session')){
+            this.$router.push('/login');
+        }
     },
 
     created() {
@@ -198,25 +208,43 @@ export default {
         return this.physician_selected.gender == 'f' ? 'Dra.' : 'Dr.'
       },
 
-      totalfee(){
-        const totalsum = []
-        if(this.chips_selected.length > 0){
-          this.chips_selected.forEach(e => {
-            totalsum.push(parseInt(e.amount))
-          })
-        }
-        let total =  totalsum.length ? totalsum.reduce((total, value) => total + value) : '0.00'
-        return (total - ((this.discount_selected.percent/100) * total)).toFixed(2) 
+      totalbalance(){
+        // let totalsum = []
+        // if(this.chips_selected.length > 0){
+        //   this.chips_selected.forEach(e => {
+        //     totalsum.push(parseInt(e.amount))
+        //   })
+        // }
+        // let total =  totalsum.length ? totalsum.reduce((total, value) => total + value) : '0.00'
+        // return total > 0 ? (total - ((this.discount_selected.percent/100) * total)).toFixed(2) : '0.00'
+        let total = Object.values(this.chips_selected).reduce((total, { amount }) => total + parseFloat(amount), 0).toFixed(2)
+        let percent = typeof this.discount_selected.percent == 'undefined' ? 0 : this.discount_selected.percent
+        return total > 0 ? (total - ((percent/100) * total)).toFixed(2) : '0.00'
       },
+
+      totalfee(){
+        // let totalsum = []
+        // if(this.chips_selected.length > 0){
+        //   this.chips_selected.forEach(e => {
+        //     totalsum.push(parseInt(e.amount))
+        //   })
+        // }
+        // return totalsum.length ? totalsum.reduce((total, value) => total + value).toFixed(2) : '0.00'
+        return Object.values(this.chips_selected).reduce((total, { amount }) => total + parseFloat(amount), 0).toFixed(2)
+      },
+
+      btndisabled(){
+        return this.$route.query.stat == 'F' ? false : true
+      }
     },
 
     watch: {
       discount_selected(){
         if(this.discount_selected.value == 'others'){
-          this.cols = 5
+          this.cols = 4
           this.readonly = false
         }else{
-          this.cols = 8
+          this.cols = 7
           this.readonly = true
           this.discount_rmks =''
         }
@@ -246,10 +274,13 @@ export default {
       },
 
       async loadPatient(){
-        const form_data = new FormData()
-        form_data.append('id', this.$route.query.id)
+        // const form_data = new FormData()
+        // form_data.append('id', this.$route.query.id)
 
-        await this.$guest.post('/api/patient/getPatient', form_data)
+        let data = {
+          id: this.$route.query.id
+        }
+        await this.$guest.post('/api/patient/getPatient', this.$form_data.generate(data))
         .then(res => {
           this.patient_info = Object.assign({}, res.data.patient)
           this.discount = Object.assign([], res.data.discount)
@@ -262,12 +293,13 @@ export default {
       },
 
       async loadAppointment(){
-        const form_data = new FormData()
-        form_data.append('patient_id', this.$route.query.id)
-        form_data.append('status', this.$route.query.stat)
-        form_data.append('cdate', this.$route.query.cdate)
+        let data = {
+          patient_id: this.$route.query.id,
+          status: this.$route.query.stat,
+          cdate: this.$route.query.cdate
+        }
         
-        await this.$guest.post('/api/appointment/getAppointment', form_data)
+        await this.$guest.post('/api/appointment/getAppointment', this.$form_data.generate(data))
         .then(res => {
           const patientinfo = {
             'id': res.data.patient.id,
@@ -281,6 +313,7 @@ export default {
             'contact': res.data.patient.contact,
             'address': res.data.patient.address,
             'totalcash': res.data.patient.payment,
+            'totalbalance': res.data.patient.balance,
             'totalfee': res.data.patient.totalamount,
             'physician_id': res.data.patient.physician_id,
           }
@@ -309,9 +342,12 @@ export default {
       },
 
       async loadLabModule(){
-        const form_data = new FormData()
-        form_data.append('appointment_id', this.patient_info.appointment_id)
-        await this.$guest.post('/api/laboratory/loadLabmodule', form_data)
+        // const form_data = new FormData()
+        // form_data.append('appointment_id', this.patient_info.appointment_id)
+        let data = {
+          appointment_id: this.patient_info.appointment_id
+        }
+        await this.$guest.post('/api/laboratory/loadLabmodule', this.$form_data.generate(data))
         .then(res => {
           if(res.data.status){
             this.default_tab_headers = res.data.modules
@@ -365,7 +401,22 @@ export default {
 
       btncancel(){
         // this.$router.push('/appointments')
-        this.overlay = true
+        // this.overlay = true
+        console.log(this.$session.get('userid-session'))
+      },
+      btnpost(){
+        let data = {
+          appointment_id: this.patient_info.appointment_id,
+          user_id: this.$session.get('userid-session')
+        }
+        this.$guest.post('/api/appointment/postAppointment', this.$form_data.generate(data))
+        .then(res => {
+          if(res.data.status == true){
+            this.$router.push({ name: 'Appointments' })
+          }
+        })
+        .catch(err => { console.log(err) })
+
       },
       async btnsave(){
         this.overlay = true
@@ -379,20 +430,25 @@ export default {
             })
           }
         })
-        const form_data = new FormData()
-        form_data.append('appointment_id', this.patient_info.appointment_id)
-        form_data.append('patient_id', this.$route.query.id)
-        form_data.append('physician_id', this.physician_selected.value)
-        form_data.append('discount_type', this.discount_selected.value)
-        form_data.append('discount_rmks', this.discount_rmks)
-        form_data.append('discount_percent', this.discount_selected.percent)
-        form_data.append('submod_id', this.comboboxvalue)
-        form_data.append('total_fee', this.totalfee)
-        form_data.append('total_cash', this.patient_info.totalcash)
-        form_data.append('lab_test', JSON.stringify(modresult))
 
+        let data = {
+          appointment_id: this.patient_info.appointment_id,
+          patient_id: this.$route.query.id,
+          physician_id: this.physician_selected.value,
+          discount_type: this.discount_selected.value,
+          discount_rmks: this.discount_rmks,
+          discount_percent: this.discount_selected.percent,
+          submod_id: this.comboboxvalue,
+          total_fee: this.totalfee,
+          total_cash: this.patient_info.totalcash,
+          total_balance: this.totalbalance,
+          lab_test: JSON.stringify(modresult),
+          cdate: this.$route.query.cdate,
+          user_id: this.$session.get('userid-session')
+        }
+ 
         if(this.$route.query.stat == 'C'){
-          await this.$guest.post('/api/appointment/insertAppointment', form_data)
+          await this.$guest.post('/api/appointment/insertAppointment', this.$form_data.generate(data))
           .then(res => {
             console.log(res.data)
             this.$router.push({ name: 'Patient_form', query: { id: this.$route.query.id, stat: res.data.stat, cdate: res.data.cdate } })
@@ -401,8 +457,7 @@ export default {
           })
           .catch(err => { console.log(err)} )
         }else{
-          form_data.append('cdate', this.$route.query.cdate)
-          await this.$guest.post('/api/appointment/updateAppointment', form_data)
+          await this.$guest.post('/api/appointment/updateAppointment', this.$form_data.generate(data))
           .then(res => {
             console.log(res.data)
             this.$router.push({ name: 'Patient_form', query: { id: this.$route.query.id, stat: res.data.stat, cdate: res.data.cdate } })

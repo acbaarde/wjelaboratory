@@ -119,10 +119,15 @@
                 </v-row>
             </v-container>
         </v-card-text>
+
+        <v-row>
+            <result-footer />
+        </v-row>
     </v-card>
 </template>
 
 <script>
+import ResultFooter from './resultFooter.vue'
 import ResultHeader from './resultHeader.vue'
 export default {
     name: 'Hematology',
@@ -134,7 +139,8 @@ export default {
         }
     },
     components: {
-        ResultHeader
+        ResultHeader,
+        ResultFooter
     }
 
 }
@@ -147,7 +153,8 @@ export default {
     }
     th, td {
         text-align: center;
-        color: black;    
+        color: black;  
+        font-size: 12px;   
     }
     /* .ul{
         list-style: none;

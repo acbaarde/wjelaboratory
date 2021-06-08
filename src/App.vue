@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import Navbar from './components/layouts/Navbar';
+import Navbar from './components/Navbar';
 export default {
   name: 'App',
   components: {

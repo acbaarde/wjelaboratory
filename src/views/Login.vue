@@ -44,17 +44,15 @@ export default {
     methods:{
         handleSubmit(){
             if(this.formValidate()){
-                const form_data = new FormData();
-                form_data.append('username', this.username);
-                form_data.append('password', this.password);
-                
-                // const context = {
-                //     self: this,
-                //     form_data: form_data
-                // }
-                // this.$store.dispatch('userLogin', context);                          
+                // const form_data = new FormData();
+                // form_data.append('username', this.username);
+                // form_data.append('password', this.password);
+                let data = {
+                    username: this.username,
+                    password: this.password
+                }
 
-                this.$guest.post('/login', form_data)
+                this.$guest.post('/login', this.$form_data.generate(data))
                 .then(res => {
                     this.msg = res.data.message;
                     if(res.data.status == true){

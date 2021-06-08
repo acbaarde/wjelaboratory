@@ -5,20 +5,29 @@
         <v-divider></v-divider>
         <v-row no-gutters>
             <v-col cols="12" class="d-flex justify-center">
-                <h2>RESULT</h2>
+                <h2>KOH RESULT</h2>
             </v-col>
         </v-row>
-        <v-row>
-            <v-col class="px-12">
+        <v-row no-gutters>
+            <v-col class="px-6">
                 <table style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th style="width:50%;">SPECIMEN</th>
+                            <th style="width:50%;">RESULT</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
-                            <td>Color</td>
+                            <td>N/A</td>
                             <td>N/A</td>
                         </tr>
                     </tbody>
                 </table>
             </v-col>
+        </v-row>
+        <v-row>
+            <result-footer />
         </v-row>
     </v-container>
   </v-card>
@@ -26,9 +35,10 @@
 
 <script>
 import ResultHeader from './resultHeader.vue'
+import ResultFooter from './resultFooter.vue'
 export default {
-    name: 'Fecalysis',
-    components: { ResultHeader }
+    name: 'KOH',
+    components: { ResultHeader, ResultFooter }
 }
 </script>
 
@@ -40,5 +50,6 @@ table, th,td {
 th, td {
     text-align: center;
     color: black;    
+    font-size: 12px; 
 }
 </style>

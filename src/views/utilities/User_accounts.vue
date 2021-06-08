@@ -194,17 +194,26 @@ export default {
       },
 
       saveUser(){
-          const form_data = new FormData()
-          form_data.append('id', this.editedUser.id)
-          form_data.append('username', this.editedUser.username)
-          form_data.append('password', this.editedUser.password)
-          form_data.append('firstname', this.editedUser.firstname)
-          form_data.append('lastname', this.editedUser.lastname)
-          form_data.append('user_type', this.editedUser.user_type)
+          // const form_data = new FormData()
+          // form_data.append('id', this.editedUser.id)
+          // form_data.append('username', this.editedUser.username)
+          // form_data.append('password', this.editedUser.password)
+          // form_data.append('firstname', this.editedUser.firstname)
+          // form_data.append('lastname', this.editedUser.lastname)
+          // form_data.append('user_type', this.editedUser.user_type)
+
+          let data = {
+            id: this.editedUser.id,
+            username: this.editedUser.username,
+            password: this.editedUser.password,
+            firstname: this.editedUser.firstname,
+            lastname: this.editedUser.lastname,
+            user_type: this.editedUser.user_type
+          }
 
         if(this.editedIndex > -1){
           //UPDATE USER
-          this.$guest.post('/updateUser', form_data)
+          this.$guest.post('/updateUser', this.$form_data.generate(data))
           .then(() => {
             this.loadItems()
             this.close()
@@ -214,7 +223,7 @@ export default {
           })
         }else{
           //REGISTER USER
-          this.$guest.post('/registerUser', form_data)
+          this.$guest.post('/registerUser', this.$form_data.generate(data))
           .then(res => {
             this.msg = res.data.message
             if(res.data.status == true){

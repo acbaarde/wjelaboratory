@@ -1,13 +1,13 @@
 <template>
   <v-card max-width="800px">
     <v-container fluid>
-        <result-header />
-        <v-divider></v-divider>
-        <v-row no-gutters>
+        <result-header :data="header_data" />
+        <!-- <v-divider></v-divider> -->
+        <!-- <v-row no-gutters>
             <v-col cols="12" class="d-flex justify-center">
                 <h2>FECALYSIS RESULT</h2>
             </v-col>
-        </v-row>
+        </v-row> -->
         <v-row no-gutters>
             <v-col class="px-6">
                 <table style="width:100%;">
@@ -63,7 +63,20 @@ import ResultHeader from './resultHeader.vue'
 import ResultFooter from './resultFooter.vue'
 export default {
     name: 'Fecalysis',
-    components: { ResultHeader, ResultFooter }
+    components: { ResultHeader, ResultFooter },
+    computed:{
+        header_data(){
+            let age = []
+            age.push(this.$route.params.active_item.age,this.$route.params.active_item.agetype)
+            return {
+                fullname: this.$route.params.active_item.fullname,
+                age: age,
+                gender: this.$route.params.active_item.gender == "M" ? "MALE" : "FEMALE",
+                physician: this.$route.params.active_item.physician,
+                title: this.$route.params.active_item.title
+            }
+        }
+    }
 }
 </script>
 

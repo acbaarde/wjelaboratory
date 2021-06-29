@@ -6,7 +6,7 @@
           <li>JOANA PAULA G. BONOIL, RMT</li>
           <li>_____________________________</li>
           <li>MEDICAL TECHNOLOGIST</li>
-          <li>Lic. No. 69669</li>
+          <!-- <li>Lic. No. 69669</li> -->
         </ul>
       </v-col>
       <v-col cols="6">
@@ -14,7 +14,7 @@
           <li>DR.GABRIEL J. CRUZ , M.D.,FPSP, FSPO</li>
           <li>_____________________________</li>
           <li>PATHOLOGIST</li>
-          <li>Lic. No. 74744</li>
+          <!-- <li>Lic. No. 74744</li> -->
         </ul>
       </v-col>
     </v-row>
@@ -36,5 +36,6 @@ li{
   text-align: center;
   line-height: 1rem;
   color: black;
+  font-family: "Roboto", sans-serif;
 }
 </style>

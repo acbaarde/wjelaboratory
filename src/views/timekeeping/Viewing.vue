@@ -1,5 +1,8 @@
 <template>
-  <v-card>
+<div class="ma-n3">
+    <myHeader :title="'Timekeeping'" :subtitle="'Manage Employee Timekeeping'" />
+    <v-container fluid>
+  <v-card flat outlined>
     <v-flex md-12 class="ma-2">
       <v-overlay :value="overlay">
         <v-progress-circular indeterminate size="70"></v-progress-circular>
@@ -23,11 +26,15 @@
       
     </v-flex>
   </v-card>
+  </v-container>
+</div>
 </template>
 
 <script>
+import myHeader from '../../components/myHeader.vue'
 export default {
     name: 'Viewing',
+    components: { myHeader },
     data(){
         return{
             overlay: false,
@@ -48,16 +55,30 @@ export default {
       if(!this.$session.has('user-session')){
           this.$router.push('/login');
       }
+      let user_access = this.$session.get('user-access')
+        let cpath = this.$route.path
+        let modpath = []
+        user_access.forEach(el => {
+          modpath.push(el.mod_path)
+        })
+        if(modpath.indexOf(cpath) == -1){
+          this.$router.push('/')
+        }
     },
     created(){
         this.initialize()
     },
     methods: {
         async initialize(){
+            this.overlay = true
             await this.$guest.get('/api/timekeeping/getEmployees')
             .then(res => {
                 console.log(res.data)
                 this.table_items = res.data.result
+                
+                this.$nextTick(() => {
+                  this.overlay = false
+                })
             })
             .catch(err => { console.log(err) })
         },

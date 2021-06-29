@@ -1,5 +1,8 @@
 <template>
-  <v-card>
+<div class="ma-n3">
+    <myHeader :title="'Appointments'" :subtitle="'Manage Patient Appointment'" />
+    <v-container fluid>
+  <v-card flat outlined>
     <v-card-title>
       <v-row>
         <v-col cols="6">
@@ -12,7 +15,7 @@
               <v-text-field readonly hide-details label="Gender" v-model="gender"></v-text-field>
             </v-col>
             <v-col cols="2" class="pa-0">
-              <v-text-field readonly hide-details label="Age" v-model="patient_info.age" :suffix="patient_info.age >= 1 ? 'yrs.' : 'mos'"></v-text-field>
+              <v-text-field readonly hide-details label="Age" :value="formatAge(patient_info.age,patient_info.agetype)"></v-text-field>
             </v-col>
           </v-row>
 
@@ -96,7 +99,7 @@
                   <v-col cols="6">
                     <v-card>
                       <v-card-title class="justify-center" >
-                          <h4>{{ item.title }} Result</h4>
+                          <h4>{{ item.title }} RESULT</h4>
                       </v-card-title>
                       <v-card-text>
                         <v-data-table dense flat disable-sort item-key="id" :items-per-page="-1" :headers="table_headers" :items="table_items" :loading="loading"  loading-text="Loading... Please wait">
@@ -143,11 +146,15 @@
       </v-card> -->
     </v-overlay>
   </v-card>
+  </v-container>
+  </div>
 </template>
 
 <script>
+import myHeader from '../../components/myHeader.vue'
 export default {
     name: 'Patient_form',
+    components: { myHeader },
     data(){
       return{
         overlay: false,
@@ -165,7 +172,8 @@ export default {
         physicians: [],
         physician_selected: [],
         table_headers:[
-          { text: 'Title', value: 'title', align: 'left'},
+          { text: 'Title', value: 'submod_title', align: 'left'},
+          { text: 'Description', value: 'title', align: 'left'},
           { text: 'Result', value: 'result', align: 'center'},
         ],
         patient_info: {
@@ -196,7 +204,7 @@ export default {
         return fullname.toUpperCase()
       },
       gender(){
-        return this.patient_info.gender == 'm' ? 'Male' : 'Female'
+        return this.patient_info.gender == 'M' ? 'Male' : 'Female'
       },
       table_items(){
         return this.tab_headers[this.tab]["subsubmodules"].filter(e => this.comboboxvalue.includes(e.submod_id))
@@ -205,7 +213,7 @@ export default {
         return this.patient_info.status == 'P' ? 'Pending' : 'For Released'
       },
       physicianprefix(){
-        return this.physician_selected.gender == 'f' ? 'Dra.' : 'Dr.'
+        return this.physician_selected.gender == 'F' ? 'Dra.' : 'Dr.'
       },
 
       totalbalance(){
@@ -255,13 +263,6 @@ export default {
           this.comboboxvalue.push(e.value)
         })
       },
-
-      // overlay(val){
-      //   val && setTimeout(() => {
-      //     this.overlay = false
-      //   }, 5000)
-      // }
-
     },
 
     methods:{
@@ -301,6 +302,7 @@ export default {
         
         await this.$guest.post('/api/appointment/getAppointment', this.$form_data.generate(data))
         .then(res => {
+          console.log(res.data)
           const patientinfo = {
             'id': res.data.patient.id,
             'appointment_id': res.data.patient.appointment_id,
@@ -350,6 +352,7 @@ export default {
         await this.$guest.post('/api/laboratory/loadLabmodule', this.$form_data.generate(data))
         .then(res => {
           if(res.data.status){
+            console.log(res.data)
             this.default_tab_headers = res.data.modules
             this.tab_headers = Object.assign({}, this.default_tab_headers)
           }
@@ -400,7 +403,7 @@ export default {
       },
 
       btncancel(){
-        // this.$router.push('/appointments')
+        this.$router.push('/appointments/view')
         // this.overlay = true
         console.log(this.$session.get('userid-session'))
       },
@@ -435,7 +438,7 @@ export default {
           appointment_id: this.patient_info.appointment_id,
           patient_id: this.$route.query.id,
           physician_id: this.physician_selected.value,
-          discount_type: this.discount_selected.value,
+          discount_type: typeof this.discount_selected.value !== 'undefined' ? this.discount_selected.value : '',
           discount_rmks: this.discount_rmks,
           discount_percent: this.discount_selected.percent,
           submod_id: this.comboboxvalue,

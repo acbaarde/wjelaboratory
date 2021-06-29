@@ -44,22 +44,21 @@ export default {
     methods:{
         handleSubmit(){
             if(this.formValidate()){
-                // const form_data = new FormData();
-                // form_data.append('username', this.username);
-                // form_data.append('password', this.password);
                 let data = {
                     username: this.username,
                     password: this.password
                 }
-
                 this.$guest.post('/login', this.$form_data.generate(data))
                 .then(res => {
+                    console.log(res.data)
                     this.msg = res.data.message;
                     if(res.data.status == true){
                         this.type = 'success';
                         this.$session.start();
-                        this.$session.set('user-session', res.data.username);
-                        this.$session.set('userid-session', res.data.id);
+                        this.$session.set('user-session', res.data.fullname);
+                        this.$session.set('userid-session', res.data.user_id);
+                        this.$session.set('user-access', res.data.user_access);
+                        this.$session.set('usertype-session', res.data.user_type);
                         this.$router.push('/');
                     }else{
                         this.type = 'error';

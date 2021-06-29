@@ -3,13 +3,12 @@
       <v-app-bar flat app dense>
           <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
           <v-app-bar-title>
-              <!-- <span>{{ navbartitle }}</span> -->
-                <v-breadcrumbs :items="items">
+              <!-- <span>WJE Diagnostic Laboratory</span> -->
+                <!-- <v-breadcrumbs :items="items">
                     <template v-slot:divider>
                         <v-icon>mdi-chevron-right</v-icon>
                     </template>
-                </v-breadcrumbs>
-
+                </v-breadcrumbs> -->
           </v-app-bar-title>
 
           <v-spacer></v-spacer>
@@ -103,10 +102,10 @@
         </v-app-bar>
 
 
-        <v-navigation-drawer v-model="drawer" permanent app>
+        <v-navigation-drawer v-model="drawer" app>
             <v-list-item class="px-2">
                 <v-list-item-avatar>
-                    <!-- <v-img src="../../assets/wjelogo.png"></v-img> -->
+                    <v-img src="../assets/wjelogo.png"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-title>{{ navigationTitle }}</v-list-item-title>
             </v-list-item>
@@ -120,26 +119,133 @@
                     </v-list-item-icon>
                     <v-list-item-title>{{ dashboard }}</v-list-item-title>
                 </v-list-item>
+                
+                <template v-for="menu in menus">
+                    <v-list-group v-if="menu.mod_lvl == 1" :key="menu.id" :prepend-icon="menu.mod_icon" no-action>
+                        <template v-slot:activator>
+                            <v-list-item-title v-text="menu.mod_title"></v-list-item-title>
+                        </template>
 
-                <!-- <v-list-item link to='/appointments'>
-                    <v-list-item-icon>
-                        <v-icon>mdi-point-of-sale</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>{{ appointments }}</v-list-item-title>
-                </v-list-item> -->
+                        <template v-for="submenu in menus">
+                            <template v-if="submenu.mod_lvl == 2">
+                                <v-list-item v-if="menu.id == submenu.mod_parent" :key="submenu.id" :to="submenu.mod_path">
+                                    <v-list-item-title>{{submenu.mod_title}}</v-list-item-title>
+                                    <v-list-item-icon><v-icon v-text="submenu.mod_icon"></v-icon></v-list-item-icon>
+                                </v-list-item>
+                            </template>
 
-                <v-list-group v-for="(menu,index) in mod_menus" :key="index" :value="false" :prepend-icon="menu.menu_icon" no-action>
-                    
+                            <template v-if="submenu.mod_lvl == 3">
+                                <v-list-group v-if="menu.id == submenu.mod_parent" :key="submenu.id" no-action sub-group>
+                                    <template v-slot:activator>
+                                        <v-list-item-content>
+                                            <v-list-item-title>{{submenu.mod_title}}</v-list-item-title>
+                                        </v-list-item-content>
+                                    </template>
+                                    
+                                    <template v-for="subsubmenu in menus">
+                                        <template v-if="submenu.id == subsubmenu.mod_parent">
+                                            <v-list-item :key="subsubmenu.id" link :to="subsubmenu.mod_path">
+                                                <v-list-item-title v-text="subsubmenu.mod_title"></v-list-item-title>
+                                                <v-list-item-icon>
+                                                    <v-icon v-text="subsubmenu.mod_icon"></v-icon>
+                                                </v-list-item-icon>
+                                            </v-list-item>
+                                        </template>
+                                    </template>
+
+                                </v-list-group>
+                            </template>
+
+
+                            <!-- <v-list-group v-if="menu.id == submenu.mod_parent && submenu.mod_lvl == 3" :key="submenu.id" no-action sub-group>
+                                <template v-slot:activator>
+                                    <v-list-item-content>
+                                        <v-list-item-title>{{submenu.mod_title}}</v-list-item-title>
+                                    </v-list-item-content>
+                                </template>
+
+                                <v-list-item v-for="([title, icon], i) in admins" :key="i" link>
+                                    <v-list-item-title v-text="title"></v-list-item-title>
+                                    <v-list-item-icon>
+                                        <v-icon v-text="icon"></v-icon>
+                                    </v-list-item-icon>
+                                </v-list-item>
+                            </v-list-group> -->
+
+                        </template>
+                    </v-list-group>
+                </template>
+                
+
+                <!-- <v-list-group v-for="(menu,index) in mod_menus" :key="index" :value="false" :prepend-icon="menu.menu_icon" no-action>
                     <template v-slot:activator>
                         <v-list-item-title v-text="menu.menu_title"></v-list-item-title>
                     </template>
 
-                    <v-list-item v-for="(sub_menu,i) in menu.sub_menus" :key="i" router :to="sub_menu.menu_path" link>
-                        <v-list-item-title>{{sub_menu.menu_title}}</v-list-item-title>
-                        <v-list-item-icon><v-icon v-text="sub_menu.menu_icon"></v-icon></v-list-item-icon>
-                    </v-list-item>
+                    <template v-if="menu.menu_code == '0003' ? false : true">
+                        <v-list-item v-for="(sub_menu,i) in menu.sub_menus" :key="i" router :to="sub_menu.menu_path">
+                            <v-list-item-title>{{sub_menu.menu_title}}</v-list-item-title>
+                            <v-list-item-icon><v-icon v-text="sub_menu.menu_icon"></v-icon></v-list-item-icon>
+                        </v-list-item>
+                    </template>
+                    
+                    <template v-else>
+                        <v-list-group v-for="(sub_menu,i) in menu.sub_menus" :key="i" :value="true" no-action sub-group>
+                            <template v-slot:activator>
+                                <v-list-item-content>
+                                    <v-list-item-title>{{sub_menu.menu_title}}</v-list-item-title>
+                                </v-list-item-content>
+                            </template>
 
-                </v-list-group>
+                            <v-list-item v-for="([title, icon], i) in admins" :key="i" link>
+                                <v-list-item-title v-text="title"></v-list-item-title>
+                                <v-list-item-icon>
+                                    <v-icon v-text="icon"></v-icon>
+                                </v-list-item-icon>
+                            </v-list-item>
+                        </v-list-group>
+                    </template>
+                
+                </v-list-group> -->
+
+                <!-- <v-list-group :value="true" prepend-icon="mdi-account-circle">
+                    <template v-slot:activator>
+                        <v-list-item-title>Users</v-list-item-title>
+                    </template>
+
+                    <v-list-group :value="true" no-action sub-group>
+                        <template v-slot:activator>
+                            <v-list-item-content>
+                                <v-list-item-title>Admin</v-list-item-title>
+                            </v-list-item-content>
+                        </template>
+
+                        <v-list-item v-for="([title, icon], i) in admins" :key="i" link>
+                            <v-list-item-title v-text="title"></v-list-item-title>
+                            <v-list-item-icon>
+                                <v-icon v-text="icon"></v-icon>
+                            </v-list-item-icon>
+                        </v-list-item>
+                    </v-list-group>
+
+                    <v-list-group no-action sub-group>
+                        <template v-slot:activator>
+                            <v-list-item-content>
+                                <v-list-item-title>Actions</v-list-item-title>
+                            </v-list-item-content>
+                        </template>
+
+                        <v-list-item v-for="([title, icon], i) in cruds" :key="i" link>
+                            <v-list-item-title v-text="title"></v-list-item-title>
+
+                            <v-list-item-icon>
+                                <v-icon v-text="icon"></v-icon>
+                            </v-list-item-icon>
+                        </v-list-item>
+                    </v-list-group>
+
+                </v-list-group> -->
+
             </v-list>
 
             <v-divider></v-divider>
@@ -182,36 +288,68 @@ export default {
     name: 'Navbar',
     data(){
         return{
-            navigationTitle: process.env.VUE_APP_APPNAME,
-            drawer: false,
+            admins: [
+        ['Management', 'mdi-account-multiple-outline'],
+        ['Settings', 'mdi-cog-outline'],
+      ],
+      cruds: [
+        ['Create', 'mdi-plus-outline'],
+        ['Read', 'mdi-file-outline'],
+        ['Update', 'mdi-update'],
+        ['Delete', 'mdi-delete'],
+      ],
+
+            // navigationTitle: process.env.VUE_APP_APPNAME,
+            drawer: true,
             mod_menus: [],
+            // menus: [],
             dashboard: "Dashboard",
             // appointments: "Appointments"
         }
     },
 
     created(){
-      this.$guest.get('/api/menu/modMenu')
+    //   this.$guest.get('/api/menu/modMenu')
+    //     .then(res => {
+    //         this.mod_menus = res.data.menu;
+    //         console.log(this.mod_menus)
+    //     })
+    //     .catch((err) => {
+    //         console.log(err);
+    //     });
+
+        this.$guest.get('/api/menu/moduleMenu')
         .then(res => {
-            this.mod_menus = res.data.menu;
-            // console.log(this.mod_menus)
+            this.mod_menus = res.data
         })
-        .catch((err) => {
-            console.log(err);
-        });
+        .catch(err => { console.log(err) })
     },
 
     computed:{
-        items(){
-            const routeItems = []
-            const routeArray = this.$route.path.split('/')
-            routeArray.forEach(element => {
-                if(element != ''){
-                    routeItems.push({ text: element[0].toUpperCase() + element.substring(1) })
-                }
+        navigationTitle(){
+            let title = this.$session.get('user-session')
+            return typeof title.split(" ")[1] == 'undefined' ? "Hi " + title : "Hi " + title.split(" ")[1]
+        },
+        // items(){
+        //     const routeItems = []
+        //     const routeArray = this.$route.path.split('/')
+        //     routeArray.forEach(element => {
+        //         if(element != ''){
+        //             routeItems.push({ text: element[0].toUpperCase() + element.substring(1) })
+        //         }
+        //     })
+        //     return routeItems.length > 0 ? routeItems : [{ text: 'Dashboard' }]
+        // },
+        
+        menus(){
+            let user_access = this.$session.get('user-access')
+            let usermod = []
+            user_access.forEach(el => {
+                usermod.push(el.mod_id)
             })
-            return routeItems.length > 0 ? routeItems : [{ text: 'Dashboard' }]
-        }  
+            return this.mod_menus.filter(e => usermod.includes(e.id))
+        }
+        
     },
 
     methods: {
@@ -223,6 +361,10 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+/* span{
+    color: #212121;
+    font-weight: bold;
+    font-family: Cambria;
+} */
 </style>

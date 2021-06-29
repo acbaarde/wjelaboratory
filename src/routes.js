@@ -1,18 +1,5 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-// import Login from './components/pages/Login';
-// import Dashboard from './components/pages/Dashboard';
-// import Appointments from './components/pages/Appointments.vue';
-// import Releasing_form from './components/pages/Appointments/Releasing_form.vue';
-// import Patient_form from './components/pages/Appointments/Patient_form';
-// import User_accounts from './components/pages/utilities/User_accounts';
-// import Data_maintenance from './components/pages/utilities/Data_maintenance';
-// import Hematology from './components/pages/Reports/Hematology';
-// import Fecalysis from './components/pages/Reports/Fecalysis';
-// import Urinalysis from './components/pages/Reports/Urinalysis';
-// import KOH from './components/pages/Reports/KOH';
-// import HGSAG from './components/pages/Reports/HGSAG';
-// import RBS from './components/pages/Reports/RBS';
 
 Vue.use(VueRouter);
 
@@ -77,32 +64,92 @@ const router = new VueRouter({
                 import ("@/views/timekeeping/Processing_form.vue"),
         },
         {
-            path: '/utilities/useraccounts',
-            name: 'User_Accounts',
+            path: '/timekeeping/posting',
+            name: 'Posting_form',
             component: () => 
-                import ("@/views/utilities/User_accounts.vue"),
+                import ("@/views/timekeeping/Posting_form.vue"),
         },
         {
-            path: '/utilities/datamaintenance',
-            name: 'Data_maintenance',
+            path: '/reports/timekeeping/dtrinout',
+            name: 'Dtrinout_form',
             component: () => 
-                import ("@/views/utilities/Data_maintenance.vue"),
+                import ("@/views/reports/timekeeping/Dtrinout_form.vue"),
+        },
+        {
+            path: '/reports/timekeeping/manhourprooflist',
+            name: 'Manhourprooflist_form',
+            component: () => 
+                import ("@/views/reports/timekeeping/Manhourprooflist_form.vue"),
+        },
+        {
+            path: '/reports/census',
+            name: 'CENSUS',
+            component: () => 
+                import ("@/views/reports/Census.vue"),
+        },
+        {
+            path: '/reports/rebates',
+            name: 'Rebates',
+            component: () => 
+                import ("@/views/reports/Rebates.vue"),
+        },
+        {
+            path: '/reports/payslip/employeepayslip',
+            name: 'Employee_payslip',
+            component: () => 
+                import ("@/views/reports/payslip/Employee_payslip.vue"),
+        },
+        {
+            path: '/utilities/users/useraccounts',
+            name: 'User_accounts',
+            component: () => 
+                import ("@/views/utilities/users/User_accounts.vue"),
+        },
+        {
+            path: '/utilities/users/useraccess',
+            name: 'User_access',
+            component: () => 
+                import ("@/views/utilities/users/User_access.vue"),
+        },
+        {
+            path: '/utilities/dm/payperiod',
+            name: 'Payperiod',
+            component: () => 
+                import ("@/views/utilities/datamaintenance/Payperiod.vue"),
+        },
+        {
+            path: '/utilities/dm/worksched',
+            name: 'Work_schedule',
+            component: () => 
+                import ("@/views/utilities/datamaintenance/Work_schedule.vue"),
+        },
+        {
+            path: '/utilities/dm/laboratory',
+            name: 'Laboratory',
+            component: () => 
+                import ("@/views/utilities/datamaintenance/Laboratory.vue"),
+        },
+        {
+            path: '/utilities/dm/physicians',
+            name: 'Physicians',
+            component: () => 
+                import ("@/views/utilities/datamaintenance/Physicians.vue"),
         },
         {
             path: '/hematology',
-            name: 'Hematology',
+            name: 'hematology',
             component: () => 
                 import ("@/views/reports/Hematology.vue"),
         },
         {
             path: '/fecalysis',
-            name: 'Fecalysis',
+            name: 'fecalysis',
             component: () => 
                 import ("@/views/reports/Fecalysis.vue"),
         },
         {
             path: '/urinalysis',
-            name: 'Urinalysis',
+            name: 'urinalysis',
             component: () => 
                 import ("@/views/reports/Urinalysis.vue"),
         },
@@ -126,13 +173,13 @@ const router = new VueRouter({
         },
         {
             path: '/thyroid',
-            name: 'Thyroid',
+            name: 'THYROID',
             component: () => 
                 import ("@/views/reports/Thyroid.vue"),
         },
         {
             path: '/bloodchem',
-            name: 'Blood_chemistry',
+            name: 'BLOOD_CHEMISTRY',
             component: () => 
                 import ("@/views/reports/Blood_chemistry.vue"),
         },

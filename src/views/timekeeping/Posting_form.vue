@@ -1,6 +1,6 @@
 <template>
 <div class="ma-n3">
-    <myHeader :title="'Timekeeping'" :subtitle="'Manhour Processing'" />
+    <myHeader :title="'Timekeeping'" :subtitle="'Manhour Posting'" />
     <v-container fluid>
   <v-card flat outlined>
         <v-overlay :value="overlay">
@@ -8,22 +8,22 @@
         </v-overlay>
         <v-flex md-12 class="ma-2">
             <v-container fluid>
-                <!-- <v-row no-gutters class="mt-2">
+                <v-row no-gutters class="mt-2">
                     <v-alert outlined type="info" max-width="600px">
                         <div><strong>Important Reminders,</strong></div>
                         <div>
-                            Process manhour computes DTR, Overtime, Undertime of the employees on active Payperiod. Please check the payperiod carefully!!!
+                            Manhour Posting is done only once. All adjustments after the successfull process will be done on the next payroll period. Please check the payperiod carefully!!!
                         </div>
                     </v-alert>
-                </v-row> -->
-                <v-row no-gutters>
-                    <v-alert v-if="alert.status" text :type="alert.type" width="600px">
+                </v-row>
+                <v-row no-gutters class="mt-4">
+                    <v-alert v-if="alert.status" text :type="alert.type">
                         {{ alert.text }}
                     </v-alert>
                 </v-row>
                 <v-row>
                     <v-col>
-                        <div class="mb-2">
+                        <div class="mb-4">
                             <ul style="list-style: none; padding: 0;">
                                 <li>
                                     <ul>
@@ -33,7 +33,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <v-btn color="primary" @click="processmanhour()">Process Manhour</v-btn>
+                        <v-btn color="primary" @click="postmanhour()">Manhour Posting</v-btn>
                     </v-col>
                 </v-row>
             </v-container>
@@ -46,7 +46,7 @@
 <script>
 import myHeader from '../../components/myHeader.vue'
 export default {
-    name: 'Processing_form',
+    name: 'Posting_form',
     components: { myHeader },
     data(){
         return{
@@ -73,19 +73,21 @@ export default {
         }
     },
     methods: {
-        async processmanhour(){
+        async postmanhour(){
             this.overlay = true
-            await this.$guest.post('/api/timekeeping/processmanhour')
+            let data = {
+                user_id: this.$session.get('userid-session')
+            }
+            await this.$guest.post('/api/timekeeping/postmanhour', this.$form_data.generate(data))
             .then(res => {
-                console.log(res.data)
+                console.log(res)
                 this.overlay = false
+                this.alert.text = res.data.message
                 if(res.data.status == true){
                     this.alert.status = 'true'
-                    this.alert.text = res.data.message
                     this.alert.type = 'success'
                 }else{
                     this.alert.status = 'true'
-                    this.alert.text = res.data.message
                     this.alert.type = 'error'
                 }
             })

@@ -94,7 +94,7 @@
                 <v-btn v-else-if="item.status == 'F'"  color="warning" x-small dark @click="getItemId(item)">
                   FOR POSTING
                 </v-btn>
-                <v-btn v-else-if="item.status == 'C'"  color="info" small dark @click="getItemId(item)">
+                <v-btn v-else-if="item.status == 'C'"  color="info" x-small dark @click="getItemId(item)">
                   CREATE
                 </v-btn>
             </template>
@@ -104,9 +104,9 @@
             <template v-slot:[`item.last_checkup`]="{ item }">
               {{ formatDateTime(item.last_checkup) }}
             </template>
-            <template v-slot:[`item.created_at`]="{ item }">
-              {{ formatDateTime(item.created_at) }}
-            </template>
+            <!-- <template v-slot:[`item.created_at`]="{ item }">
+              {{ formatDate(item.created_at) }}
+            </template> -->
             <template v-slot:[`item.actions`]="{ item }">
                 <v-btn class="mr-2" x-small @click="btn_update(item)" color="primary">UPDATE</v-btn>
                 <v-btn x-small @click="btn_delete(item)" color="error">DELETE</v-btn>
@@ -143,8 +143,9 @@ export default {
                 { text: 'Middle Name', value: 'middlename' },
                 { text: 'Age', align: 'center', value: 'age', filterable: false  },
                 { text: 'Gender', align: 'center', value: 'gender', filterable: false  },
-                { text: 'Last Checkup', align: 'center', value: 'last_checkup', filterable: false  },
-                { text: 'Created date', align: 'center', value: 'created_at', filterable: false  },
+                { text: 'Contact #', align: 'center', value: 'contact', filterable: false  },
+                // { text: 'Last Checkup', align: 'center', value: 'last_checkup', filterable: false  },
+                // { text: 'Created date', align: 'center', value: 'created_at', filterable: false  },
                 { text: 'Actions', align: 'center', value: 'actions', filterable: false  },
             ],
             table_items: [],
@@ -197,6 +198,7 @@ export default {
       
       await this.$guest.get('/api/patient/getPatients')
       .then(res => {
+        console.log(res.data)
         this.table_items = res.data
         this.overlay = false
       })

@@ -72,8 +72,8 @@ export default {
         search: '',
         table_headers:[
           { text: 'Period', value: 'pperiod', align: 'center' },
-          { text: 'From', value: 'cfrom', align: 'center' },
-          { text: 'To', value: 'cto', align: 'center' },
+          { text: 'Date From', value: 'cfrom', align: 'center' },
+          { text: 'Date To', value: 'cto', align: 'center' },
           { text: 'Status', value: 'ppost', align: 'center', filterable: false },
           { text: 'Actions', value: 'actions', align: 'center', filterable: false },
         ],

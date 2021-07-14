@@ -52,6 +52,13 @@ Vue.mixin({
             }
             return d.toLocaleDateString("en-us", options)
           },
+          formatDateYYYYmmdd(){
+            let dateNow =  new Date()
+            let mm = dateNow.getMonth() < 10 ? '0' + dateNow.getMonth() : dateNow.getMonth()
+            let dd = dateNow.getDay() < 10 ? '0' + dateNow.getDay() : dateNow.getDay()
+            let yyyy = dateNow.getFullYear()
+            return yyyy+"-"+mm+"-"+dd
+          },
           formatAge(age,agetype){
             let formatage = ''
             if(age == 1 && agetype == 'mos'){

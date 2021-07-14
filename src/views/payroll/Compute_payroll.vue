@@ -1,6 +1,6 @@
 <template>
 <div class="ma-n3">
-    <myHeader :title="'Timekeeping'" :subtitle="'Manhour Processing'" />
+    <myHeader :title="'Payroll'" :subtitle="'Process Payroll Computation'" />
     <v-container fluid>
   <v-card flat outlined>
         <v-overlay :value="overlay">
@@ -8,22 +8,22 @@
         </v-overlay>
         <v-flex md-12 class="ma-2">
             <v-container fluid>
-                <!-- <v-row no-gutters class="mt-2">
+                <v-row no-gutters class="mt-2">
                     <v-alert outlined type="info" max-width="600px">
                         <div><strong>Important Reminders,</strong></div>
                         <div>
-                            Process manhour computes DTR, Overtime, Undertime of the employees on active Payperiod. Please check the payperiod carefully!!!
+                            Payroll Computation processing is done only once. All adjustments after the successfull process will be done on the next payroll period.Please check the payperiod carefully!!!
                         </div>
                     </v-alert>
-                </v-row> -->
-                <v-row no-gutters>
-                    <v-alert v-if="alert.status" text :type="alert.type" width="600px">
+                </v-row>
+                <v-row no-gutters class="mt-4">
+                    <v-alert v-if="alert.status" text :type="alert.type">
                         {{ alert.text }}
                     </v-alert>
                 </v-row>
                 <v-row>
                     <v-col>
-                        <div class="mb-2">
+                        <div class="mb-4">
                             <ul style="list-style: none; padding: 0;">
                                 <li>
                                     <ul>
@@ -33,9 +33,12 @@
                                 </li>
                             </ul>
                         </div>
-                        <v-btn color="primary" @click="processmanhour()">Process Manhour</v-btn>
+                        <v-btn color="primary" @click="processpayroll()" :disabled="disabled">PROCESS PAYROLL</v-btn>
                     </v-col>
                 </v-row>
+
+                <Dialog :dialog="dialog_data" @emit="dialogEvent" />
+
             </v-container>
         </v-flex>
   </v-card>
@@ -45,18 +48,23 @@
 
 <script>
 import myHeader from '../../components/myHeader.vue'
+import Dialog from '../../components/Dialog.vue'
 export default {
-    name: 'Processing_form',
-    components: { myHeader },
+    components: { myHeader, Dialog },
     data(){
-        return{
+        return {
             overlay: false,
+            disabled: false,
             alert:{
                 status: false,
                 text: '',
                 type: ''
             },
             pperiod: '',
+            dialog_data:{
+                text: 'This process is done only once. Proceed Anyway?',
+                status: false
+            }
         }
     },
     beforeCreate: function(){
@@ -92,23 +100,27 @@ export default {
             })
             .catch(err => { console.log(err) })
         },
-        async processmanhour(){
-            this.overlay = true
-            await this.$guest.post('/api/timekeeping/processmanhour')
-            .then(res => {
-                console.log(res.data)
-                this.overlay = false
-                if(res.data.status == true){
-                    this.alert.status = 'true'
-                    this.alert.text = res.data.message
-                    this.alert.type = 'success'
-                }else{
-                    this.alert.status = 'true'
-                    this.alert.text = res.data.message
-                    this.alert.type = 'error'
+        processpayroll(){
+            this.dialog_data.status = true
+        },
+        async dialogEvent(value){
+            this.dialog_data.status = false
+            if(value == true){
+                this.overlay = true
+                let data = {
+                    user_id: this.$session.get('userid-session')
                 }
-            })
-            .catch(err => { console.log(err) })
+                await this.$guest.post('/api/payroll/processPayroll', this.$form_data.generate(data))
+                .then(res => {
+                    this.overlay = false
+                    this.alert.text = res.data.message
+                    this.alert.status = 'true'
+                    this.alert.type = res.data.status == true ? 'success' : 'error'
+                    this.disabled = res.data.status == true ? true : false
+                    console.log(res.data)
+                })
+                .catch(err => { console.log(err) })
+            }
         }
     }
 }

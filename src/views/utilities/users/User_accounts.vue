@@ -167,7 +167,6 @@ export default {
           let url = this.itemIndex == -1 ? 'registerUser' : 'updateUser'
           this.$guest.post('/api/users/'+ url, this.$form_data.generate(data))
           .then(res => {
-            console.log(res)
             if(res.data.status == true){
               this.loadItems()
               this.btn_cancel()

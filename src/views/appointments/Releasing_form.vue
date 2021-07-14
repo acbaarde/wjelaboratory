@@ -39,6 +39,9 @@
                 <template v-slot:[`item.gender`]="{ item }">
                     {{ gender.filter(e => e.id == item.gender)[0]['desc'] }}
                 </template>
+                <template v-slot:[`item.discount_type`]="{ item }">
+                    {{ item.discount_type.toUpperCase() }}
+                </template>
                 <template v-slot:[`item.created_at`]="{ item }">
                     {{ formatDateTime(item.created_at) }}
                 </template>
@@ -68,7 +71,7 @@
                                     </tr>
                                     <tr>
                                         <td style="width: 120px;">Age:</td>
-                                        <td>{{ active_item.age + " " + active_item.agetype }}</td>
+                                        <td>{{ formatAge(active_item.age, active_item.agetype) }}</td>
                                     </tr>
                                     <tr>
                                         <td style="width: 120px;">Address:</td>
@@ -178,8 +181,8 @@
                             </template>
                         </div>
                         <div v-else-if="active_item.approved == '' && $session.get('usertype-session') == 'ADMIN'">
-                            <v-btn outlined color="primary" @click="btn_approved()" class="mr-2">APPROVED</v-btn>
-                            <v-btn outlined color="warning" @click="btn_reject()" class="mr-2">REJECT</v-btn>
+                            <v-btn outlined color="primary" @click="btn_actions('approved')" class="mr-2">APPROVED</v-btn>
+                            <v-btn outlined color="warning" @click="btn_actions('reject')" class="mr-2">REJECT</v-btn>
                         </div>                        
                         <v-btn outlined color="error" @click="btn_close()">CLOSE</v-btn>
                     </v-card-actions>
@@ -207,11 +210,15 @@ export default {
                 { text: 'Full Name', value: 'fullname' },
                 { text: 'Age', align: 'center', value: 'age', filterable: false  },
                 { text: 'Gender', align: 'center', value: 'gender', filterable: false  },
+                { text: 'Discount Type', align: 'center', value: 'discount_type', filterable: false  },
                 { text: 'Created date', align: 'center', value: 'created_at', filterable: false  },
                 { text: 'Posted date', align: 'center', value: 'posted_date', filterable: false  },
                 { text: 'Actions', align: 'center', value: 'actions', filterable: false  },
             ],
             gender: [],
+            discount: [{
+                text: ''
+            }],
             table_items:[],
             active_item: [],
             tab_headers: [],
@@ -246,6 +253,10 @@ export default {
             }
             return text
         },
+        // discount_type(){
+        //     console.log(this.discount.filter(e => this.active_item.discount_type == e.value))
+        //     return this.discount.filter(e => this.active_item.discount_type == e.value)[]
+        // },
 
         btn_ua(){
             return this.active_item.submod_id.split(",").includes("13") ? true : false
@@ -271,6 +282,11 @@ export default {
             await this.$guest.get('/api/data_maintenance/getGender')
             .then(res => {
                 this.gender = res.data
+            })
+            .catch(err => { console.log(err) })
+            await this.$guest.get('/api/data_maintenance/getDiscount')
+            .then(res => {
+                this.discount = res.data
             })
             .catch(err => { console.log(err) })
 
@@ -299,6 +315,7 @@ export default {
             // console.log(this.active_item.submod_id)
             let mod_id = this.tab_headers[this.tab]['id']
             let mod = this.tab_headers[this.tab]['subsubmodules'].filter(e => this.active_item.submod_id.split(",").includes(e.submod_id))
+            // console.log(mod)
             let route = ''
             switch(mod_id){
                 case "1":
@@ -314,11 +331,19 @@ export default {
             }
             this.$router.push({ name: route, params: { active_item: this.active_item, mod: mod } })
         },
-        btn_approved(){
-            this.active_item.approved = 'Y'
-        },
-        btn_reject(){
-            this.active_item.approved = 'N'
+        btn_actions(val){
+            let data = {
+                status: val,
+                appointment_id: this.active_item.id,
+                user_id: this.$session.get('userid-session')
+            }
+            this.$guest.post('/api/appointment/approved_reject', this.$form_data.generate(data))
+            .then(res => {
+                console.log(res.data)
+                this.initialize()
+                this.btn_close()
+            })
+            .catch(err => { console.log(err) })
         },
         btn_close(){
             this.dialog = false

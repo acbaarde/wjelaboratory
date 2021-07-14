@@ -1,7 +1,7 @@
 <template>
   <div class="ma-n3">
     <myHeader :title="'Employee Master'" :subtitle="'Manage Employee Master'" />
-    <v-container>
+    <v-container fluid>
     <v-card flat outlined>
       <v-flex md-12 class="ma-2">
         <v-overlay :value="overlay">

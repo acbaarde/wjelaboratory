@@ -27,25 +27,68 @@
         </v-card>
       </v-col>
     </v-row> -->
-    <v-dialog v-model="dialog" :max-width="card_id == 3 ? '100%' : '60%'">
+    <v-dialog v-model="dialog" :max-width="card_id == 3 ? '100%' : '60%'" scrollable>
       <v-card v-if="card_id == 1">
-        <v-card-title>PENDING APPOINTMENTS</v-card-title>
+        <v-card-title>
+          <span>PENDING</span>
+          <v-spacer></v-spacer>
+          <v-btn icon text @click="btn_close()">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
         <v-divider></v-divider>
       </v-card>
       <v-card v-if="card_id == 2">
-        <v-card-title>FOR RELEASED</v-card-title>
+        <v-card-title>
+          <span>FOR RELEASED</span>
+          <v-spacer></v-spacer>
+          <v-btn icon text @click="btn_close()">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
         <v-divider></v-divider>
 
       </v-card>
       <v-card v-if="card_id == 3">
-        <v-card-title>CENSUS</v-card-title>
+        <v-card-title>
+          <span>{{ datetext.toUpperCase() }} CENSUS</span>
+          <v-spacer></v-spacer>
+          <v-btn icon text @click="btn_close()">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <CustomChart :data="chart_data"/>
+          <!-- <v-row dense no-gutters>
+            <v-col cols="2" class="mt-2">
+              <v-menu v-model="menu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
+                offset-y min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="datetext"
+                    label="Choose Month"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    hide-details
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="date" @input="menu = false" type="month" @change="btn_datepicker()"></v-date-picker>
+              </v-menu>
+            </v-col>
+          </v-row> -->
+          <CustomChart :chart-data="chartData"/>
         </v-card-text>
       </v-card>
       <v-card v-if="card_id == 4">
-        <v-card-title>TOTAL PATIENTS</v-card-title>
+        <v-card-title>
+          <span>TOTAL PATIENTS</span>
+          <v-spacer></v-spacer>
+          <v-btn icon text @click="btn_close()">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
         <v-divider></v-divider>
         
       </v-card>
@@ -60,10 +103,24 @@ export default {
     components: { CustomChart },
     data(){
       return{
+        date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 7),
+        // datetext: '',
+        menu: false,
         dialog: false,
         overlay: false,
         card_id: 0,
+        chartData: null,
         chart_data: { 
+          labels: [],
+          datasets: [
+            {
+              label: 'Laboratory Census',
+              backgroundColor: '#f87979',
+              data: []
+            }
+          ],
+        },
+        default_chart_data: { 
           labels: [],
           datasets: [
             {
@@ -90,12 +147,29 @@ export default {
       this.overlay = true
       this.initialize()
     },
+    mounted(){
+      this.generatechartData()
+    },
+    computed:{
+      datetext(){
+        let date = this.date.split("-")
+        let mm = date[1] - 1
+        const month = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+        return month[mm]
+      }
+    },
     methods:{
+      generatechartData(){
+        this.chartData = this.chart_data  
+      },
       async initialize(){
-        console.log(this.chart_data)
-        await this.$guest.get('/api/data_maintenance/dashboardData')
+        let date = this.date.split("-")
+        let data = {
+          year: date[0],
+          month: date[1]
+        }
+        await this.$guest.post('/api/data_maintenance/dashboardData', this.$form_data.generate(data))
         .then(res => {
-          console.log(res.data)
           this.items[0].count = res.data.pending
           this.items[1].count = res.data.released
           this.items[3].count = res.data.all
@@ -117,12 +191,32 @@ export default {
         console.log(id)
         this.card_id = id
         this.dialog = !this.dialog
-      }
-      // myStyle(){
-      //   return {
-      //     height: '300px', 
-      //     position: 'relative'
+      },
+      btn_close(){
+        this.card_id = 0
+        this.dialog = !this.dialog
+      },
+      // btn_datepicker(){
+      //   let date = this.date.split("-")
+      //   let mm = date[1] - 1
+      //   const month = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+      //   this.datetext = month[mm]
+
+      //   let data = {
+      //     year: date[0],
+      //     month: date[1]
       //   }
+      //   this.$guest.post('/api/data_maintenance/dashboardData', this.$form_data.generate(data))
+      //   .then(res => {
+      //     res.data.submod.forEach(el => {
+      //       this.chart_data.labels.push(el.abbr)
+      //       this.chart_data.datasets[0]['data'].push(el.value)
+      //     })
+      //     setTimeout(() => {
+      //       this.overlay = false
+      //     }, 500);
+      //   })
+      //   .catch(err => { console.log(err) })
       // }
     }
 }

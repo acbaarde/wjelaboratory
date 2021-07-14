@@ -1,11 +1,12 @@
 <template>
     <!-- <v-layout class="justify-center" wrap> -->
-    <v-card flat outlined>
-        <v-card-title>
+    <div class="ma-n3">
+        <!-- <v-card-title>
                 <span>Manhour Prooflist</span>
         </v-card-title>
         <v-card-subtitle><span>Report Module Generation...</span></v-card-subtitle>
-        <v-divider></v-divider>
+        <v-divider></v-divider> -->
+        <myHeader :title="'Manhour Prooflist'" :subtitle="'Report Module Generation'" />
         <v-container fluid>
             <v-row no-gutters class="d-flex justify-end align-end mb-4">
                 <v-col cols="2" class="mr-2">
@@ -84,12 +85,14 @@
                 </v-col>
             </v-row>
         </v-container>
-    </v-card>
+    </div>
     <!-- </v-layout> -->
 </template>
 
 <script>
+import myHeader from '../../../components/myHeader.vue'
 export default {
+    components: { myHeader },
     data(){
         return{
             alert_status: true,

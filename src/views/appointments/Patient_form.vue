@@ -1,6 +1,6 @@
 <template>
 <div class="ma-n3">
-    <myHeader :title="'Appointments'" :subtitle="'Manage Patient Appointment'" />
+    <!-- <myHeader :title="'Appointments'" :subtitle="'Manage Patient Appointment'" /> -->
     <v-container fluid>
   <v-card flat outlined>
     <v-card-title>
@@ -84,9 +84,9 @@
       <v-tabs-items v-model="tab">
           <v-tab-item v-for="item in tab_headers" :key="item.id">
               <v-card-text>
-                <v-row>
-                  <v-col cols="6">
-                    <v-combobox v-model="chips_selected" :items="item.submodules" item-text="text" item-value="value" chips clearable label="Select Laboratory Test"
+                <v-row no-gutters dense>
+                  <v-col>
+                    <v-combobox v-model="chips_selected" :items="item.submodules" item-text="text" item-value="value" chips clearable dense label="Select Laboratory Test"
                       multiple prepend-icon="mdi-filter-variant" solo>
                       <template v-slot:selection="{ attrs, item, select, selected }">
                         <v-chip color="primary" outlined dark v-bind="attrs" :input-value="selected" close @click="select" @click:close="removechips(item)">
@@ -95,8 +95,9 @@
                       </template>
                     </v-combobox>
                   </v-col>
-                  
-                  <v-col cols="6">
+                </v-row>  
+                <v-row no-gutters dense>
+                  <v-col>
                     <v-card>
                       <v-card-title class="justify-center" >
                           <h4>{{ item.title }} RESULT</h4>
@@ -151,10 +152,10 @@
 </template>
 
 <script>
-import myHeader from '../../components/myHeader.vue'
+// import myHeader from '../../components/myHeader.vue'
 export default {
     name: 'Patient_form',
-    components: { myHeader },
+    // components: { myHeader },
     data(){
       return{
         overlay: false,
@@ -172,12 +173,13 @@ export default {
         physicians: [],
         physician_selected: [],
         table_headers:[
-          { text: 'Title', value: 'submod_title', align: 'left'},
-          { text: 'Description', value: 'title', align: 'left'},
-          { text: 'Result', value: 'result', align: 'center'},
+          { text: 'Category', value: 'submod_title', align: 'left' },
+          { text: 'Description', value: 'title', align: 'left' },
+          { text: 'Range', value: 'result_range', align: 'center' },
+          { text: 'Result', value: 'result', align: 'center' },
         ],
         patient_info: {
-          id: '', appointment_id: 0, firstname: '',lastname: '',middlename: '', age: '', gender: '', 
+          id: '', appointment_id: 0, firstname: '',lastname: '',middlename: '', age: '',agetype: '', gender: '', 
           status: '', contact: '', address: '', totalcash: 0, totalfee: 0, totalbalance: 0, physician_id: 0
         },
       }
@@ -283,6 +285,7 @@ export default {
         }
         await this.$guest.post('/api/patient/getPatient', this.$form_data.generate(data))
         .then(res => {
+          // console.log(res.data)
           this.patient_info = Object.assign({}, res.data.patient)
           this.discount = Object.assign([], res.data.discount)
           this.discount.push({ value: '', text: 'No Discount', percent: 0 })
@@ -310,6 +313,7 @@ export default {
             'lastname': res.data.patient.lastname,
             'middlename': res.data.patient.middlename,
             'age': res.data.patient.age,
+            'agetype': res.data.patient.agetype,
             'gender': res.data.patient.gender,
             'status': res.data.patient.status,
             'contact': res.data.patient.contact,
@@ -352,7 +356,6 @@ export default {
         await this.$guest.post('/api/laboratory/loadLabmodule', this.$form_data.generate(data))
         .then(res => {
           if(res.data.status){
-            console.log(res.data)
             this.default_tab_headers = res.data.modules
             this.tab_headers = Object.assign({}, this.default_tab_headers)
           }
@@ -404,8 +407,6 @@ export default {
 
       btncancel(){
         this.$router.push('/appointments/view')
-        // this.overlay = true
-        console.log(this.$session.get('userid-session'))
       },
       btnpost(){
         let data = {
@@ -453,37 +454,22 @@ export default {
         if(this.$route.query.stat == 'C'){
           await this.$guest.post('/api/appointment/insertAppointment', this.$form_data.generate(data))
           .then(res => {
-            console.log(res.data)
             this.$router.push({ name: 'Patient_form', query: { id: this.$route.query.id, stat: res.data.stat, cdate: res.data.cdate } })
-            
             this.refreshPage()
           })
           .catch(err => { console.log(err)} )
         }else{
           await this.$guest.post('/api/appointment/updateAppointment', this.$form_data.generate(data))
           .then(res => {
-            console.log(res.data)
             this.$router.push({ name: 'Patient_form', query: { id: this.$route.query.id, stat: res.data.stat, cdate: res.data.cdate } })
-            
             this.refreshPage()
          })
           .catch(err => { console.log(err)} )
         }
-
-        // const form_data = new FormData()
-        // form_data.append('lab_test', JSON.stringify(modresult))
-        // this.$guest.post('/api/appointment/insertmod', form_data)
-        //   .then(res => {
-        //     console.log(res.data)
-        //     // this.$router.push('/appointments')
-        //   })
-        //   .catch(err => { console.log(err)} )
       },
 
       removechips(item){
-        // console.log(item)
         this.chips_selected.splice(this.chips_selected.indexOf(item), 1)
-        // this.chips = [...this.chips]
       }
     }
 }

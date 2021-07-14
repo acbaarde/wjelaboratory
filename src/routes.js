@@ -46,6 +46,12 @@ const router = new VueRouter({
                 import ("@/views/employee/Employee_master.vue"),
         },
         {
+            path: '/payroll/computepayroll',
+            name: 'Compute_payroll',
+            component: () => 
+                import ("@/views/payroll/Compute_payroll.vue"),
+        },
+        {
             path: '/timekeeping/view',
             name: 'Viewing',
             component: () => 
@@ -70,6 +76,12 @@ const router = new VueRouter({
                 import ("@/views/timekeeping/Posting_form.vue"),
         },
         {
+            path: '/generatereports',
+            name: 'Generate_reports',
+            component: () => 
+                import ("@/views/reports/generate_reports.vue"),
+        },
+        {
             path: '/reports/timekeeping/dtrinout',
             name: 'Dtrinout_form',
             component: () => 
@@ -82,22 +94,28 @@ const router = new VueRouter({
                 import ("@/views/reports/timekeeping/Manhourprooflist_form.vue"),
         },
         {
-            path: '/reports/census',
+            path: '/reports/appointments/census',
             name: 'CENSUS',
             component: () => 
-                import ("@/views/reports/Census.vue"),
+                import ("@/views/reports/appointments/Census.vue"),
         },
         {
-            path: '/reports/rebates',
+            path: '/reports/appointments/rebates',
             name: 'Rebates',
             component: () => 
-                import ("@/views/reports/Rebates.vue"),
+                import ("@/views/reports/appointments/Rebates.vue"),
         },
         {
-            path: '/reports/payslip/employeepayslip',
+            path: '/reports/appointments/sales',
+            name: 'Sales',
+            component: () => 
+                import ("@/views/reports/appointments/Sales.vue"),
+        },
+        {
+            path: '/reports/employees/payslip',
             name: 'Employee_payslip',
             component: () => 
-                import ("@/views/reports/payslip/Employee_payslip.vue"),
+                import ("@/views/reports/employees/Employee_payslip.vue"),
         },
         {
             path: '/utilities/users/useraccounts',

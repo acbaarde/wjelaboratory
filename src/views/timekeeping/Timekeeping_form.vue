@@ -1,6 +1,6 @@
 <template>
 <div class="ma-n3">
-    <myHeader :title="'Timekeeping'" :subtitle="'Manage Employee Timekeeping'" />
+    <!-- <myHeader :title="'Timekeeping'" :subtitle="'Manage Employee Timekeeping'" /> -->
     <v-container fluid>
     <v-alert v-if="alert_status == false" type="error" outlined text>
         No Payroll Period Established!
@@ -314,13 +314,13 @@
 </template>
 
 <script>
-import myHeader from '../../components/myHeader.vue'
+// import myHeader from '../../components/myHeader.vue'
 export default {
     name: 'Timekeeping_form',
-    components: { myHeader },
+    // components: { myHeader },
     data(){
         return{
-            tab: 3,
+            tab: 0,
             overlay: false,
             dialog: false,
             snackbar:{

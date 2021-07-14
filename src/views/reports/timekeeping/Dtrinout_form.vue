@@ -1,10 +1,11 @@
 <template>
-    <v-card flat outlined>
-        <v-card-title>
-                <span>DTR In/Out</span>
+    <div class="ma-n3">
+        <!-- <v-card-title>
+                <span>DTR In/Out1111</span>
         </v-card-title>
         <v-card-subtitle><span>Report Module Generation...</span></v-card-subtitle>
-        <v-divider></v-divider>
+        <v-divider></v-divider> -->
+        <myHeader :title="'DTR In/Out'" :subtitle="'Report Module Generation'" />
         <v-container fluid>
             <v-row no-gutters class="d-flex justify-end align-end mb-4">
                 <v-col cols="2" class="mr-2">
@@ -127,11 +128,13 @@
                 </v-col>
             </v-row>
         </v-container>
-    </v-card>
+    </div>
 </template>
 
 <script>
+import myHeader from '../../../components/myHeader.vue'
 export default {
+    components: { myHeader },
     data(){
         return{
             alert_status: true,

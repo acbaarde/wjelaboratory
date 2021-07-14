@@ -28,14 +28,16 @@
                                 <li>
                                     <ul>
                                         <li style="width: 120px;">PAYPERIOD:</li>
-                                        <li style="color: red;">2021-01-01</li>
+                                        <li style="color: red;">{{ pperiod }}</li>
                                     </ul>
                                 </li>
                             </ul>
                         </div>
-                        <v-btn color="primary" @click="postmanhour()">Manhour Posting</v-btn>
+                        <v-btn color="primary" @click="postmanhour()" :disabled="disabled">Manhour Posting</v-btn>
                     </v-col>
                 </v-row>
+
+                <Dialog :dialog="dialog_data" @emit="dialogEvent" />
             </v-container>
         </v-flex>
   </v-card>
@@ -45,16 +47,23 @@
 
 <script>
 import myHeader from '../../components/myHeader.vue'
+import Dialog from '../../components/Dialog.vue'
 export default {
     name: 'Posting_form',
-    components: { myHeader },
+    components: { myHeader,Dialog },
     data(){
         return{
             overlay: false,
+            disabled: false,
             alert:{
                 status: false,
                 text: '',
                 type: ''
+            },
+            pperiod: '',
+            dialog_data:{
+                text: 'This process is done only once. Proceed Anyway?',
+                status: false
             }
         }
     },
@@ -72,26 +81,50 @@ export default {
           this.$router.push('/')
         }
     },
+    created(){
+        this.initialize()
+    },
     methods: {
-        async postmanhour(){
+         async initialize(){
             this.overlay = true
-            let data = {
-                user_id: this.$session.get('userid-session')
-            }
-            await this.$guest.post('/api/timekeeping/postmanhour', this.$form_data.generate(data))
+            await this.$guest.get('/api/timekeeping/activePayperiod')
             .then(res => {
-                console.log(res)
+                this.pperiod = res.data.pperiod
                 this.overlay = false
                 this.alert.text = res.data.message
-                if(res.data.status == true){
-                    this.alert.status = 'true'
-                    this.alert.type = 'success'
-                }else{
+                if(res.data.status == false){
                     this.alert.status = 'true'
                     this.alert.type = 'error'
+                    this.disabled = true
                 }
             })
             .catch(err => { console.log(err) })
+        },
+        postmanhour(){
+            this.dialog_data.status = true
+        },
+        dialogEvent(value){
+            this.dialog_data.status = false
+            if(value == true){
+                this.overlay = true
+                let data = {
+                    user_id: this.$session.get('userid-session')
+                }
+                this.$guest.post('/api/timekeeping/postmanhour', this.$form_data.generate(data))
+                .then(res => {
+                    console.log(res)
+                    this.overlay = false
+                    this.alert.text = res.data.message
+                    if(res.data.status == true){
+                        this.alert.status = 'true'
+                        this.alert.type = 'success'
+                    }else{
+                        this.alert.status = 'true'
+                        this.alert.type = 'error'
+                    }
+                })
+                .catch(err => { console.log(err) })
+            }
         }
     }
 }

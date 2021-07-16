@@ -4,6 +4,7 @@
     <v-container fluid>
 <v-card flat outlined>
     <v-flex md12 class="ma-2">
+      <Overlay :value="overlay.value" />
       <v-data-table disable-sort :headers="table_headers" :items="table_items" :items-per-page="15" :search="search" outlined dense flat max-width="300px" :loading="loading" loading-text ="Loading... Please wait">
         <template v-slot:top>
           <v-toolbar flat>
@@ -43,14 +44,31 @@
           <v-card-title><span class="headline">{{ formTitle }}</span></v-card-title>
           <v-divider></v-divider>
           <v-card-text class="mt-4">
-            <v-form>
+            <v-form ref="form">
               <v-container>
                 <v-row dense>
                   <v-col>
-                    <v-select :disabled="disabled" v-model="active_item.user_id" :items="options" item-text="desc" item-value="id" outlined dense label="Select User..."></v-select>
-                    <v-text-field v-model="active_item.password" outlined dense required label="Password" type="password"></v-text-field>
-                    <v-text-field v-model="active_item.confirmpassword" outlined dense required label="Confirm Password" type="password"></v-text-field>
-                    <v-select v-model="active_item.user_type" :items="options_type" item-text="desc" item-value="id" outlined dense label="Select User Type..."></v-select>
+                    <!-- <v-select :disabled="disabled" v-model="active_item.user_id" :items="options" item-text="desc" item-value="id" outlined dense label="Select User..."></v-select> -->
+                    <v-text-field :disabled="disabled" v-model="active_item.user_id" outlined dense required label="Username" type="username" :rules="user_idRules"></v-text-field>
+                    <v-text-field v-model="active_item.fullname" outlined dense required label="Fullname" type="fullname" :rules="fullnameRules"></v-text-field>
+                    <v-row dense no-gutters>
+                      <v-col cols="6" class="pr-2">
+                        <v-text-field v-model="active_item.password" clearable outlined dense required label="Password" type="password" :rules="passwordRules"></v-text-field>
+                      </v-col>
+                      <v-col cols="6">
+                        <v-text-field v-model="active_item.confirmpassword" clearable outlined dense required label="Confirm Password" type="password" :rules="confirmpasswordRules"></v-text-field>
+                      </v-col>
+                    </v-row>
+                    
+                    <v-row dense no-gutters>
+                      <v-col cols="6" class="pr-2">
+                        <v-select v-model="active_item.user_type" :items="options_type" item-text="desc" item-value="id" outlined dense label="Type" :rules="user_typeRules"></v-select>
+                      </v-col>
+                      <v-col cols="6">
+                        <v-select v-model="active_item.active" :items="options_status" item-text="desc" item-value="id" outlined dense label="Status" :rules="activeRules"></v-select>
+                      </v-col>
+                    </v-row>
+
                   </v-col>
                 </v-row>
                 <v-alert v-if="msg" dense outlined :type="type">{{ msg }}</v-alert>
@@ -75,18 +93,29 @@
 
 <script>
 import myHeader from '../../../components/myHeader.vue'
+import Overlay from '../../../components/Overlay.vue'
 export default {
     name: 'User_accounts',
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data(){
       return{
         search: '',
         dialog: false,
+        overlay: {
+          value: false
+        },
         // dialogDelete: false,
         disabled: false,
         loading: true,
         type: '',
         msg: '',
+        user_idRules: [ v => !!v || 'Username is required' ],
+        fullnameRules: [ v => !!v || 'Fullname is required' ],
+        activeRules: [ v => !!v || 'Status is required' ],
+        user_typeRules: [ v => !!v || 'User Type is required' ],
+        passwordRules: [ v => !!v || 'Password is required' ],
+        confirmpasswordRules: [ v => !!v || 'Confirm password is required' ],
+
         table_headers: [
           { text: 'User ID', align: 'center', value: 'user_id' },
           { text: 'Fullname', align: 'center', value: 'fullname' },
@@ -102,18 +131,26 @@ export default {
           { id: 'ADMIN', desc: 'ADMIN' },
           { id: 'USERS', desc: 'USERS' }
         ],
+        options_status: [
+          { id: 'Y', desc: 'ACTIVE' },
+          { id: 'N', desc: 'INACTIVE' }
+        ],
         itemIndex: -1,
         active_item: {
           user_id: '', 
           password: '', 
           confirmpassword: '',
-          user_type: '', 
+          user_type: 'USERS', 
+          fullname: '',
+          active: 'Y'
         },
         default_active_item: {
           user_id: '', 
           password: '', 
           confirmpassword: '', 
-          user_type: '',
+          user_type: 'USERS',
+          fullname: '',
+          active: 'Y'
         },
       }
     },
@@ -142,8 +179,10 @@ export default {
     },
     methods: {
       loadItems() {
+        this.overlay.value = true
         this.$guest.get('/api/users/getAllUser')
         .then(res => {
+          this.overlay.value = false
           this.loading = false
           this.table_items = res.data
         })
@@ -151,34 +190,40 @@ export default {
           console.log(err)
         })
 
-        this.$guest.get('/api/users/getEmployees')
-        .then(res => {
-          this.options = res.data
-        })
-        .catch(err => { console.log(err) })
+        // this.$guest.get('/api/users/getEmployees')
+        // .then(res => {
+        //   this.options = res.data
+        // })
+        // .catch(err => { console.log(err) })
       },
       btn_save(){
-        if(this.active_item.password == this.active_item.confirmpassword){
+        if(this.$refs.form.validate()){
+          if(this.active_item.password == this.active_item.confirmpassword){
+            this.overlay.value = true
             let data = {
-            user_id: this.active_item.user_id,
-            password: this.active_item.password,
-            user_type: this.active_item.user_type,
-          }
-          let url = this.itemIndex == -1 ? 'registerUser' : 'updateUser'
-          this.$guest.post('/api/users/'+ url, this.$form_data.generate(data))
-          .then(res => {
-            if(res.data.status == true){
-              this.loadItems()
-              this.btn_cancel()
-            }else{
-              this.msg = res.data.message
-              this.type = 'error'
+              user_id: this.active_item.user_id,
+              fullname: this.active_item.fullname,
+              status: this.active_item.active,
+              password: this.active_item.password,
+              user_type: this.active_item.user_type,
             }
-          })
-          .catch(err => { console.log(err) })
-        }else{
-          this.msg = "Password Mismatch!"
-          this.type = 'error'
+            let url = this.itemIndex == -1 ? 'registerUser' : 'updateUser'
+            this.$guest.post('/api/users/'+ url, this.$form_data.generate(data))
+            .then(res => {
+              this.overlay.value = false
+              if(res.data.status == true){
+                this.loadItems()
+                this.btn_cancel()
+              }else{
+                this.msg = res.data.message
+                this.type = 'error'
+              }
+            })
+            .catch(err => { console.log(err) })
+          }else{
+            this.msg = "Password Mismatch!"
+            this.type = 'error'
+          }
         }
       },
       btn_cancel(){
@@ -188,12 +233,14 @@ export default {
         this.disabled = false
         this.itemIndex = -1
         this.active_item = Object.assign({}, this.default_active_item)
+        this.$refs.form.reset()
       },
       btn_update(item){
         this.dialog = true
         this.disabled = true
         this.itemIndex = this.table_items.indexOf(item)
         this.active_item = Object.assign({}, item)
+        this.active_item.confirmpassword = item.password
       },
     }
 }

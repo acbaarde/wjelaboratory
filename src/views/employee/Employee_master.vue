@@ -4,9 +4,7 @@
     <v-container fluid>
     <v-card flat outlined>
       <v-flex md-12 class="ma-2">
-        <v-overlay :value="overlay">
-          <v-progress-circular indeterminate size="70"></v-progress-circular>
-        </v-overlay>
+        <Overlay :value="overlay.value" />
 
         <v-data-table :headers="table_headers" :items="table_items" :search="search" dense flat disable-sort :items-per-page="15">
           <template v-slot:top>
@@ -133,11 +131,15 @@
 
 <script>
 import myHeader from '../../components/myHeader.vue'
+import Overlay from '../../components/Overlay.vue';
 export default {
     name: 'Employee_master',
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data(){
       return{
+        overlay: {
+          value: false
+        },
         firstnameRules: [ v => !!v || 'First Name is required' ],
         lastnameRules: [ v => !!v || 'Last Name is required' ],
         middlenameRules: [ v => !!v || 'Middle Name is required' ],
@@ -163,7 +165,6 @@ export default {
         ordinary_restday_idRules: [ v => !!v || 'Please select Ordinary Restday...' ],
         original_restday_idRules: [ v => !!v || 'Please select Original Restday...' ],
         work_shift_idRules: [ v => !!v || 'Please select Work Schedule...' ],
-        overlay: false,
         dialog: false,
         search: '',
         table_headers:[
@@ -287,7 +288,7 @@ export default {
       }
     },
     created(){
-      this.overlay = true
+      this.overlay.value = true
       this.loadDataMaintenance()
     },
     computed:{
@@ -345,7 +346,7 @@ export default {
         await this.$guest.get('/api/employee/getEmployees')
         .then(res => {
           this.table_items = res.data
-          this.overlay = false
+          this.overlay.value = false
         })
         .catch(err => { console.log(err) })
       },
@@ -359,7 +360,7 @@ export default {
       async btn_save(){
         if(this.$refs.form.validate()){
           this.dialog = false
-          this.overlay = true
+          this.overlay.value = true
           this.active_item['user_id'] = this.$session.get('userid-session') 
           let url = this.itemIndex == -1 ? '/api/employee/insertEmployee' : '/api/employee/updateEmployee'
           await this.$guest.post(url, this.$form_data.generate(this.active_item))

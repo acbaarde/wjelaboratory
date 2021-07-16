@@ -4,9 +4,7 @@
     <v-container fluid>
   <v-card flat outlined>
     <v-flex md-12 class="ma-2">
-      <v-overlay :value="overlay">
-        <v-progress-circular indeterminate size="70"></v-progress-circular>
-      </v-overlay>
+      <Overlay :value="overlay.value" />
 
       <v-data-table :headers="table_headers" :items="table_items" :search="search" dense flat disable-sort :items-per-page="15">
         <template v-slot:top>
@@ -32,12 +30,15 @@
 
 <script>
 import myHeader from '../../components/myHeader.vue'
+import Overlay from '../../components/Overlay.vue'
 export default {
     name: 'Viewing',
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data(){
         return{
-            overlay: false,
+            overlay: {
+              value: false
+            },
             dialog: false,
             search: '',
             table_headers:[
@@ -70,14 +71,14 @@ export default {
     },
     methods: {
         async initialize(){
-            this.overlay = true
+            this.overlay.value = true
             await this.$guest.get('/api/timekeeping/getEmployees')
             .then(res => {
                 console.log(res.data)
                 this.table_items = res.data.result
                 
                 this.$nextTick(() => {
-                  this.overlay = false
+                  this.overlay.value = false
                 })
             })
             .catch(err => { console.log(err) })

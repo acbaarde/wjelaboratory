@@ -27,7 +27,7 @@
         </v-card>
       </v-col>
     </v-row> -->
-    <v-dialog v-model="dialog" :max-width="card_id == 3 ? '100%' : '60%'" scrollable>
+    <v-dialog v-model="dialog" :max-width="card_id == 3 ? '100%' : '80%'" scrollable>
       <v-card v-if="card_id == 1">
         <v-card-title>
           <span>PENDING</span>
@@ -37,6 +37,13 @@
           </v-btn>
         </v-card-title>
         <v-divider></v-divider>
+        <v-card-text>
+          <v-data-table :headers="table_headers" :items="pending_items()" dense>
+            <template v-slot:[`item.created_at`] = "{ item }">
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </v-data-table>
+        </v-card-text>
       </v-card>
       <v-card v-if="card_id == 2">
         <v-card-title>
@@ -47,7 +54,13 @@
           </v-btn>
         </v-card-title>
         <v-divider></v-divider>
-
+        <v-card-text>
+          <v-data-table :headers="table_headers" :items="released_items()" dense>
+            <template v-slot:[`item.created_at`] = "{ item }">
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </v-data-table>
+        </v-card-text>
       </v-card>
       <v-card v-if="card_id == 3">
         <v-card-title>
@@ -90,7 +103,13 @@
           </v-btn>
         </v-card-title>
         <v-divider></v-divider>
-        
+        <v-card-text>
+          <v-data-table :headers="table_headers" :items="total_patient_items" dense>
+            <template v-slot:[`item.created_at`] = "{ item }">
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </v-data-table>
+        </v-card-text>
       </v-card>
     </v-dialog>
   </v-container>
@@ -130,6 +149,18 @@ export default {
             }
           ],
         },
+        table_headers: [
+          { text: 'LASTNAME', value: 'lastname', align: 'left', sortable: false },
+          { text: 'FIRSTNAME', value: 'firstname', align: 'left', sortable: false },
+          { text: 'MIDDLENAME', value: 'middlename', align: 'left', sortable: false },
+          { text: 'AGE', value: 'age', align: 'center', sortable: false },
+          { text: 'GENDER', value: 'gender_desc', align: 'center', sortable: false },
+          { text: 'PHYSICIAN', value: 'physician', align: 'left', sortable: false },
+          { text: 'DISCOUNT TYPE', value: 'discount_type', align: 'center', sortable: false },
+          { text: 'DISCOUNT %', value: 'discount', align: 'center', sortable: false },
+          { text: 'DATE', value: 'created_at', align: 'center', sortable: false },
+        ],
+        total_patient_items: [],
         items: [
           { id: '1', title: 'PENDING', color: 'primary', count: 0 },
           { id: '2', title: 'FOR RELEASED', color: 'info', count: 0 },
@@ -182,7 +213,22 @@ export default {
           }, 500);
         })
         .catch(err => { console.log(err) })
+
+        await this.$guest.get('/api/data_maintenance/getAppointments')
+        .then(res => {
+          console.log(res.data)
+          this.total_patient_items = res.data
+        })
+        .catch(err => { console.log(err) })
       },
+
+      released_items(){
+        return this.total_patient_items.filter(e => e.approved == 'Y')
+      },
+      pending_items(){
+        return this.total_patient_items.filter(e => e.approved == '')
+      },
+
       refresh(){
         window.location.reload()
       },

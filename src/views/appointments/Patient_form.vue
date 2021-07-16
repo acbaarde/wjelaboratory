@@ -3,6 +3,7 @@
     <!-- <myHeader :title="'Appointments'" :subtitle="'Manage Patient Appointment'" /> -->
     <v-container fluid>
   <v-card flat outlined>
+      <Overlay :value="overlay.value" />
     <v-card-title>
       <v-row>
         <v-col cols="6">
@@ -130,8 +131,8 @@
       </v-tabs-items>
     </v-card-text>
 
-    <v-overlay :value="overlay">
-      <v-progress-circular indeterminate size="70"></v-progress-circular>
+    <!-- <v-overlay :value="overlay">
+      <v-progress-circular indeterminate size="70"></v-progress-circular> -->
       <!-- <strong>Please wait...</strong>  -->
       <!-- <v-card>
         <v-card-text>
@@ -145,7 +146,7 @@
         </v-container>
         </v-card-text>
       </v-card> -->
-    </v-overlay>
+    <!-- </v-overlay> -->
   </v-card>
   </v-container>
   </div>
@@ -153,12 +154,15 @@
 
 <script>
 // import myHeader from '../../components/myHeader.vue'
+import Overlay from '../../components/Overlay.vue'
 export default {
     name: 'Patient_form',
-    // components: { myHeader },
+    components: { Overlay },
     data(){
       return{
-        overlay: false,
+        overlay: {
+          value: false
+        },
         chips_selected: [],
         comboboxvalue: [],
         tab: 0,
@@ -279,13 +283,14 @@ export default {
       async loadPatient(){
         // const form_data = new FormData()
         // form_data.append('id', this.$route.query.id)
-
+        this.overlay.value = true
         let data = {
           id: this.$route.query.id
         }
         await this.$guest.post('/api/patient/getPatient', this.$form_data.generate(data))
         .then(res => {
           // console.log(res.data)
+          
           this.patient_info = Object.assign({}, res.data.patient)
           this.discount = Object.assign([], res.data.discount)
           this.discount.push({ value: '', text: 'No Discount', percent: 0 })
@@ -297,6 +302,7 @@ export default {
       },
 
       async loadAppointment(){
+        this.overlay.value = true
         let data = {
           patient_id: this.$route.query.id,
           status: this.$route.query.stat,
@@ -355,6 +361,7 @@ export default {
         }
         await this.$guest.post('/api/laboratory/loadLabmodule', this.$form_data.generate(data))
         .then(res => {
+          this.overlay.value = false
           if(res.data.status){
             this.default_tab_headers = res.data.modules
             this.tab_headers = Object.assign({}, this.default_tab_headers)
@@ -423,7 +430,7 @@ export default {
 
       },
       async btnsave(){
-        this.overlay = true
+        this.overlay.value = true
         const modresult = []
         const mods = Object.assign([], this.tab_headers)
         mods.forEach(el => {

@@ -59,6 +59,7 @@ export default {
                         this.$session.set('userid-session', res.data.user_id);
                         this.$session.set('user-access', res.data.user_access);
                         this.$session.set('usertype-session', res.data.user_type);
+                        this.$session.set('userposn-session', res.data.user_posn);
                         this.$router.push('/');
                     }else{
                         this.type = 'error';

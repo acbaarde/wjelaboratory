@@ -7,6 +7,7 @@
         <v-divider></v-divider> -->
         <myHeader :title="'DTR In/Out'" :subtitle="'Report Module Generation'" />
         <v-container fluid>
+            <Overlay :value="overlay.value" />
             <v-row no-gutters class="d-flex justify-end align-end mb-4">
                 <v-col cols="2" class="mr-2">
                     <v-select v-model="filters.year" :items="options.year" item-text="desc" item-value="id" @change="getPayperiod()" dense outlined hide-details></v-select>
@@ -133,11 +134,15 @@
 
 <script>
 import myHeader from '../../../components/myHeader.vue'
+import Overlay from '../../../components/Overlay.vue'
 export default {
-    components: { myHeader },
+    components: { myHeader, Overlay },
     data(){
         return{
             alert_status: true,
+            overlay: {
+                value: false
+            },
             filters:{   
                 year: null,
                 payperiod_id: null
@@ -178,8 +183,10 @@ export default {
     },
     methods:{
         initialize(){
+            this.overlay.value = true
             this.$guest('/api/reports/getYear')
             .then(res => {
+                this.overlay.value = false
                 this.options.year = res.data
                 this.options.year.splice(0,0, Object.assign({}, { id: null, desc: 'Please Select Year...'}))
             })
@@ -205,13 +212,14 @@ export default {
         },
 
         async getDtrinout(){
+            this.overlay.value = true
             let data = {
                 year: this.filters.year,
                 payperiod_id: this.filters.payperiod_id
             }
             await this.$guest.post('/api/reports/getDtrinout', this.$form_data.generate(data))
             .then(res => {
-                console.log(res)
+                this.overlay.value = false
                 this.alert_status = res.data.status
                 if(res.data.status == true){
                     this.reports.employees = res.data.employees

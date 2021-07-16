@@ -4,9 +4,7 @@
     <v-container fluid>
   <v-card flat outlined>
     <v-flex md-12 class="ma-2">
-      <v-overlay :value="overlay">
-        <v-progress-circular indeterminate size="70"></v-progress-circular>
-      </v-overlay>
+      <Overlay :value="overlay.value" />
 
       <v-data-table :headers="table_headers" :items="table_items" :search="search" dense flat disable-sort :items-per-page="-1">
         <template v-slot:top>
@@ -74,12 +72,15 @@
 
 <script>
 import myHeader from '../../../components/myHeader.vue'
+import Overlay from '../../../components/Overlay.vue'
 export default {
     name: 'Physicians',
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data(){
       return{
-        overlay: false,
+        overlay: {
+          value: false
+        },
         dialog: false,
         search: '',
         table_headers:[
@@ -129,7 +130,7 @@ export default {
       }
     },
     created(){
-        this.overlay = true
+        this.overlay.value = true
         this.initialize()
     },
     computed:{
@@ -152,7 +153,7 @@ export default {
             .then(res => {
                 console.log(res)
                 this.table_items = res.data
-                this.overlay = false
+                this.overlay.value = false
             })
             .catch(err => { console.log(err) })
         },

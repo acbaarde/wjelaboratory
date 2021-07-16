@@ -3,9 +3,7 @@
     <myHeader :title="'Timekeeping'" :subtitle="'Manhour Posting'" />
     <v-container fluid>
   <v-card flat outlined>
-        <v-overlay :value="overlay">
-            <v-progress-circular indeterminate size="70"></v-progress-circular>
-        </v-overlay>
+        <Overlay :value="overlay.value" />
         <v-flex md-12 class="ma-2">
             <v-container fluid>
                 <v-row no-gutters class="mt-2">
@@ -48,12 +46,15 @@
 <script>
 import myHeader from '../../components/myHeader.vue'
 import Dialog from '../../components/Dialog.vue'
+import Overlay from '../../components/Overlay.vue'
 export default {
     name: 'Posting_form',
-    components: { myHeader,Dialog },
+    components: { myHeader,Dialog,Overlay },
     data(){
         return{
-            overlay: false,
+            overlay: {
+                value: false
+            },
             disabled: false,
             alert:{
                 status: false,
@@ -86,11 +87,11 @@ export default {
     },
     methods: {
          async initialize(){
-            this.overlay = true
+            this.overlay.value = true
             await this.$guest.get('/api/timekeeping/activePayperiod')
             .then(res => {
                 this.pperiod = res.data.pperiod
-                this.overlay = false
+                this.overlay.value = false
                 this.alert.text = res.data.message
                 if(res.data.status == false){
                     this.alert.status = 'true'
@@ -106,14 +107,14 @@ export default {
         dialogEvent(value){
             this.dialog_data.status = false
             if(value == true){
-                this.overlay = true
+                this.overlay.value = true
                 let data = {
                     user_id: this.$session.get('userid-session')
                 }
                 this.$guest.post('/api/timekeeping/postmanhour', this.$form_data.generate(data))
                 .then(res => {
                     console.log(res)
-                    this.overlay = false
+                    this.overlay.value = false
                     this.alert.text = res.data.message
                     if(res.data.status == true){
                         this.alert.status = 'true'

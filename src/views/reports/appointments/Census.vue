@@ -2,9 +2,7 @@
     <div class="ma-n3">
         <myHeader :title="'Census'" :subtitle="'Report Module Generation'" />
         <v-container fluid>
-            <v-overlay :value="overlay">
-                <v-progress-circular indeterminate size="70"></v-progress-circular>
-            </v-overlay>
+            <Overlay :value="overlay.value" />
             <v-form ref="form">
                 <v-row no-gutters class="mb-4">
                     <v-spacer></v-spacer>
@@ -92,14 +90,17 @@
 
 <script>
 import myHeader from '../../../components/myHeader.vue'
+import Overlay from '../../../components/Overlay.vue'
 export default {
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data(){
         return{
             dateFromRules: [ v => !!v || 'Please Select Date...' ],
             dateToRules: [ v => !!v || 'Please Select Date...' ],
             alert_status: true,
-            overlay: false,
+            overlay: {
+                value: false
+            },
             dateFrom: '',
             dateTo: '',
             table_headers: [
@@ -125,9 +126,10 @@ export default {
     },
     methods:{
         async btn_process(){
+            
             this.table_footer = []
             if(this.$refs.form.validate()){
-                this.overlay = true
+                this.overlay.value = true
                 let data = {
                     dateFrom: this.dateFrom,
                     dateTo: this.dateTo
@@ -135,7 +137,7 @@ export default {
                 await this.$guest.post('/api/reports/Census', this.$form_data.generate(data))
                 .then(res => {
                     this.table_items = res.data
-                    this.overlay = false
+                    this.overlay.value = false
                     let len = res.data[0].results.length
                     let total = []
                     for(let i = 0; i < len; i++){

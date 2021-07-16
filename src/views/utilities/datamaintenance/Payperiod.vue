@@ -4,10 +4,8 @@
     <v-container fluid>
   <v-card flat outlined>
     <v-flex md-12 class="ma-2">
-      <v-overlay :value="overlay">
-        <v-progress-circular indeterminate size="70"></v-progress-circular>
-      </v-overlay>
-
+      
+      <Overlay :value="overlay.value" />
       <v-data-table :headers="table_headers" :items="table_items" :search="search" dense flat disable-sort :items-per-page="15">
         <template v-slot:top>
             <v-toolbar flat>
@@ -17,7 +15,9 @@
             </v-toolbar>
         </template>
         <template v-slot:[`item.ppost`]="{ item }">
-          {{ item.ppost == 'P' ? 'POSTED' : 'OPEN' }}
+          <div :style="stat_style(item.ppost)">
+            {{ item.ppost == 'P' ? 'POSTED' : 'OPEN' }}
+          </div>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn dense x-small @click="btn_update(item)" color="primary">UPDATE</v-btn>
@@ -62,12 +62,15 @@
 
 <script>
 import myHeader from '../../../components/myHeader.vue'
+import Overlay from '../../../components/Overlay.vue'
 export default {
     name: 'Physicians',
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data(){
       return{
-        overlay: false,
+        overlay: {
+          value: false
+        },
         dialog: false,
         search: '',
         table_headers:[
@@ -114,7 +117,7 @@ export default {
       }
     },
     created(){
-        this.overlay = true
+        this.overlay.value = true
         this.getPayperiod()
     },
     computed:{
@@ -128,7 +131,7 @@ export default {
             .then(res => {
                 console.log(res)
                 this.table_items = res.data
-                this.overlay = false
+                this.overlay.value = false
             })
             .catch(err => { console.log(err) })
         },
@@ -169,6 +172,12 @@ export default {
         },
         btn_unpost(item){
           console.log(item)
+        },
+
+        stat_style(value){
+          let clor = value == 'P' ? 'red' : 'green'
+          let styl = "color: " + clor
+          return styl
         }
     }
 }

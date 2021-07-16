@@ -4,9 +4,7 @@
     <v-container fluid>
     <v-card flat outlined>
         <v-flex md12 class="ma-2">
-            <v-overlay :value="overlay">
-                <v-progress-circular indeterminate size="70"></v-progress-circular>
-            </v-overlay>
+            <Overlay :value="overlay.value" />
             <v-data-table :headers="table_headers" :items="table_items" :search="search" dense flat disable-sort :items-per-page="15">
                 <template v-slot:top>
                     <v-toolbar flat>
@@ -196,13 +194,16 @@
 
 <script>
 import myHeader from '../../components/myHeader.vue'
+import Overlay from '../../components/Overlay.vue'
 export default {
     name: 'Releasing_form',
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data(){
         return{
             tab: 0,
-            overlay: false,
+            overlay: {
+                value: false
+            },
             dialog: false,
             search: '',
             table_headers:[
@@ -278,7 +279,7 @@ export default {
             return id == "2" ? true : false
         },
         async initialize(){
-            this.overlay = true
+            this.overlay.value = true
             await this.$guest.get('/api/data_maintenance/getGender')
             .then(res => {
                 this.gender = res.data
@@ -293,7 +294,7 @@ export default {
             await this.$guest.get('/api/appointment/getAppointment_forreleased')
             .then(res => {
                 this.table_items = Object.assign([], res.data.result)
-                this.overlay = false
+                this.overlay.value = false
             }).catch(err => { console.log(err) })
         },
 
@@ -310,7 +311,7 @@ export default {
             
         },
         btn_print(rmk){
-            this.overlay = true
+            this.overlay.value = true
             // console.log(rmk)
             // console.log(this.active_item.submod_id)
             let mod_id = this.tab_headers[this.tab]['id']

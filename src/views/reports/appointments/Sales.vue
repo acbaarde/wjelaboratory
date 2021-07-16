@@ -2,9 +2,7 @@
     <div class="ma-n3">
         <myHeader :title="'Sales'" :subtitle="'Report Module Generation'" />
         <v-container fluid>
-            <v-overlay :value="overlay">
-                <v-progress-circular indeterminate size="70"></v-progress-circular>
-            </v-overlay>
+            <Overlay :value="overlay.value" />
             <v-form ref="form">
                 <v-row no-gutters>
                     <v-spacer></v-spacer>
@@ -51,12 +49,15 @@
 
 <script>
 import myHeader from '../../../components/myHeader.vue'
+import Overlay from '../../../components/Overlay.vue'
 export default {
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data(){
         return{
             alert_status: true,
-            overlay: false,
+            overlay: {
+                value: false
+            },
             date: '',
             total_amount: 0,
             dateRules: [ v => !!v || 'Please Select Date...' ],
@@ -84,19 +85,18 @@ export default {
     methods: {
         async btn_process(){
             if(this.$refs.form.validate()){
-                this.overlay = true
+                this.overlay.value = true
                 let data = {
                     date: this.date
                 }
                 await this.$guest.post('/api/reports/Sales', this.$form_data.generate(data))
                 .then(res => {
-                    console.log(res.data.results)
                     this.alert_status = res.data.status
                     if(res.data.status){
                         this.table_items = res.data.results
                         this.total_amount = res.data.total_amount
                     }
-                    this.overlay = false
+                    this.overlay.value = false
                 })
                 .catch(err => { console.log(err) })
             }

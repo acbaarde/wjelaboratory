@@ -8,6 +8,7 @@
         <v-divider></v-divider> -->
         <myHeader :title="'Manhour Prooflist'" :subtitle="'Report Module Generation'" />
         <v-container fluid>
+            <Overlay :value="overlay.value" />
             <v-row no-gutters class="d-flex justify-end align-end mb-4">
                 <v-col cols="2" class="mr-2">
                     <v-select v-model="filters.year" :items="options.year" item-text="desc" item-value="id" @change="getPayperiod()" dense outlined hide-details></v-select>
@@ -91,11 +92,15 @@
 
 <script>
 import myHeader from '../../../components/myHeader.vue'
+import Overlay from '../../../components/Overlay.vue'
 export default {
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data(){
         return{
             alert_status: true,
+            overlay: {
+                value: false
+            },
             filters: {
                 year: null,
                 payperiod_id: null
@@ -132,15 +137,18 @@ export default {
         this.initialize()
     },
     methods: {
-        initialize(){
-            this.$guest('/api/reports/getYear')
+        async initialize(){
+            this.overlay.value = true
+            await this.$guest('/api/reports/getYear')
             .then(res => {
+                this.overlay.value = false
                 this.options.year = res.data
                 this.options.year.splice(0,0, Object.assign({}, { id: null, desc: 'Please Select Year...'}))
             })
             .catch(err => { console.log(err) })
         },
         getPayperiod(){
+            // this.overlay.value = true
             if(this.filters.year != null){
                 let data = {
                     year: this.filters.year,
@@ -148,24 +156,27 @@ export default {
                 }
                 this.$guest.post('/api/reports/getPayperiod', this.$form_data.generate(data))
                 .then(res => {
+                    // this.overlay.value = false
                     this.options.payperiod = res.data
                     this.options.payperiod.splice(0,0, Object.assign({}, { id: null, pperiod: 'Please Select Payperiod...'}))
                 })
                 .catch(err => { console.log(err) })
             }else{
+                this.overlay.value = false
                 this.filters.payperiod_id = null
                 this.options.payperiod = [{ id: null, pperiod: 'Please Select Payperiod...'}]
                 this.alert_status = true
             }
         },
         async getManhourprooflist(){
+            this.overlay.value = true
             let data = {
                 year: this.filters.year,
                 payperiod_id: this.filters.payperiod_id
             }
             await this.$guest.post('/api/reports/getManhourprooflist', this.$form_data.generate(data))
             .then(res => {
-                console.log(res.data)
+                this.overlay.value = false
                 this.alert_status = res.data.status
                 if(res.data.status == true){
                     this.reports.manhour = res.data.manhour

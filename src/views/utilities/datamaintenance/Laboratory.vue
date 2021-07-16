@@ -4,9 +4,7 @@
     <v-container fluid>
   <v-card flat outlined>
     <v-flex md-12 class="ma-2">
-      <v-overlay :value="overlay">
-        <v-progress-circular indeterminate size="70"></v-progress-circular>
-      </v-overlay>
+      <Overlay :value="overlay.value" />
 
       <v-tabs v-model="tab" centered grow>
         <v-tab>
@@ -124,14 +122,17 @@
 
 <script>
 import myHeader from '../../../components/myHeader.vue'
+import Overlay from '../../../components/Overlay.vue'
 export default {
     name: 'Physicians',
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data(){
       return{
         clearicon: "mdi-close-circle",
         tab: 0,
-        overlay: false,
+        overlay: {
+          value: false
+        },
         mod_dialog: false,
         submod_dialog: false,
         subsubmod_dialog: false,
@@ -186,7 +187,7 @@ export default {
     },
     methods: {
       async initialize(){
-        this.overlay = true
+        this.overlay.value = true
         await this.$guest.get('/api/data_maintenance/loadModule')
         .then(res => {
           console.log(res.data)
@@ -194,7 +195,7 @@ export default {
           this.submodule_table_items = res.data.submodule
           this.subsubmodule_table_items = res.data.labtest
           // setTimeout(() => {
-            this.overlay = false
+            this.overlay.value = false
           // },1000)
         })
         .catch(err => { console.log(err) })

@@ -6,9 +6,7 @@
         No Payroll Period Established!
     </v-alert>
     <v-card v-else flat outlined>
-        <v-overlay :value="overlay">
-            <v-progress-circular indeterminate size="70"></v-progress-circular>
-        </v-overlay>
+        <Overlay :value="overlay.value" />
         <v-flex md-12 class="ma-2">
             <v-container fluid>
                 <v-row no-gutters>
@@ -116,16 +114,16 @@
                                                 {{ props.item.sched_pmout.substr(0,5) }}
                                             </template>
                                             <template v-slot:[`item.encoded_amin`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.encoded_amin" v-mask="'##:##'" single-line dense hide-details outlined></v-text-field>
+                                                <v-text-field class="font-weight" v-model="props.item.encoded_amin" v-mask="'##:##'" @input="handleInput(props.item,'amin')" single-line dense outlined hide-details></v-text-field>
                                             </template>
                                             <template v-slot:[`item.encoded_amout`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.encoded_amout" v-mask="'##:##'" single-line dense hide-details outlined></v-text-field>
+                                                <v-text-field class="font-weight" v-model="props.item.encoded_amout" v-mask="'##:##'" @input="handleInput(props.item,'amout')" single-line dense hide-details outlined></v-text-field>
                                             </template>
                                             <template v-slot:[`item.encoded_pmin`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.encoded_pmin" v-mask="'##:##'" single-line dense hide-details outlined></v-text-field>
+                                                <v-text-field class="font-weight" v-model="props.item.encoded_pmin" v-mask="'##:##'" @input="handleInput(props.item,'pmin')" single-line dense hide-details outlined></v-text-field>
                                             </template>
                                             <template v-slot:[`item.encoded_pmout`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.encoded_pmout" v-mask="'##:##'" single-line dense hide-details outlined></v-text-field>
+                                                <v-text-field class="font-weight" v-model="props.item.encoded_pmout" v-mask="'##:##'" @input="handleInput(props.item,'pmout')" single-line dense hide-details outlined></v-text-field>
                                             </template>
                                         
                                         </v-data-table>
@@ -165,10 +163,10 @@
                                                 </tr>
                                             </template>
                                             <template v-slot:[`item.ot_start`]="props">
-                                                <v-text-field class="font-weight" @blur="validateot(props.item)" v-model="props.item.ot_start" v-mask="'##:##'" single-line dense hide-details outlined></v-text-field>
+                                                <v-text-field class="font-weight" v-model="props.item.ot_start" v-mask="'##:##'" @blur="handleInput_ot(props.item,'ot_start')" single-line dense hide-details outlined></v-text-field>
                                             </template>
                                             <template v-slot:[`item.ot_end`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.ot_end" v-mask="'##:##'" single-line dense hide-details outlined></v-text-field>
+                                                <v-text-field class="font-weight" v-model="props.item.ot_end" v-mask="'##:##'" @blur="handleInput_ot(props.item,'ot_end')" single-line dense hide-details outlined></v-text-field>
                                             </template>
                                             
                                         </v-data-table>
@@ -315,13 +313,17 @@
 
 <script>
 // import myHeader from '../../components/myHeader.vue'
+import Overlay from '../../components/Overlay.vue'
 export default {
     name: 'Timekeeping_form',
-    // components: { myHeader },
+    components: { Overlay },
     data(){
         return{
             tab: 0,
-            overlay: false,
+            show_placeholder: 'HH:mm',
+            overlay: {
+                value: false
+            },
             dialog: false,
             snackbar:{
                 status: false,
@@ -424,7 +426,7 @@ export default {
 
     methods: {
         async initialize(){
-            this.overlay = true
+            this.overlay.value = true
             let data = {
                 id: this.$route.query.id
             }
@@ -440,14 +442,13 @@ export default {
                     this.adjustment = res.data.result.salary_adjustments
                     this.adjustment_items = res.data.result.salary_adjustments_breakdown
                     this.$nextTick(() => {
-                        this.overlay = false
+                        this.overlay.value = false
                         this.snackbar.status = true
                         this.snackbar.text = 'Page Refreshed!'
                         this.snackbar.color = 'success'
                         this.snackbar.timeout = 2000
                     })
                 }
-                console.log(res.data)
             })
             .catch(err => { console.log(err) })
         },
@@ -474,10 +475,59 @@ export default {
         deletedtr(){
             console.log(this.tab)
         },
- 
-        validateot(item){
-            console.log(item);
+
+        handleInput(item,input){
+            let itemIndex = this.dtr_items.indexOf(item)
+            let encoded = "encoded_"+input
+            let time = this.dtr_items[itemIndex][encoded].split(":")
+            let hrs = parseInt(time[0])
+            let min = parseInt(time[1])
+            if(hrs >= 24 || min >= 60){
+                this.dtr_items[itemIndex][encoded] = ''
+            }
+            
         },
+
+        handleInput_ot(item,input){
+            let itemIndex = this.dtr_items.indexOf(item)
+            let s_pmout = this.dtr_items[itemIndex]['sched_pmout'].split(":")
+            let s_hrs = s_pmout[0]
+            let s_min = s_pmout[1]
+            let s_mins = (s_hrs * 60) + parseInt(s_min)
+
+            let e_pmout = this.dtr_items[itemIndex]['encoded_pmout'].split(":")
+            let e_hrs = e_pmout[0]
+            let e_min = e_pmout[1]
+            let e_mins = (e_hrs * 60) + parseInt(e_min)
+
+            let ot = this.dtr_items[itemIndex][input].split(":")
+            let ot_hrs = parseInt(ot[0])
+            let ot_min = parseInt(ot[1])
+            let ot_mins = (ot_hrs * 60) + parseInt(ot_min)
+
+            if(ot_hrs >= 24 || ot_min >= 60){
+                this.dtr_items[itemIndex][input] = ''
+            }
+
+            if(ot_mins < s_mins){
+                this.dtr_items[itemIndex][input] = ''
+            }
+
+            if(input == 'ot_end'){
+                if(ot_mins > e_mins){
+                    this.dtr_items[itemIndex][input] = ''
+                }
+            }
+        },
+        // validate_tk(item){
+        //     let itemIndex = this.dtr_items.indexOf(item)
+        //     let time = this.dtr_items[itemIndex].encoded_amin.split(":")
+        //     let hrs = parseInt(time[0])
+        //     let min = parseInt(time[1])
+        //     if(hrs >= 24 || min >= 60){
+        //         this.dtr_items[itemIndex].encoded_amin = ''
+        //     }
+        // },
         add_adjustment(){
             console.log("ADD")
         },
@@ -490,7 +540,7 @@ export default {
             this.active_item = {}
         },
         async btn_delete(item){
-            this.overlay = true
+            this.overlay.value = true
             await this.$guest.post('/api/timekeeping/deleteSalaryAdjustment', this.$form_data.generate(item))
             .then(() => {
                 this.initialize()
@@ -503,7 +553,7 @@ export default {
             this.active_item = Object.assign({}, item)
         },
         async btn_save(){
-            this.overlay = true
+            this.overlay.value = true
             this.active_item['adjustment_id'] = this.adjustment.id
             this.active_item['user_id'] = this.$session.get('userid-session')
             this.active_item['employee_id'] = this.$route.query.id

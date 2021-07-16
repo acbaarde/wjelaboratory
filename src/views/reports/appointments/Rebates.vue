@@ -2,9 +2,7 @@
     <div class="ma-n3">
         <myHeader :title="'Rebates'" :subtitle="'Report Module Generation'" />
         <v-container fluid>
-            <v-overlay :value="overlay">
-                <v-progress-circular indeterminate size="70"></v-progress-circular>
-            </v-overlay>
+            <Overlay :value="overlay.value" />
             <v-form ref="form">
                 <v-row no-gutters class="mb-4">
                     <v-spacer></v-spacer>
@@ -105,14 +103,17 @@
 
 <script>
 import myHeader from '../../../components/myHeader.vue'
+import Overlay from '../../../components/Overlay.vue'
 export default {
-    components: { myHeader },
+    components: { myHeader,Overlay },
     data() {
         return {
             dateFromRules: [ v => !!v || 'Please Select Date...' ],
             dateToRules: [ v => !!v || 'Please Select Date...' ],
             alert_status: true,
-            overlay: false,
+            overlay: {
+                value: false
+            },
             dialog: false,
             dateFrom: '',
             dateTo: '',
@@ -134,22 +135,20 @@ export default {
     methods: {
         async btn_process(){
             if(this.$refs.form.validate()){
-                this.overlay = true
+                this.overlay.value = true
                 let data = {
                     dateFrom: this.dateFrom,
                     dateTo: this.dateTo
                 }
                 await this.$guest.post('/api/reports/Rebates', this.$form_data.generate(data))
                 .then(res => {
-                    console.log(res.data)
+                    this.overlay.value = false
                     this.table_items = res.data
-                    this.overlay = false
                 })
                 .catch(err => { console.log(err) })
             }
         },
         btn_view(item){
-            console.log(item)
             this.active_item = Object.assign({}, item)
             this.dialog = true
         },

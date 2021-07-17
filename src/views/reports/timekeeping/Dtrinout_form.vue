@@ -233,11 +233,6 @@ export default {
             })  
             .catch(err => { console.log(err) })
         },
-
-        checkpp(){
-            console.log(this.filters.payperiod_id)
-        },
-        
         fullname(item){
             let firstname = item.firstname.charAt(0).toUpperCase() + item.firstname.slice(1)
             let lastname = item.lastname.charAt(0).toUpperCase() + item.lastname.slice(1)
@@ -245,7 +240,6 @@ export default {
             return lastname + ", " + firstname + " " + middlename
         },
         table_items(item){
-            console.log(this.reports.dtrinout.filter(e => e.employee_id == item))
             return this.reports.dtrinout.filter(e => e.employee_id == item)
         }
     }

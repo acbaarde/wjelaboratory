@@ -352,7 +352,6 @@ export default {
       },
 
       btn_update(item){
-        console.log(item)
         this.itemIndex = this.table_items.indexOf(item)
         this.active_item = Object.assign({}, item)
         this.dialog = true
@@ -364,8 +363,7 @@ export default {
           this.active_item['user_id'] = this.$session.get('userid-session') 
           let url = this.itemIndex == -1 ? '/api/employee/insertEmployee' : '/api/employee/updateEmployee'
           await this.$guest.post(url, this.$form_data.generate(this.active_item))
-          .then(res => {
-            console.log(res.data)
+          .then(() => {
             this.refreshPage()
           })
           .catch(err => { console.log(err) })

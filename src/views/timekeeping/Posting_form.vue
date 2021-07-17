@@ -113,7 +113,6 @@ export default {
                 }
                 this.$guest.post('/api/timekeeping/postmanhour', this.$form_data.generate(data))
                 .then(res => {
-                    console.log(res)
                     this.overlay.value = false
                     this.alert.text = res.data.message
                     if(res.data.status == true){

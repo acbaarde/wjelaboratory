@@ -142,7 +142,6 @@ export default {
         async initialize(){
             await this.$guest.get('/api/data_maintenance/getGender')
             .then(res => {
-                console.log(res)
                 this.gender = res.data
                 this.getPhysicians()
             })
@@ -151,7 +150,6 @@ export default {
         async getPhysicians(){
             await this.$guest.get('/api/data_maintenance/getPhysicians')
             .then(res => {
-                console.log(res)
                 this.table_items = res.data
                 this.overlay.value = false
             })
@@ -170,8 +168,7 @@ export default {
             }
             let url = this.itemIndex == -1 ? 'insertPhysician' : 'updatePhysician'
             await this.$guest.post('/api/data_maintenance/' + url, this.$form_data.generate(data))
-            .then(res => {
-                console.log(res)
+            .then(() => {
                 this.close()
                 this.getPhysicians()
             })

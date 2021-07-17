@@ -37,13 +37,13 @@
                     <v-container fluid>
                         <v-row>
                             <v-col cols="2">
-                              <v-text-field :disabled="itemIndex == -1 ? false : true" v-model="active_item.ws_code" dense outlined label="Shift Code" type="text"></v-text-field>
+                              <v-text-field :disabled="itemIndex == -1 ? false : true" v-model="active_item.ws_code" dense outlined label="Shift Code" type="text" required :rules="ws_codeRules"></v-text-field>
                             </v-col>
                             <v-col cols="5">
-                              <v-text-field v-model="active_item.desc" v-mask="'##:##-##:##-##:##-##:##'" hint="Format ex. 08:00-11:00-12:00-17:00" dense outlined label="Description" type="text"></v-text-field>
+                              <v-text-field v-model="active_item.desc" v-mask="'##:##-##:##-##:##-##:##'" hint="Format ex. 08:00-11:00-12:00-17:00" dense outlined label="Description" type="text" required :rules="descRules"></v-text-field>
                             </v-col>
                             <v-col cols="3">
-                              <v-text-field v-model="active_item.grace_period" v-mask="'###'" dense outlined label="Grace Period" type="number"></v-text-field>
+                              <v-text-field v-model="active_item.grace_period" v-mask="'###'" dense outlined label="Grace Period" type="number" required :rules="grace_periodRules"></v-text-field>
                             </v-col>
                             <v-col cols="2">
                               <v-btn block color="green" dark @click="btn_spread()">Spread</v-btn>
@@ -87,10 +87,13 @@ export default {
         },
         dialog: false,
         search: '',
+        ws_codeRules: [v => !!v || 'Work Shift is required'],
+        descRules: [v => !!v || 'Description is required'],
+        grace_periodRules: [v => !!v || 'Grace Period is required'],
         table_headers:[
           { text: 'Shift Code', value: 'ws_code', align: 'center' },
           { text: 'Description', value: 'desc', align: 'center' },
-          { text: 'Grace Period', value: 'grace_period', align: 'center' },
+          { text: 'Grace Period (min)', value: 'grace_period', align: 'center' },
           { text: 'Actions', value: 'actions', align: 'center', filterable: false },
         ],
         table_items: [],
@@ -149,7 +152,6 @@ export default {
         async getWorksched(){
             await this.$guest.get('/api/data_maintenance/getWorksched')
             .then(res => {
-                console.log(res)
                 this.table_items = res.data.work_shift
                 this.sched_items = res.data.work_sched
                 this.overlay.value = false
@@ -160,8 +162,7 @@ export default {
             this.active_item['user_id'] = this.$session.get('userid-session')
             let url = this.itemIndex == -1 ? 'insertWorksched' : 'updateWorksched'
             await this.$guest.post('/api/data_maintenance/' + url, this.$form_data.generate(this.active_item))
-            .then(res => {
-                console.log(res)
+            .then(() => {
                 this.close()
             })
             .catch(err => { console.log(err) })
@@ -181,21 +182,23 @@ export default {
             this.active_item = Object.assign({}, item)
         },
         btn_spread(){
-          let ws_code = this.active_item.ws_code
-          let time = this.active_item.desc.split("-")
-          let amin = time[0]
-          let amout = time[1]
-          let pmin = time[2]
-          let pmout = time[3]
-          this.sched_items = [
-            { ws_code: ws_code, ws_day: 'Mon', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
-            { ws_code: ws_code, ws_day: 'Tue', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
-            { ws_code: ws_code, ws_day: 'Wed', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
-            { ws_code: ws_code, ws_day: 'Thu', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
-            { ws_code: ws_code, ws_day: 'Fri', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
-            { ws_code: ws_code, ws_day: 'Sat', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
-            { ws_code: ws_code, ws_day: 'Sun', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
-          ]
+          if(this.$refs.form.validate()){
+            let ws_code = this.active_item.ws_code
+            let time = this.active_item.desc.split("-")
+            let amin = time[0]
+            let amout = time[1]
+            let pmin = time[2]
+            let pmout = time[3]
+            this.sched_items = [
+              { ws_code: ws_code, ws_day: 'Mon', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
+              { ws_code: ws_code, ws_day: 'Tue', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
+              { ws_code: ws_code, ws_day: 'Wed', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
+              { ws_code: ws_code, ws_day: 'Thu', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
+              { ws_code: ws_code, ws_day: 'Fri', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
+              { ws_code: ws_code, ws_day: 'Sat', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
+              { ws_code: ws_code, ws_day: 'Sun', ws_amin: amin, ws_amout: amout, ws_pmin: pmin, ws_pmout: pmout },
+            ]
+          }
         }
     }
 }

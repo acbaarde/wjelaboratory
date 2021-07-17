@@ -190,13 +190,10 @@ export default {
         this.overlay.value = true
         await this.$guest.get('/api/data_maintenance/loadModule')
         .then(res => {
-          console.log(res.data)
           this.module_table_items = res.data.module
           this.submodule_table_items = res.data.submodule
           this.subsubmodule_table_items = res.data.labtest
-          // setTimeout(() => {
-            this.overlay.value = false
-          // },1000)
+          this.overlay.value = false
         })
         .catch(err => { console.log(err) })
       },
@@ -255,7 +252,6 @@ export default {
             this.tab = 2
           })
           .catch(err => { console.log(err) })
-          console.log(this.active_item)
         }else{
           this.$route.push({ name: 'Laboratory' })
         }

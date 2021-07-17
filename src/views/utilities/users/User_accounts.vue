@@ -186,9 +186,7 @@ export default {
           this.loading = false
           this.table_items = res.data
         })
-        .catch(err =>{
-          console.log(err)
-        })
+        .catch(err => { console.log(err) })
 
         // this.$guest.get('/api/users/getEmployees')
         // .then(res => {

@@ -260,50 +260,6 @@ export default {
             WinPrint.print();
             WinPrint.close();
         }
-    //   async getUsers(){
-    //     await this.$guest.get('/api/users/getAllUser')
-    //     .then(res => {
-    //       this.users = res.data
-    //       this.users.splice(0,0, { id: '', username: 'Please Select User...' })
-    //       this.loadMenu()
-    //     })
-    //     .catch(err => { console.log(err) })
-    //   },
-    //   async loadMenu(){
-    //     await this.$guest.get('/api/menu/Menu')
-    //     .then(res => {
-    //       this.menus = res.data
-    //     })
-    //     .catch(err => { console.log(err) })
-    //   },
-    //   async getUseraccess(){
-    //     let data = {
-    //       id: this.id,
-    //     }
-    //     await this.$guest.post('/api/menu/getUseraccess', this.$form_data.generate(data))
-    //     .then(res => {
-    //       console.log(res)
-    //       this.selected = res.data
-    //     })
-    //     .catch(err => { console.log(err) })
-    //   },
-
-    //   // menu(id){
-    //   //   return this.menus.filter(e => e.id == id)
-    //   // },
-    //   async btn_save(){
-    //     let data = {
-    //       id: this.id,
-    //       mod_id: this.selected,
-    //       user_id: this.$session.get('userid-session')
-    //     }
-    //     await this.$guest.post('/api/menu/saveUseraccess', this.$form_data.generate(data))
-    //     .then(res => {
-    //       console.log(res)
-    //       this.getUseraccess()
-    //     })
-    //     .catch(err => { console.log(err) })
-    //   },
     }
 }
 </script>

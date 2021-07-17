@@ -129,7 +129,6 @@ export default {
         async getPayperiod(){
             await this.$guest.get('/api/data_maintenance/getPayperiod')
             .then(res => {
-                console.log(res)
                 this.table_items = res.data
                 this.overlay.value = false
             })
@@ -146,8 +145,7 @@ export default {
             }
             let url = this.itemIndex == -1 ? 'insertPayperiod' : 'updatePayperiod'
             await this.$guest.post('/api/data_maintenance/' + url, this.$form_data.generate(data))
-            .then(res => {
-                console.log(res)
+            .then(() => {
                 this.close()
             })
             .catch(err => { console.log(err) })
@@ -165,15 +163,7 @@ export default {
             this.dialog = true
             this.itemIndex = this.table_items.indexOf(item)
             this.active_item = Object.assign({}, item)
-            console.log(this.active_item)
         },
-        btn_post(item){
-          console.log(item)
-        },
-        btn_unpost(item){
-          console.log(item)
-        },
-
         stat_style(value){
           let clor = value == 'P' ? 'red' : 'green'
           let styl = "color: " + clor

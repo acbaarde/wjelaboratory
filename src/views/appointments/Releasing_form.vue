@@ -254,11 +254,6 @@ export default {
             }
             return text
         },
-        // discount_type(){
-        //     console.log(this.discount.filter(e => this.active_item.discount_type == e.value))
-        //     return this.discount.filter(e => this.active_item.discount_type == e.value)[]
-        // },
-
         btn_ua(){
             return this.active_item.submod_id.split(",").includes("13") ? true : false
         },
@@ -311,12 +306,9 @@ export default {
             
         },
         btn_print(rmk){
-            this.overlay.value = true
-            // console.log(rmk)
-            // console.log(this.active_item.submod_id)
+            this.overlay.value = TextTrackCueList
             let mod_id = this.tab_headers[this.tab]['id']
             let mod = this.tab_headers[this.tab]['subsubmodules'].filter(e => this.active_item.submod_id.split(",").includes(e.submod_id))
-            // console.log(mod)
             let route = ''
             switch(mod_id){
                 case "1":
@@ -339,8 +331,7 @@ export default {
                 user_id: this.$session.get('userid-session')
             }
             this.$guest.post('/api/appointment/approved_reject', this.$form_data.generate(data))
-            .then(res => {
-                console.log(res.data)
+            .then(() => {
                 this.initialize()
                 this.btn_close()
             })

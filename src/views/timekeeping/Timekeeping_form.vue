@@ -519,18 +519,6 @@ export default {
                 }
             }
         },
-        // validate_tk(item){
-        //     let itemIndex = this.dtr_items.indexOf(item)
-        //     let time = this.dtr_items[itemIndex].encoded_amin.split(":")
-        //     let hrs = parseInt(time[0])
-        //     let min = parseInt(time[1])
-        //     if(hrs >= 24 || min >= 60){
-        //         this.dtr_items[itemIndex].encoded_amin = ''
-        //     }
-        // },
-        add_adjustment(){
-            console.log("ADD")
-        },
         btn_cancel(){
             this.close()
         },

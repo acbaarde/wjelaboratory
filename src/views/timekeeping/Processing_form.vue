@@ -97,7 +97,6 @@ export default {
             this.overlay.value = true
             await this.$guest.post('/api/timekeeping/processmanhour')
             .then(res => {
-                console.log(res.data)
                 this.overlay.value = false
                 if(res.data.status == true){
                     this.alert.status = 'true'

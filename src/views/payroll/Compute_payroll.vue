@@ -118,7 +118,6 @@ export default {
                     this.alert.status = 'true'
                     this.alert.type = res.data.status == true ? 'success' : 'error'
                     this.disabled = res.data.status == true ? true : false
-                    console.log(res.data)
                 })
                 .catch(err => { console.log(err) })
             }

@@ -60,7 +60,7 @@
               <v-btn color="green" dark class="mr-2" @click="btnpost()" :disabled="btndisabled">POST</v-btn>
             </v-col>
             <v-col cols="3" class="pr-2">
-              <v-text-field dense outlined hide-details filled @keypress="cash_keypress()" label="Cash" type="number" v-model="patient_info.totalcash" placeholder="0.00"></v-text-field>
+              <v-text-field dense outlined hide-details filled label="Cash" type="number" v-model="patient_info.totalcash" placeholder="0.00"></v-text-field>
             </v-col>
             <v-col cols="3" class="pr-2">
               <v-text-field dense outlined readonly hide-details filled label="Balance" v-model="totalbalance" placeholder="0.00"></v-text-field>
@@ -272,30 +272,17 @@ export default {
     },
 
     methods:{
-
-      click(){
-        console.log(this.chips_selected)
-      },
-      cash_keypress(){
-        console.log(this.cash);
-      },
-
       async loadPatient(){
-        // const form_data = new FormData()
-        // form_data.append('id', this.$route.query.id)
         this.overlay.value = true
         let data = {
           id: this.$route.query.id
         }
         await this.$guest.post('/api/patient/getPatient', this.$form_data.generate(data))
         .then(res => {
-          // console.log(res.data)
-          
           this.patient_info = Object.assign({}, res.data.patient)
           this.discount = Object.assign([], res.data.discount)
           this.discount.push({ value: '', text: 'No Discount', percent: 0 })
           this.physicians = Object.assign([], res.data.physicians)
-
           this.loadLabModule()
         })
         .catch(err => { console.log(err) })
@@ -311,7 +298,6 @@ export default {
         
         await this.$guest.post('/api/appointment/getAppointment', this.$form_data.generate(data))
         .then(res => {
-          console.log(res.data)
           const patientinfo = {
             'id': res.data.patient.id,
             'appointment_id': res.data.patient.appointment_id,

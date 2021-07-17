@@ -74,9 +74,7 @@ export default {
             this.overlay.value = true
             await this.$guest.get('/api/timekeeping/getEmployees')
             .then(res => {
-                console.log(res.data)
                 this.table_items = res.data.result
-                
                 this.$nextTick(() => {
                   this.overlay.value = false
                 })
@@ -84,7 +82,6 @@ export default {
             .catch(err => { console.log(err) })
         },
         btn_view(item){
-            console.log(item)
             this.$router.push({ name: 'Timekeeping_form', query: { id: item.id }, params: { id: item.id } })
         }
     }

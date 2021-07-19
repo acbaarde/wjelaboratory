@@ -35,7 +35,7 @@
                 <v-card-text class="pa-2">
                     <v-container fluid>
                         <v-row>
-                            <v-col cols="8">
+                            <v-col cols="8" id="print-form">
                                 <table style="width:100%;">
                                     <thead>
                                         <tr>
@@ -94,6 +94,7 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-spacer></v-spacer>
+                    <v-btn small outlined color="primary" @click="print()">PRINT</v-btn>
                     <v-btn small outlined color="error" @click="btn_close()">Close</v-btn>
                 </v-card-actions>
             </v-card>
@@ -155,6 +156,9 @@ export default {
         btn_close(){
             this.dialog = false
             this.active_item = Object.assign({}, this.default_item)
+        },
+        print(){
+            this.print_form()
         }
     }
 }

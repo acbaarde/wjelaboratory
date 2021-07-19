@@ -87,6 +87,8 @@
     
   <!-- </v-row> -->
   </v-card>
+
+  <Snackbar :snackbar="snackbar" />
   </v-container>
   </div>
 </template>
@@ -94,9 +96,10 @@
 <script>
 import myHeader from '../../../components/myHeader.vue'
 import Overlay from '../../../components/Overlay.vue'
+import Snackbar from '../../../components/Snackbar.vue'
 export default {
     name: 'User_accounts',
-    components: { myHeader,Overlay },
+    components: { myHeader,Overlay,Snackbar },
     data(){
       return{
         search: '',
@@ -104,7 +107,11 @@ export default {
         overlay: {
           value: false
         },
-        // dialogDelete: false,
+        snackbar: {
+          status: false,
+          text: '',
+          color: ''
+        },
         disabled: false,
         loading: true,
         type: '',
@@ -208,8 +215,11 @@ export default {
             let url = this.itemIndex == -1 ? 'registerUser' : 'updateUser'
             this.$guest.post('/api/users/'+ url, this.$form_data.generate(data))
             .then(res => {
+              this.snackbar.status = true
               this.overlay.value = false
               if(res.data.status == true){
+                this.snackbar.text = this.itemIndex == -1 ? 'Record(s) saved successfully!' : 'Record(s) updated successfully!'
+                this.snackbar.color = 'success'
                 this.loadItems()
                 this.btn_cancel()
               }else{

@@ -1,14 +1,12 @@
 <template>
     <div class="ma-n3">
-        <!-- <v-card-title>
-                <span>DTR In/Out1111</span>
-        </v-card-title>
-        <v-card-subtitle><span>Report Module Generation...</span></v-card-subtitle>
-        <v-divider></v-divider> -->
         <myHeader :title="'DTR In/Out'" :subtitle="'Report Module Generation'" />
         <v-container fluid>
             <Overlay :value="overlay.value" />
             <v-row no-gutters class="d-flex justify-end align-end mb-4">
+                <v-col v-if="reports.employees.length > 0">
+                    <v-btn small color="primary" @click="print()">PRINT</v-btn>
+                </v-col>
                 <v-col cols="2" class="mr-2">
                     <v-select v-model="filters.year" :items="options.year" item-text="desc" item-value="id" @change="getPayperiod()" dense outlined hide-details></v-select>
                 </v-col>
@@ -175,7 +173,6 @@ export default {
                 { value: 'ut_start', align: 'center' },
                 { value: 'ut_end', align: 'center' },
             ],
-            // table_items:[],
         }
     },
     created(){
@@ -241,6 +238,9 @@ export default {
         },
         table_items(item){
             return this.reports.dtrinout.filter(e => e.employee_id == item)
+        },
+        print(){
+            this.print_form()
         }
     }
 }

@@ -70,6 +70,33 @@ Vue.mixin({
             }
             return formatage
           },
+
+          print_form(){
+            // Get HTML to print from element
+            const prtHtml = document.getElementById('print-form').innerHTML;
+
+            // Get all stylesheets HTML
+            let stylesHtml = '';
+            for (const node of [...document.querySelectorAll('link[rel="prefetch"], style')]) {
+                stylesHtml += node.outerHTML;
+            }
+            // Open the print window
+            const WinPrint = window.open();
+            WinPrint.document.write(`<!DOCTYPE html>
+            <html>
+            <head>
+                ${stylesHtml}
+            </head>
+            <body>
+                ${prtHtml}
+            </body>
+            </html>`);
+
+            WinPrint.document.close();
+            WinPrint.focus();
+            WinPrint.print();
+            WinPrint.close();
+          }
     }
 })
 

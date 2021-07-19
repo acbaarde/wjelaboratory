@@ -5,6 +5,9 @@
             <Overlay :value="overlay.value" />
             <v-form ref="form">
                 <v-row no-gutters>
+                    <v-col>
+                        <v-btn small color="primary" @click="print()">PRINT</v-btn>
+                    </v-col>
                     <v-spacer></v-spacer>
                     <v-text-field class="shrink mr-2" v-model="date" dense outlined type="date" label="Date" required :rules="dateRules"></v-text-field>
                     <v-btn color="primary" @click="btn_process()">Process</v-btn>
@@ -13,36 +16,38 @@
             <v-alert v-if="alert_status == false" type="error" outlined text>
                 No Records Found!!!
             </v-alert>
-            <v-row no-gutters>
-                <v-col class="px-4 mb-2">
-                    <tr>
-                        <td style="width: 100px;">Date:</td>
-                        <td><strong>{{ DateNow() }}</strong></td>
-                    </tr>
-                    <tr>
-                        <td style="width: 100px;">Total Sales:</td>
-                        <td><strong>{{ total_amount }}</strong></td>
-                    </tr>
-                </v-col>
-            </v-row>
-            <v-row no-gutters>
-                <v-col>
-                    <v-data-table :headers="table_headers" :items="table_items" dense :items-per-page="-1" hide-default-footer>
-                        <template v-slot:[`item.fullname`]="{ item }">
-                            {{ item.fullname }}
-                        </template>
-                        <template v-slot:[`item.age`]="{ item }">
-                            {{ formatAge(item.age,item.agetype) }}
-                        </template>
-                        <template v-slot:[`item.gender`]="{ item }">
-                            {{ item.gender == 'F' ? 'FEMALE' : 'MALE' }}
-                        </template>
-                        <template v-slot:[`item.physician`]="{ item }">
-                            {{ item.physician }}
-                        </template>
-                    </v-data-table>
-                </v-col>
-            </v-row>
+            <div id="print-form">
+                <v-row no-gutters>
+                    <v-col class="px-4 mb-2">
+                        <tr>
+                            <td style="width: 100px;">Date:</td>
+                            <td><strong>{{ DateNow() }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="width: 100px;">Total Sales:</td>
+                            <td><strong>{{ total_amount }}</strong></td>
+                        </tr>
+                    </v-col>
+                </v-row>
+                <v-row no-gutters>
+                    <v-col>
+                        <v-data-table :headers="table_headers" :items="table_items" dense :items-per-page="-1" hide-default-footer>
+                            <template v-slot:[`item.fullname`]="{ item }">
+                                {{ item.fullname }}
+                            </template>
+                            <template v-slot:[`item.age`]="{ item }">
+                                {{ formatAge(item.age,item.agetype) }}
+                            </template>
+                            <template v-slot:[`item.gender`]="{ item }">
+                                {{ item.gender == 'F' ? 'FEMALE' : 'MALE' }}
+                            </template>
+                            <template v-slot:[`item.physician`]="{ item }">
+                                {{ item.physician }}
+                            </template>
+                        </v-data-table>
+                    </v-col>
+                </v-row>
+            </div>
         </v-container>
     </div>
 </template>
@@ -100,6 +105,9 @@ export default {
                 })
                 .catch(err => { console.log(err) })
             }
+        },
+        print(){
+            this.print_form()
         }
     }
 }

@@ -53,14 +53,14 @@
                     <v-btn class="mr-2" small v-bind="attrs" v-on="on"  @click="btn_view(item)" color="primary">VIEW</v-btn>
                 </template> -->
                 <v-card>
-                    <v-card-title>Patient Info</v-card-title>
+                    <v-card-title>Appointment Details</v-card-title>
                     <v-divider></v-divider>
                     <v-card-text>
                         <v-container>
                             <v-row no-gutters>
                                 <v-col cols="6" class="pr-2">
                                     <tr>
-                                        <td style="width: 120px;">Full Name:</td>
+                                        <td style="width: 120px;">Patient Name:</td>
                                         <td><strong>{{ active_item.fullname }}</strong></td>
                                     </tr>
                                     <tr>
@@ -208,6 +208,7 @@ export default {
             search: '',
             table_headers:[
                 { text: 'Status', align: 'center', value: 'approved', filterable: false  },
+                { text: 'Patient ID', value: 'patient_id' },
                 { text: 'Full Name', value: 'fullname' },
                 { text: 'Age', align: 'center', value: 'age', filterable: false  },
                 { text: 'Gender', align: 'center', value: 'gender', filterable: false  },

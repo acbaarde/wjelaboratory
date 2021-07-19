@@ -27,7 +27,7 @@
         </v-card>
       </v-col>
     </v-row> -->
-    <v-dialog v-model="dialog" :max-width="card_id == 3 ? '100%' : '80%'" scrollable>
+    <v-dialog v-model="dialog" :max-width="card_id == 3 ? '100%' : '80%'" scrollable persistent>
       <v-card v-if="card_id == 1">
         <v-card-title>
           <span>PENDING</span>
@@ -40,7 +40,7 @@
         <v-card-text>
           <v-data-table :headers="table_headers" :items="pending_items()" dense>
             <template v-slot:[`item.created_at`] = "{ item }">
-              {{ formatDateTime(item.created_at) }}
+              {{ formatDateTime(item.created_at).substring(14,22) }}
             </template>
           </v-data-table>
         </v-card-text>
@@ -57,7 +57,7 @@
         <v-card-text>
           <v-data-table :headers="table_headers" :items="released_items()" dense>
             <template v-slot:[`item.created_at`] = "{ item }">
-              {{ formatDateTime(item.created_at) }}
+              {{ formatDateTime(item.created_at).substring(14,22) }}
             </template>
           </v-data-table>
         </v-card-text>
@@ -91,7 +91,7 @@
               </v-menu>
             </v-col>
           </v-row> -->
-          <CustomChart :chart-data="chartData"/>
+          <CustomChart :chart-data="chartData" :styles="chartStyles" />
         </v-card-text>
       </v-card>
       <v-card v-if="card_id == 4">
@@ -106,7 +106,7 @@
         <v-card-text>
           <v-data-table :headers="table_headers" :items="total_patient_items" dense>
             <template v-slot:[`item.created_at`] = "{ item }">
-              {{ formatDateTime(item.created_at) }}
+              {{ formatDateTime(item.created_at).substring(14,22) }}
             </template>
           </v-data-table>
         </v-card-text>
@@ -128,6 +128,10 @@ export default {
         dialog: false,
         overlay: false,
         card_id: 0,
+        chartStyles:{
+          height: '500px',
+          position: 'relative',
+        },
         chartData: null,
         chart_data: { 
           labels: [],
@@ -150,6 +154,7 @@ export default {
           ],
         },
         table_headers: [
+          { text: 'PATIENT ID', value: 'patient_id', align: 'center', sortable: false },
           { text: 'LASTNAME', value: 'lastname', align: 'left', sortable: false },
           { text: 'FIRSTNAME', value: 'firstname', align: 'left', sortable: false },
           { text: 'MIDDLENAME', value: 'middlename', align: 'left', sortable: false },
@@ -158,7 +163,7 @@ export default {
           { text: 'PHYSICIAN', value: 'physician', align: 'left', sortable: false },
           { text: 'DISCOUNT TYPE', value: 'discount_type', align: 'center', sortable: false },
           { text: 'DISCOUNT %', value: 'discount', align: 'center', sortable: false },
-          { text: 'DATE', value: 'created_at', align: 'center', sortable: false },
+          { text: 'TIME', value: 'created_at', align: 'center', sortable: false },
         ],
         total_patient_items: [],
         items: [
@@ -216,7 +221,6 @@ export default {
 
         await this.$guest.get('/api/data_maintenance/getAppointments')
         .then(res => {
-          console.log(res.data)
           this.total_patient_items = res.data
         })
         .catch(err => { console.log(err) })
@@ -234,7 +238,6 @@ export default {
       },
 
       btn_view(id){
-        console.log(id)
         this.card_id = id
         this.dialog = !this.dialog
       },
@@ -242,28 +245,6 @@ export default {
         this.card_id = 0
         this.dialog = !this.dialog
       },
-      // btn_datepicker(){
-      //   let date = this.date.split("-")
-      //   let mm = date[1] - 1
-      //   const month = ["January","February","March","April","May","June","July","August","September","October","November","December"]
-      //   this.datetext = month[mm]
-
-      //   let data = {
-      //     year: date[0],
-      //     month: date[1]
-      //   }
-      //   this.$guest.post('/api/data_maintenance/dashboardData', this.$form_data.generate(data))
-      //   .then(res => {
-      //     res.data.submod.forEach(el => {
-      //       this.chart_data.labels.push(el.abbr)
-      //       this.chart_data.datasets[0]['data'].push(el.value)
-      //     })
-      //     setTimeout(() => {
-      //       this.overlay = false
-      //     }, 500);
-      //   })
-      //   .catch(err => { console.log(err) })
-      // }
     }
 }
 </script>

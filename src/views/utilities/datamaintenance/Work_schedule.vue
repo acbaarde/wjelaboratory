@@ -69,6 +69,8 @@
       </v-dialog>
 
     </v-flex>
+
+    <Snackbar :snackbar="snackbar" />
   </v-card>
 </v-container>
 </div>
@@ -77,13 +79,19 @@
 <script>
 import myHeader from '../../../components/myHeader.vue'
 import Overlay from '../../../components/Overlay.vue'
+import Snackbar from '../../../components/Snackbar.vue'
 export default {
     name: 'Physicians',
-    components: { myHeader,Overlay },
+    components: { myHeader,Overlay,Snackbar },
     data(){
       return{
         overlay: {
           value: false
+        },
+        snackbar: {
+          status: false,
+          text: '',
+          color: '',
         },
         dialog: false,
         search: '',
@@ -163,6 +171,9 @@ export default {
             let url = this.itemIndex == -1 ? 'insertWorksched' : 'updateWorksched'
             await this.$guest.post('/api/data_maintenance/' + url, this.$form_data.generate(this.active_item))
             .then(() => {
+                this.snackbar.status = true
+                this.snackbar.color = "success"
+                this.snackbar.text = this.itemIndex == -1 ? 'Record(s) saved successfully!' : 'Record(s) updated successfully!'
                 this.close()
             })
             .catch(err => { console.log(err) })

@@ -85,7 +85,7 @@
                 <v-select v-model="active_item.mod_id" dense outlined :items="module_table_items" item-text="title" item-value="id" clearable :clear-icon="clearicon"></v-select>
                 <v-text-field v-model="active_item.title" dense outlined label="Title" clearable :clear-icon="clearicon"></v-text-field>
                 <v-text-field v-model="active_item.amount" dense outlined label="Amount" clearable :clear-icon="clearicon"></v-text-field>
-                <v-text-field v-model="active_item.abbr" dense outlined label="Abbreviation" clearable :clear-icon="clearicon"></v-text-field>
+                <v-text-field v-model="active_item.abbr" v-mask="'XXXX'" dense outlined label="Abbreviation" clearable :clear-icon="clearicon"></v-text-field>
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
@@ -115,6 +115,7 @@
       </v-dialog>
 
     </v-flex>
+    <Snackbar :snackbar="snackbar" />
   </v-card>
   </v-container>
   </div>
@@ -123,15 +124,21 @@
 <script>
 import myHeader from '../../../components/myHeader.vue'
 import Overlay from '../../../components/Overlay.vue'
+import Snackbar from '../../../components/Snackbar.vue'
 export default {
     name: 'Physicians',
-    components: { myHeader,Overlay },
+    components: { myHeader,Overlay,Snackbar },
     data(){
       return{
         clearicon: "mdi-close-circle",
         tab: 0,
         overlay: {
           value: false
+        },
+        snackbar: {
+          status: false,
+          text: '',
+          color: '',
         },
         mod_dialog: false,
         submod_dialog: false,
@@ -237,12 +244,20 @@ export default {
           await this.$guest.post('/api/laboratory/saveModule', this.$form_data.generate(data))
           .then(() => {
             this.tab = 0
+             this.snackbar.status = true
+              this.snackbar.color = "success"
+              this.snackbar.text = this.itemIndex == -1 ? 'Record(s) saved successfully!' : 'Record(s) updated successfully!'
+                
           })
           .catch(err => { console.log(err) })
         }else if(this.tab == 1){
           await this.$guest.post('/api/laboratory/saveSubModule', this.$form_data.generate(this.active_item))
           .then(() => { 
             this.tab = 1
+             this.snackbar.status = true
+                this.snackbar.color = "success"
+                this.snackbar.text = this.itemIndex == -1 ? 'Record(s) saved successfully!' : 'Record(s) updated successfully!'
+                
           })
           .catch(err => { console.log(err) })
         }else if(this.tab == 2){
@@ -250,6 +265,10 @@ export default {
           await this.$guest.post('/api/laboratory/saveSubSubModule', this.$form_data.generate(this.active_item))
           .then(() => { 
             this.tab = 2
+             this.snackbar.status = true
+                this.snackbar.color = "success"
+                this.snackbar.text = this.itemIndex == -1 ? 'Record(s) saved successfully!' : 'Record(s) updated successfully!'
+                
           })
           .catch(err => { console.log(err) })
         }else{

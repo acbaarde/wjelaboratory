@@ -124,6 +124,7 @@
         </v-dialog>
 
       </v-flex>
+      <Snackbar :snackbar="snackbar" />
     </v-card>
     </v-container>
   </div>
@@ -131,14 +132,20 @@
 
 <script>
 import myHeader from '../../components/myHeader.vue'
-import Overlay from '../../components/Overlay.vue';
+import Overlay from '../../components/Overlay.vue'
+import Snackbar from '../../components/Snackbar.vue'
 export default {
     name: 'Employee_master',
-    components: { myHeader,Overlay },
+    components: { myHeader,Overlay,Snackbar },
     data(){
       return{
         overlay: {
           value: false
+        },
+        snackbar: {
+          status: false,
+          text: '',
+          color: '',
         },
         firstnameRules: [ v => !!v || 'First Name is required' ],
         lastnameRules: [ v => !!v || 'Last Name is required' ],
@@ -364,7 +371,12 @@ export default {
           let url = this.itemIndex == -1 ? '/api/employee/insertEmployee' : '/api/employee/updateEmployee'
           await this.$guest.post(url, this.$form_data.generate(this.active_item))
           .then(() => {
-            this.refreshPage()
+            this.snackbar.status = true
+            this.snackbar.color = "success"
+            this.snackbar.text = this.itemIndex == -1 ? 'Record(s) saved successfully!' : 'Record(s) updated successfully!'
+            setTimeout(() => {
+              this.refreshPage()
+            },1500)
           })
           .catch(err => { console.log(err) })
         }

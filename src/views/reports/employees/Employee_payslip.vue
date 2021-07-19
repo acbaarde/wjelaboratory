@@ -9,7 +9,7 @@
         <v-container fluid>
             <Overlay :value="overlay.value" />
             <v-row no-gutters class="d-flex justify-end align-center mb-4">
-            <v-col>
+            <v-col v-if="employees.length > 0">
                 <v-btn small color="primary" @click="print()">PRINT</v-btn>
             </v-col>
             <v-spacer></v-spacer>
@@ -235,30 +235,7 @@ export default {
             .catch(err => { console.log(err) })
         },
         print(){
-            // Get HTML to print from element
-            const prtHtml = document.getElementById('print-form').innerHTML;
-
-            // Get all stylesheets HTML
-            let stylesHtml = '';
-            for (const node of [...document.querySelectorAll('link[rel="prefetch"], style')]) {
-                stylesHtml += node.outerHTML;
-            }
-            // Open the print window
-            const WinPrint = window.open();
-            WinPrint.document.write(`<!DOCTYPE html>
-            <html>
-            <head>
-                ${stylesHtml}
-            </head>
-            <body>
-                ${prtHtml}
-            </body>
-            </html>`);
-
-            WinPrint.document.close();
-            WinPrint.focus();
-            WinPrint.print();
-            WinPrint.close();
+            this.print_form()
         }
     }
 }

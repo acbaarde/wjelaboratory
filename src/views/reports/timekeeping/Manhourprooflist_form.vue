@@ -1,15 +1,13 @@
 <template>
-    <!-- <v-layout class="justify-center" wrap> -->
     <div class="ma-n3">
-        <!-- <v-card-title>
-                <span>Manhour Prooflist</span>
-        </v-card-title>
-        <v-card-subtitle><span>Report Module Generation...</span></v-card-subtitle>
-        <v-divider></v-divider> -->
         <myHeader :title="'Manhour Prooflist'" :subtitle="'Report Module Generation'" />
         <v-container fluid>
             <Overlay :value="overlay.value" />
             <v-row no-gutters class="d-flex justify-end align-end mb-4">
+                <v-col v-if="reports.manhour.length > 0">
+                    <v-btn small color="primary" @click="print()">PRINT</v-btn>
+                </v-col>
+                <v-spacer></v-spacer>
                 <v-col cols="2" class="mr-2">
                     <v-select v-model="filters.year" :items="options.year" item-text="desc" item-value="id" @change="getPayperiod()" dense outlined hide-details></v-select>
                 </v-col>
@@ -21,7 +19,7 @@
                 No Records Found!!!
             </v-alert>
             <v-row no-gutters>
-                <v-col>
+                <v-col id="print-form">
                     <v-card v-for="(item,i) in reports.manhour" :key="i" outlined class="mb-2">
                         <v-card-subtitle class="mb-n4">
                             <ul style="list-style: none; padding: 0;">
@@ -39,7 +37,7 @@
                         </v-card-subtitle>
                         <v-card-text>
                             <v-data-table :headers="table_headers" :items-per-page="-1" hide-default-header hide-default-footer dense>
-                                <template v-slot:header="{}">
+                                <template v-slot:header>
                                     <tr>
                                         <th colspan="6">Regular working hours (Days:Hours:Mins)</th>
                                         <th colspan="6">Overtime Hours (Hours:Mins)</th>
@@ -62,7 +60,7 @@
                                         <th style="width: 50px;">Undertime</th>
                                     </tr>
                                 </template>
-                                <template v-slot:body={}>
+                                <template v-slot:body>
                                     <tr>
                                         <td>{{ item.regular }}</td>
                                         <td>{{ item.restday }}</td>
@@ -87,7 +85,6 @@
             </v-row>
         </v-container>
     </div>
-    <!-- </v-layout> -->
 </template>
 
 <script>
@@ -148,7 +145,6 @@ export default {
             .catch(err => { console.log(err) })
         },
         getPayperiod(){
-            // this.overlay.value = true
             if(this.filters.year != null){
                 let data = {
                     year: this.filters.year,
@@ -156,7 +152,6 @@ export default {
                 }
                 this.$guest.post('/api/reports/getPayperiod', this.$form_data.generate(data))
                 .then(res => {
-                    // this.overlay.value = false
                     this.options.payperiod = res.data
                     this.options.payperiod.splice(0,0, Object.assign({}, { id: null, pperiod: 'Please Select Payperiod...'}))
                 })
@@ -194,6 +189,9 @@ export default {
             let middlename = item.middlename.charAt(0).toUpperCase() + item.middlename.slice(1)
             return lastname + ", " + firstname + " " + middlename
         },
+        print(){
+            this.print_form()
+        }
     }
 }
 </script>

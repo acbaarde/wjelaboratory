@@ -30,15 +30,15 @@
                             <v-card-title>{{ formTitle }}</v-card-title>
                             <v-divider></v-divider>
                             <v-card-text class="pa-2">
-                                <v-form>
+                                <v-form ref="form">
                                     <v-container>
                                       <v-row>
                                         <v-col cols="6">
                                           <v-row>
                                             <v-col>
-                                              <v-text-field outlined dense required v-model="patient.firstname" label="First name"></v-text-field>
+                                              <v-text-field outlined dense required v-model="patient.lastname" label="Last name" :rules="lastnameRules"></v-text-field>
+                                              <v-text-field outlined dense required v-model="patient.firstname" label="First name" :rules="firstnameRules"></v-text-field>
                                               <v-text-field outlined dense required v-model="patient.middlename" label="Middle name"></v-text-field>
-                                              <v-text-field outlined dense required v-model="patient.lastname" label="Last name"></v-text-field>
                                             </v-col>
                                           </v-row>
                                         </v-col>
@@ -46,7 +46,7 @@
                                         <v-col cols="6">
                                           <v-row no-gutters>
                                             <v-col cols="4" class="pr-2">
-                                              <v-text-field outlined dense required v-model="patient.age" v-mask="'##'" label="Age"></v-text-field>
+                                              <v-text-field outlined dense required v-model="patient.age" v-mask="'##'" label="Age" :rules="ageRules"></v-text-field>
                                             </v-col>
                                             <v-col cols="8">
                                               <v-radio-group v-model="patient.agetype" row class="ma-1">
@@ -58,7 +58,7 @@
 
                                           <v-row no-gutters>
                                             <v-col cols="6" class="pr-2">
-                                              <v-select outlined dense v-model="patient.gender" :items="gender" item-text="desc" item-value="id" label="Gender"></v-select>
+                                              <v-select outlined dense v-model="patient.gender" :items="gender" item-text="desc" item-value="id" label="Gender" required :rules="genderRules"></v-select>
                                             </v-col>
                                             <v-col cols="6">
                                               <v-text-field outlined dense required v-mask="'####-###-####'" v-model="patient.contact" label="Contact #."></v-text-field>
@@ -114,7 +114,7 @@
         </v-data-table>
     </v-flex>
 
-
+  <Snackbar :snackbar="snackbar" />
   </v-card>
   </v-container>
 </div>
@@ -122,19 +122,25 @@
 
 <script>
 import myHeader from '../components/myHeader.vue'
+import Snackbar from '../components/Snackbar.vue'
 export default {
   name: 'Appointments',
-  components: { myHeader },
+  components: { myHeader,Snackbar },
   data(){
         return{
             overlay: false,
-            snackbar: false,
-            snackbartext: '',
-            snackbartimeout: -1,
-            snackbarcolor: '',
+            snackbar: {
+              status: false,
+              text: '',
+              color: '',
+            },
             search: '',
             dialog: false,
             itemIndex: -1,
+            firstnameRules: [v => !!v || "First name is required!"],
+            lastnameRules: [v => !!v || "Last name is required!"],
+            ageRules: [v => !!v || "Age is required!"],
+            genderRules: [v => !!v || "Gender is required!"],
             table_header: [
                 { text: 'View', align: 'center', value: 'status', filterable: false },
                 { text: 'ID #', value: 'id',align: 'center' },
@@ -155,10 +161,10 @@ export default {
               { text: 'Mos.', value: "mos" }
             ],
             patient:{
-              id: null, firstname: null, lastname: null, middlename: null, age: null, agetype: 'yrs', gender: null, contact: null, address: null
+              id: '', firstname: '', lastname: '', middlename: '', age: '', agetype: 'yrs', gender: '', contact: '', address: ''
             },
             defaultpatient:{
-              id: null, firstname: null, lastname: null, middlename: null, age: null, agetype: 'yrs', gender: null, contact: null, address: null
+              id: '', firstname: '', lastname: '', middlename: '', age: '', agetype: 'yrs', gender: '', contact: '', address: ''
             }
         }
     },
@@ -198,7 +204,6 @@ export default {
       
       await this.$guest.get('/api/patient/getPatients')
       .then(res => {
-        console.log(res.data)
         this.table_items = res.data
         this.overlay = false
       })
@@ -206,7 +211,8 @@ export default {
     },  
 
     async btn_save(){
-      let data = {
+      if(this.$refs.form.validate()){
+        let data = {
         id: this.patient.id,
         firstname: this.patient.firstname,
         lastname: this.patient.lastname,
@@ -219,22 +225,17 @@ export default {
         user_id: this.$session.get('userid-session')
       }
 
-      if(this.itemIndex == -1){
-        await this.$guest.post('/api/patient/insertPatient', this.$form_data.generate(data))
+      let url = this.itemIndex == -1 ? '/api/patient/insertPatient' : '/api/patient/updatePatient'
+      await this.$guest.post(url, this.$form_data.generate(data))
         .then(() => {
-          this.loaditems()
-          this.close()
-        })
-        .catch(err => { console.log(err) })
-      }else{
-        await this.$guest.post('/api/patient/updatePatient', this.$form_data.generate(data))
-        .then(() => {
+          this.snackbar.status = true
+          this.snackbar.color = "success"
+          this.snackbar.text = this.itemIndex == -1 ? 'Record(s) saved successfully!' : 'Record(s) updated successfully!'
           this.loaditems()
           this.close()
         })
         .catch(err => { console.log(err) })
       }
-      
     },
     
     btn_update(item){
@@ -254,6 +255,7 @@ export default {
 
     close(){
       this.dialog = false;
+      this.$refs.form.reset()
       this.$nextTick(() => {
         this.patient = Object.assign({}, this.defaultpatient)
         this.itemIndex = -1

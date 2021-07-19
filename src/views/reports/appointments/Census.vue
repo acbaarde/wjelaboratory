@@ -5,6 +5,7 @@
             <Overlay :value="overlay.value" />
             <v-form ref="form">
                 <v-row no-gutters class="mb-4">
+                    <v-btn small color="primary" @click="print()">PRINT</v-btn>
                     <v-spacer></v-spacer>
                     <v-text-field class="shrink mr-2" v-model="dateFrom" dense outlined type="date" label="Date From" required :rules="dateFromRules"></v-text-field>
                     <v-text-field class="shrink mr-2" v-model="dateTo" dense outlined type="date" label="Date To" required :rules="dateToRules"></v-text-field>
@@ -48,7 +49,7 @@
                             </tr>
                         </template>
                     </v-data-table> -->
-                    <div style="overflow-x: auto;">
+                    <div style="overflow-x: auto;" id="print-form">
                         <table border="1">
                             <thead>
                                 <tr>
@@ -166,6 +167,9 @@ export default {
                 })
             })
             return submod
+        },
+        print(){
+            this.print_form()
         }
     }
 }

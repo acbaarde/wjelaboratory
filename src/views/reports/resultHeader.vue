@@ -1,7 +1,11 @@
 <template>
     <v-container>
         <v-row>
-            <v-col cols="12">
+            <v-col cols="2" class="ml-10">
+                <img src="../../assets/wjelogo.png">
+            </v-col>
+            <v-col cols="8"  class="mr-18">
+                <v-spacer></v-spacer>
                 <ul class="ul">
                     <li class="li-center" style="color: #00B050; font-size: 20px; font-weight: bold; padding-bottom: 4px">WJE Diagnostic Laboratory</li>
                     <li class="li-center"> Blk 6 lot 34 A Brgy. San Pedro Sapang Palay</li>

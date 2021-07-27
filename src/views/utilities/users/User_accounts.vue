@@ -124,7 +124,7 @@ export default {
         confirmpasswordRules: [ v => !!v || 'Confirm password is required' ],
 
         table_headers: [
-          { text: 'User ID', align: 'center', value: 'user_id' },
+          { text: 'Username', align: 'center', value: 'user_id' },
           { text: 'Fullname', align: 'center', value: 'fullname' },
           { text: 'Status', align: 'center', value: 'active' },
           { text: 'Type', align: 'center', value: 'user_type' },
@@ -215,9 +215,9 @@ export default {
             let url = this.itemIndex == -1 ? 'registerUser' : 'updateUser'
             this.$guest.post('/api/users/'+ url, this.$form_data.generate(data))
             .then(res => {
-              this.snackbar.status = true
               this.overlay.value = false
               if(res.data.status == true){
+                this.snackbar.status = true
                 this.snackbar.text = this.itemIndex == -1 ? 'Record(s) saved successfully!' : 'Record(s) updated successfully!'
                 this.snackbar.color = 'success'
                 this.loadItems()

@@ -2,18 +2,10 @@
 <div class="ma-n3">
     <myHeader :title="'Timekeeping'" :subtitle="'Manhour Processing'" />
     <v-container fluid>
-  <v-card flat outlined>
+    <v-card flat outlined>
         <Overlay :value="overlay.value" />
         <v-flex md-12 class="ma-2">
             <v-container fluid>
-                <!-- <v-row no-gutters class="mt-2">
-                    <v-alert outlined type="info" max-width="600px">
-                        <div><strong>Important Reminders,</strong></div>
-                        <div>
-                            Process manhour computes DTR, Overtime, Undertime of the employees on active Payperiod. Please check the payperiod carefully!!!
-                        </div>
-                    </v-alert>
-                </v-row> -->
                 <v-row no-gutters>
                     <v-alert v-if="alert.status" text :type="alert.type" width="600px">
                         {{ alert.text }}
@@ -36,7 +28,7 @@
                 </v-row>
             </v-container>
         </v-flex>
-  </v-card>
+    </v-card>
 </v-container>
 </div>
 </template>

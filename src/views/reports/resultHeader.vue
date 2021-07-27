@@ -83,12 +83,12 @@
                     </ul> -->
                 </v-col>
             </v-row>
-            <v-divider></v-divider>
-            <v-row no-gutters>
+            <!-- <v-divider></v-divider> -->
+            <!-- <v-row no-gutters>
                 <v-col cols="12" style="text-align: center; padding-top: 6px;">
                     <h2 style="color: red;">{{ data.title }}</h2>
                 </v-col>
-            </v-row>
+            </v-row> -->
     </v-container>
 </template>
 

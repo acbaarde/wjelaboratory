@@ -6,10 +6,10 @@
       <Overlay :value="overlay.value" />
     <v-card-title>
       <v-row>
-        <v-col cols="6">
+        <v-col cols="7">
           <v-row no-gutters>
             <v-col cols="7" class="pr-2 pa-0">
-              <v-text-field readonly hide-details label="Patient" v-model="fullname"></v-text-field>
+              <v-text-field readonly hide-details :label="'ID#. ' + patient_info.id" v-model="fullname" prefix="Name:"></v-text-field>
             </v-col>
             <v-col cols="3" class="pr-2 pa-0">
               <!-- <v-select readonly v-model="gender_selected.value" :items="gender" hide-details item-text="text" item-value="value" label="Gender"></v-select> -->
@@ -20,30 +20,10 @@
             </v-col>
           </v-row>
 
-          <v-row no-gutters class="pt-3">
-            <v-col cols="7" class="pa-0 mt-2 pr-2">
-              <v-text-field dense readonly hide-details label="Address" v-model="patient_info.address"></v-text-field>
-            </v-col>
-            <v-spacer></v-spacer>
-            <!-- <v-col cols="3" class="pa-0">
-              <v-text-field dense outlined readonly hide-details label="Status" color="orange" v-model="patient_status"></v-text-field>
-            </v-col> -->
-            <v-col cols="5" class="text-right">
-              <v-btn color="primary" class="mr-2" @click="btnsave()">SAVE</v-btn>
-              <v-btn color="error" @click="btncancel()">CANCEL</v-btn>
-            </v-col>
-          </v-row>
-        </v-col>
-
-        <v-divider vertical inset></v-divider>
-
-        <v-col cols="6">
           <v-row no-gutters>
             <v-col :cols="cols" class="pa-0 pr-2">
-              <!-- <v-text-field readonly hide-details label="Physician" v-model="patient_info.physician_name" :prefix="physicianprefix"></v-text-field> -->
               <v-select v-model="physician_selected.value" @change="physician_changed()" :items="physicians" hide-details item-text="text" item-value="value" label="Physician" :prefix="physicianprefix"></v-select>
             </v-col>
-            
             <v-col cols="3" class="pa-0 pr-2">
               <v-select v-model="discount_selected.value" @change="discount_changed()" :items="discount" hide-details item-text="text" item-value="value" label="Discount type"></v-select>
             </v-col>
@@ -54,24 +34,38 @@
               <v-text-field :readonly="readonly" hide-details label="Percentage" v-model="discount_selected.percent" suffix="%"></v-text-field>
             </v-col>
           </v-row>
-
-          <v-row no-gutters class="pt-3">
-            <v-col cols="3" class="pr-2">
-              <v-btn color="green" dark class="mr-2" @click="btnpost()" :disabled="btndisabled">POST</v-btn>
-            </v-col>
+        </v-col>
+        <v-divider vertical inset></v-divider>
+        <v-col cols="5">
+          <v-row no-gutters>
+            <!-- <v-col cols="3" class="pr-2"> -->
+              <!-- <v-btn color="green" dark class="mr-2" @click="btnpost()" :disabled="btndisabled">POST</v-btn> -->
+              <!-- <v-btn color="green" class="mr-2" @click="btnpost()" disabled>POST</v-btn> -->
+            <!-- </v-col> -->
             <v-col cols="3" class="pr-2">
               <v-text-field dense outlined hide-details filled label="Cash" type="number" v-model="patient_info.totalcash" placeholder="0.00"></v-text-field>
             </v-col>
             <v-col cols="3" class="pr-2">
               <v-text-field dense outlined readonly hide-details filled label="Balance" v-model="totalbalance" placeholder="0.00"></v-text-field>
             </v-col>
+            <v-col cols="3" class="pr-2">
+              <v-text-field dense outlined readonly hide-details filled label="Total" v-model="totalamount" placeholder="0.00"></v-text-field>
+            </v-col>
             <v-col cols="3">
               <v-text-field dense outlined readonly hide-details filled label="Total Fee" v-model="totalfee" placeholder="0.00"></v-text-field>
             </v-col>
           </v-row>
+          <v-row no-gutters class="pt-4">
+            <v-spacer></v-spacer>
+            <v-col cols="12" class="text-right">
+              <v-btn color="primary" class="mr-2" @click="btnsave()">SAVE</v-btn>
+              <v-btn color="error"  class="mr-2" @click="btncancel()">CANCEL</v-btn>
+              <v-btn color="green" @click="btnpost()" :disabled="btndisabled">POST</v-btn>
+            </v-col>
+          </v-row>
         </v-col>
-
       </v-row>
+      
     </v-card-title>
     
     <v-card-text>
@@ -106,7 +100,7 @@
                       <v-card-text>
                         <v-data-table dense flat disable-sort item-key="id" :items-per-page="-1" :headers="table_headers" :items="table_items" :loading="loading"  loading-text="Loading... Please wait">
                           
-                          <template v-slot:[`item.result`]="props">
+                          <!-- <template v-slot:[`item.result`]="props">
                             <v-chip color="primary" dark outlined label>
     
                               <v-edit-dialog :return-value.sync="props.item.result" @save="save(props.item)" @cancel="cancel" @open="open" @close="close">
@@ -117,6 +111,10 @@
                               </v-edit-dialog>
 
                             </v-chip>
+                          </template> -->
+
+                          <template v-slot:[`item.result`]="props">
+                            <v-text-field v-model="props.item.result" :disabled="$session.get('userposnid-session') == '1' ? false : true" single-line dense hide-details outlined></v-text-field>
                           </template>
 
                         </v-data-table>
@@ -184,7 +182,7 @@ export default {
         ],
         patient_info: {
           id: '', appointment_id: 0, firstname: '',lastname: '',middlename: '', age: '',agetype: '', gender: '', 
-          status: '', contact: '', address: '', totalcash: 0, totalfee: 0, totalbalance: 0, physician_id: 0
+          status: '', contact: '', address: '', totalcash: 0, totalfee: 0, totalbalance: 0, totalamount: 0, physician_id: 0
         },
       }
     },
@@ -223,6 +221,14 @@ export default {
       },
 
       totalbalance(){
+        if(parseInt(this.patient_info.totalcash) > parseInt(this.totalamount)){
+          return (this.patient_info.totalcash - this.totalamount) > 0 ? (this.patient_info.totalcash - this.totalamount).toFixed(2) : ""
+        }else{
+          return ''
+        }
+      },
+
+      totalamount(){
         // let totalsum = []
         // if(this.chips_selected.length > 0){
         //   this.chips_selected.forEach(e => {
@@ -310,9 +316,10 @@ export default {
             'status': res.data.patient.status,
             'contact': res.data.patient.contact,
             'address': res.data.patient.address,
-            'totalcash': res.data.patient.payment,
+            'totalcash': res.data.patient.cash,
             'totalbalance': res.data.patient.balance,
-            'totalfee': res.data.patient.totalamount,
+            'totalfee': res.data.patient.totalfee,
+            'totalamount': res.data.patient.totalamount,
             'physician_id': res.data.patient.physician_id,
           }
           this.patient_info = Object.assign({}, patientinfo)
@@ -340,8 +347,6 @@ export default {
       },
 
       async loadLabModule(){
-        // const form_data = new FormData()
-        // form_data.append('appointment_id', this.patient_info.appointment_id)
         let data = {
           appointment_id: this.patient_info.appointment_id
         }
@@ -436,14 +441,14 @@ export default {
           discount_rmks: this.discount_rmks,
           discount_percent: this.discount_selected.percent,
           submod_id: this.comboboxvalue,
-          total_fee: this.totalfee,
           total_cash: this.patient_info.totalcash,
           total_balance: this.totalbalance,
+          total_amount: this.totalamount,
+          total_fee: this.totalfee,
           lab_test: JSON.stringify(modresult),
           cdate: this.$route.query.cdate,
           user_id: this.$session.get('userid-session')
         }
- 
         if(this.$route.query.stat == 'C'){
           await this.$guest.post('/api/appointment/insertAppointment', this.$form_data.generate(data))
           .then(res => {

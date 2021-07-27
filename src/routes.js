@@ -40,6 +40,18 @@ const router = new VueRouter({
                 import ("@/views/appointments/Patient_form.vue"),
         },
         {
+            path: '/appointments/entries',
+            name: 'Entries_form',
+            component: () => 
+                import ("@/views/appointments/Entries_form.vue"),
+        },
+        {
+            path: '/appointments/entry',
+            name: 'Entry_form',
+            component: () => 
+                import ("@/views/appointments/Entry_form.vue"),
+        },
+        {
             path: '/employee/employeemaster',
             name: 'Employee_master',
             component: () => 

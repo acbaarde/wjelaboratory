@@ -26,6 +26,9 @@
                   <v-btn class="ml-2" color="primary" @click="mod_dialog = true" dark>Add MODULE</v-btn>
                 </v-toolbar>
             </template>
+            <template v-slot:[`item.send_out`]="{item}">
+              {{ item.send_out == 1 ? "YES" : "" }}
+            </template>
             <template v-slot:[`item.actions`]="{ item }">
               <v-btn dense x-small color="primary" @click="btn_update(item)">UPDATE</v-btn>
             </template>
@@ -66,7 +69,14 @@
             <v-card-title>{{ formTitle }}</v-card-title>
             <v-divider></v-divider>
             <v-card-text class="pa-2">
-                <v-text-field v-model="active_item.title" dense outlined label="Title" clearable :clear-icon="clearicon"></v-text-field>
+                <v-row no-gutters>
+                  <v-col cols="8" class="mr-4">
+                    <v-text-field v-model="active_item.title" dense outlined label="Title" clearable :clear-icon="clearicon"></v-text-field>
+                  </v-col>
+                  <v-col>
+                    <v-switch v-model="send_out" class="mt-1" inset hide-details label="SEND OUT"></v-switch>
+                  </v-col>
+                </v-row>
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
@@ -148,9 +158,11 @@ export default {
         subsubmodule_search: '',
         itemIndex: -1,
         active_item:[],
+        send_out: false,
         module_table_items: [],
         module_table_headers:[
           { text: 'Title', value: 'title', align: 'left' },
+          { text: 'SEND OUT', value: 'send_out', align: 'center' },
           { text: 'Actions', value: 'actions', align: 'center', filterable: false },
         ],
         submodule_table_items: [],
@@ -222,6 +234,7 @@ export default {
         this.active_item = Object.assign({}, item)
         if(this.tab == 0){
           this.mod_dialog = true
+          this.send_out = this.active_item.send_out == 1 ? true : false
           this.itemIndex = this.module_table_items.indexOf(item)
         }else if(this.tab == 1){
           this.submod_dialog = true
@@ -239,15 +252,15 @@ export default {
           let data = {
             id: this.active_item.id,
             title: this.active_item.title,
+            send_out: this.send_out == true ? 1 : 0,
             user_id: this.active_item.user_id
           }
           await this.$guest.post('/api/laboratory/saveModule', this.$form_data.generate(data))
           .then(() => {
             this.tab = 0
-             this.snackbar.status = true
-              this.snackbar.color = "success"
-              this.snackbar.text = this.itemIndex == -1 ? 'Record(s) saved successfully!' : 'Record(s) updated successfully!'
-                
+            this.snackbar.status = true
+            this.snackbar.color = "success"
+            this.snackbar.text = this.itemIndex == -1 ? 'Record(s) saved successfully!' : 'Record(s) updated successfully!'
           })
           .catch(err => { console.log(err) })
         }else if(this.tab == 1){

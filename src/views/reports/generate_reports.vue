@@ -93,7 +93,7 @@ export default {
             //     title: this.$route.params.active_item.title
             // }
             return{
-                fullname: 'TEST', age: ['999','test'], gender: 'TEST',physician: 'TEST', title: "RESULTS"
+                fullname: 'TEST', age: ['999','test'], gender: 'TEST',physician: 'TEST'
             }
         },
     },
@@ -101,6 +101,10 @@ export default {
         subsubmodules(index){
             let submod_id = ['1','2','14']
             return this.results[index]['subsubmodules'].filter(e => submod_id.includes(e.submod_id))
+        },
+
+        print(){
+            this.print_form()
         }
     }
     

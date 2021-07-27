@@ -1,7 +1,11 @@
 <template>
     <v-container fluid>
         <v-card class="my-16 mx-auto" max-width="400" elevation="2">
-            <v-card-title class="justify-center"><h5>Login Form</h5></v-card-title>
+            <v-card-title class="justify-center">
+                <div>
+                    <v-img src="../assets/wjelogo.png"></v-img>
+                </div>
+            </v-card-title>
             <v-card-text class="justify-center">
                 <v-container>
                     <v-form @submit.prevent="handleSubmit()" v-model="is_valid">
@@ -50,19 +54,24 @@ export default {
                 }
                 this.$guest.post('/login', this.$form_data.generate(data))
                 .then(res => {
-                    console.log(res.data)
                     this.msg = res.data.message;
                     if(res.data.status == true){
+                        let posn = res.data.user_id == 'admin' ? 'admin' : res.data.user_posn
                         this.type = 'success';
                         this.$session.start();
                         this.$session.set('user-session', res.data.fullname);
                         this.$session.set('userid-session', res.data.user_id);
                         this.$session.set('user-access', res.data.user_access);
                         this.$session.set('usertype-session', res.data.user_type);
-                        this.$session.set('userposn-session', res.data.user_posn);
+                        this.$session.set('userposn-session', posn);
+                        this.$session.set('userposnid-session', res.data.user_posn_id);
                         this.$router.push('/');
                     }else{
                         this.type = 'error';
+                        setTimeout(() => {
+                            this.msg = ''
+                            this.password = ''
+                        }, 1000)
                     }
                 })
                 .catch(err => {

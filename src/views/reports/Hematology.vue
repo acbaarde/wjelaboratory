@@ -11,7 +11,7 @@
         <result-header :data="header_data" />
         <!-- <v-divider></v-divider> -->
         <v-card-text style="padding-top: 0;">
-            <v-container>
+            <v-container fluid>
                 <!-- <v-row no-gutters>
                     <v-col cols="12" class="d-flex justify-center">
                         <h2>HEMATOLOGY RESULT</h2>

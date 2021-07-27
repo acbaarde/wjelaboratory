@@ -39,19 +39,46 @@
                     <v-divider></v-divider>
                     <!-- <v-card-text> -->
                         <v-list nav dense>
-                            <!-- <v-list-item link>
-                                <v-list-item-title>UPDATE PROFILE</v-list-item-title>
-                                <v-list-item-icon right>
-                                    <v-icon>mdi-account-details-outline</v-icon>
-                                </v-list-item-icon>
-                            </v-list-item> -->
 
-                            <v-list-item link>
+                            <!-- <v-list-item link>
                                 <v-list-item-title>CHANGE PASSWORD</v-list-item-title>
                                 <v-list-item-icon right>
                                     <v-icon>mdi-lock-open-outline</v-icon>
                                 </v-list-item-icon>
-                            </v-list-item>
+                            </v-list-item> -->
+
+                            <v-dialog v-model="dialog" max-width="500" persistent>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-list-item  v-bind="attrs" v-on="on" link>
+                                        <v-list-item-title>CHANGE PASSWORD</v-list-item-title>
+                                            <v-list-item-icon right>
+                                                <v-icon>mdi-lock-open-outline</v-icon>
+                                            </v-list-item-icon>
+                                    </v-list-item>
+                                </template>
+                                <v-card>
+                                    <v-card-title class="headline grey lighten-2">UPDATE PASSWORD</v-card-title>
+                                    <v-card-text class="text-left text-h6 pa-5">
+                                        <v-form ref="form">
+                                            <v-text-field v-model="password" dense outlined label="New Password" required :rules="passwordRules" 
+                                                @click:append="passwordShow = !passwordShow"
+                                                :append-icon="passwordShow ? 'mdi-eye-off' : 'mdi-eye'" 
+                                                :type="passwordShow ? 'text' : 'password'"></v-text-field>
+                                            <v-text-field v-model="confirmpassword" dense outlined label="Confirm Password" required :rules="confirmpasswordRules" 
+                                                @click:append="confirmpasswordShow = !confirmpasswordShow"
+                                                :append-icon="confirmpasswordShow ? 'mdi-eye-off' : 'mdi-eye'" 
+                                                :type="confirmpasswordShow ? 'text' : 'password'"></v-text-field>
+                                        </v-form>
+                                        <v-alert v-if="alert_status" dense outlined type="error">Password Mismatch!</v-alert>
+                                    </v-card-text>
+                                    <v-divider></v-divider>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="primary" @click="btn_save()">SAVE</v-btn>
+                                        <v-btn color="error" @click="btn_close()">CANCEL</v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
                             
                             <v-divider></v-divider>
                             
@@ -173,44 +200,39 @@
                     </v-dialog>
                 </v-list>
             </v-navigation-drawer>
+
+            <Snackbar :snackbar="snackbar" />
   </nav>
 </template>
 
 <script>
+import Snackbar from '../components/Snackbar.vue'
 export default {
     name: 'Navbar',
+    components: { Snackbar },
     data(){
         return{
-            admins: [
-        ['Management', 'mdi-account-multiple-outline'],
-        ['Settings', 'mdi-cog-outline'],
-      ],
-      cruds: [
-        ['Create', 'mdi-plus-outline'],
-        ['Read', 'mdi-file-outline'],
-        ['Update', 'mdi-update'],
-        ['Delete', 'mdi-delete'],
-      ],
-
             // navigationTitle: process.env.VUE_APP_APPNAME,
+            snackbar:{
+                status: false,
+                text: '',
+                color: ''
+            },
             drawer: true,
+            dialog: false,
+            alert_status: false,
             mod_menus: [],
-            // menus: [],
             dashboard: "Dashboard",
-            // appointments: "Appointments"
+            passwordShow: false,
+            confirmpasswordShow: false,
+            password: '',
+            confirmpassword: '',
+            passwordRules: [v => !!v || 'Password is Required!'],
+            confirmpasswordRules: [v => !!v || 'Confirm Password is Required!'],
         }
     },
 
     created(){
-    //   this.$guest.get('/api/menu/modMenu')
-    //     .then(res => {
-    //         this.mod_menus = res.data.menu;
-    //         console.log(this.mod_menus)
-    //     })
-    //     .catch((err) => {
-    //         console.log(err);
-    //     });
-
         this.$guest.get('/api/menu/moduleMenu')
         .then(res => {
             this.mod_menus = res.data
@@ -223,17 +245,6 @@ export default {
             let title = this.$session.get('user-session')
             return typeof title.split(" ")[1] == 'undefined' ? "Hi " + title : "Hi " + title.split(" ")[1]
         },
-        // items(){
-        //     const routeItems = []
-        //     const routeArray = this.$route.path.split('/')
-        //     routeArray.forEach(element => {
-        //         if(element != ''){
-        //             routeItems.push({ text: element[0].toUpperCase() + element.substring(1) })
-        //         }
-        //     })
-        //     return routeItems.length > 0 ? routeItems : [{ text: 'Dashboard' }]
-        // },
-        
         menus(){
             let user_access = this.$session.get('user-access')
             let usermod = []
@@ -249,15 +260,43 @@ export default {
       logout(){
         this.$session.destroy();
         this.$router.push('/login');
+      },
+        async btn_save(){
+            if(this.$refs.form.validate()){
+                if(this.password == this.confirmpassword){
+                    let data = {
+                        newpassword: this.password,
+                        user_id: this.$session.get('userid-session')
+                    }
+                    await this.$guest.post('/api/users/updatePassword', this.$form_data.generate(data))
+                    .then(res => {
+                        this.btn_close()
+                        this.snackbar.status = true
+                        if(res.data == true){
+                            this.snackbar.text = 'Password updated successfully!'
+                            this.snackbar.color = 'success'
+                        }else{
+                            this.snackbar.text = 'Error updating password...'
+                            this.snackbar.color = 'error'
+                        }
+                    })
+                    .catch(err => { console.log(err) } )
+                }else{
+                    this.alert_status = true
+                    setTimeout(() =>{
+                        this.alert_status = false
+                        this.$refs.form.reset()
+                    },2000)
+                }
+            }
+      },
+      btn_close(){
+          this.dialog = false
+          this.$refs.form.reset()
       }
     },
 }
 </script>
 
 <style scoped>
-/* span{
-    color: #212121;
-    font-weight: bold;
-    font-family: Cambria;
-} */
 </style>

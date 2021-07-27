@@ -88,13 +88,13 @@
               {{ formatAge(item.age, item.agetype) }}
             </template>
             <template v-slot:[`item.status`]="{ item }">
-                <v-btn v-if="item.status == 'P'" color="green" x-small dark @click="getItemId(item)">
-                  ONGOING
+                <v-btn v-if="item.status == 'P'" color="green" small dark @click="getItemId(item)">
+                  ON-GOING
                 </v-btn>
-                <v-btn v-else-if="item.status == 'F'"  color="warning" x-small dark @click="getItemId(item)">
+                <v-btn v-else-if="item.status == 'F'"  color="info" outlined small dark @click="getItemId(item)">
                   FOR POSTING
                 </v-btn>
-                <v-btn v-else-if="item.status == 'C'"  color="info" x-small dark @click="getItemId(item)">
+                <v-btn v-else-if="item.status == 'C'"  color="info" small dark @click="getItemId(item)">
                   CREATE
                 </v-btn>
             </template>

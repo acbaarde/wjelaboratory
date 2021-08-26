@@ -14,16 +14,6 @@
               <v-btn class="ml-2" color="primary" @click="dialog = !dialog" dark>Add Physicians</v-btn>
             </v-toolbar>
         </template>
-
-        <!-- <template v-slot:[`item.firstname`]="{ item }">
-            <p class="text-uppercase ma-0">{{ item.firstname }}</p>
-        </template>
-        <template v-slot:[`item.lastname`]="{ item }">
-            <p class="text-uppercase ma-0">{{ item.lastname }}</p>
-        </template>
-        <template v-slot:[`item.middlename`]="{ item }">
-            <p class="text-uppercase ma-0">{{ item.middlename }}</p>
-        </template> -->
         <template v-slot:[`item.gender`]="{ item }">
           {{ gender.filter(e => e.id == item.gender)[0]['desc'] }}
         </template>
@@ -155,7 +145,7 @@ export default {
             .catch(err => { console.log(err) })
         },
         async getPhysicians(){
-            await this.$guest.get('/api/data_maintenance/getPhysicians')
+            await this.$guest.get('/api/data_maintenance/Physicians')
             .then(res => {
                 this.table_items = res.data
                 this.overlay.value = false

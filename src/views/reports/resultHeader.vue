@@ -1,21 +1,23 @@
 <template>
     <v-container>
         <v-row>
-            <v-col cols="2" class="ml-10">
-                <img src="../../assets/wjelogo.png">
+            <v-col cols="2" class="ml-10" style="padding-left:60px;">
+                <img src="../../assets/wjelogo.png" width="80" height="80">
             </v-col>
+            <!-- <div>
+                <img src="../../assets/wjelogo.png" width="100" height="100">
+            </div> -->
             <v-col cols="8"  class="mr-18">
                 <v-spacer></v-spacer>
                 <ul class="ul">
-                    <li class="li-center" style="color: #00B050; font-size: 20px; font-weight: bold; padding-bottom: 4px">WJE Diagnostic Laboratory</li>
-                    <li class="li-center"> Blk 6 lot 34 A Brgy. San Pedro Sapang Palay</li>
-                    <li class="li-center">City of San Jose del Monte, Bulacan</li>
-                    <li class="li-center">San Pedro Pharmacy and Diagnostic Clinic Bldg. TEL. No. 09328449462</li>
-                    <li class="li-center">DOH Lic. No. 03-356-14-CL-2</li>
+                    <li class="li-center" style="color: #00B050; font-size: 20px; font-weight: bold; padding-bottom: 4px">{{ company.name }}</li>
+                    <li class="li-center" v-for="(item,index) in company.address" :key="index">{{ item }}</li>
+                    <li class="li-center">TEL. No. {{ company.tel_no }}</li>
+                    <li class="li-center">DOH Lic. No. {{ company.doh_lic_no }}</li>
                 </ul>
             </v-col>
         </v-row>
-        <v-row class="px-4 mb-2" style="padding-bottom: 8px;">
+        <v-row class="ml-6 mb-2" style="margin-left: 16px;padding-bottom: 8px;">
                 <v-col cols="7" class="py-0">
                     <ul class="ul">
                         <li>
@@ -25,7 +27,7 @@
                             </ul>
                             <ul class="ul">
                                 <li style="display: inline-block; width: 50px;">Age:</li>
-                                <li style="display: inline-block;"><strong>{{ formatAge(data.age[0],data.age[1]) }}</strong></li>
+                                <li style="display: inline-block;"><strong>{{ data.age }}</strong></li>
                             </ul>
                             <ul class="ul">
                                 <li style="display: inline-block; width: 50px;">Gender:</li>
@@ -95,7 +97,32 @@
 <script>
 export default {
     name: 'resultHeader',
-    props: ['data']
+    props: ['data'],
+    data(){
+        return{
+            company: {
+                name: '',
+                tel_no: '',
+                doh_lic_no: '',
+                address: []
+            }
+        }
+    },
+    created(){
+        this.initialize()
+    },
+    methods: {
+        async initialize(){
+            await this.$guest.get('/api/data_maintenance/getCompanyInfo')
+            .then(res => {
+                this.company.name = res.data.company_name
+                this.company.address = res.data.address.split("\n")
+                this.company.tel_no = res.data.tel_no
+                this.company.doh_lic_no = res.data.doh_lic_no
+            })
+            .catch(err => {console.log(err)})
+        }
+    }
 }
 </script>
 

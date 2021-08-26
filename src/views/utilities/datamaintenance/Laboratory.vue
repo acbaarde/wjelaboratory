@@ -5,7 +5,6 @@
   <v-card flat outlined>
     <v-flex md-12 class="ma-2">
       <Overlay :value="overlay.value" />
-
       <v-tabs v-model="tab" centered grow>
         <v-tab>
           MODULE

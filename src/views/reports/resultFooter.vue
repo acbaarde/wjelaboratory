@@ -2,8 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="6">
-        <ul>
-          <li>JOANA PAULA G. BONOIL, RMT</li>
+        <ul style="margin-top: 16px;">
           <li>_____________________________</li>
           <li>MEDICAL TECHNOLOGIST</li>
           <!-- <li>Lic. No. 69669</li> -->
@@ -11,10 +10,10 @@
       </v-col>
       <v-col cols="6">
         <ul>
-          <li>DR.GABRIEL J. CRUZ , M.D.,FPSP, FSPO</li>
+          <li>{{ pathologist.name }}</li>
           <li>_____________________________</li>
           <li>PATHOLOGIST</li>
-          <!-- <li>Lic. No. 74744</li> -->
+          <li>Lic. No. {{ pathologist.lic_no }}</li>
         </ul>
       </v-col>
     </v-row>
@@ -23,7 +22,29 @@
 
 <script>
 export default {
-    name: 'resultFooter'
+    name: 'resultFooter',
+    props: ['data'],
+    data(){
+      return{
+        pathologist:{
+          name: '',
+          lic_no: ''
+        }
+      }
+    },
+    created(){
+        this.initialize()
+    },
+    methods: {
+        async initialize(){
+            await this.$guest.get('/api/data_maintenance/getCompanyInfo')
+            .then(res => {
+              this.pathologist.name = res.data.pathologist_name
+              this.pathologist.lic_no = res.data.pathologist_lic_no
+            })
+            .catch(err => {console.log(err)})
+        }
+    }
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
     <div class="ma-n3">
-        <myHeader :title="'Rebates'" :subtitle="'Report Module Generation'" />
+        <myHeader :title="'Physician Rebates'" :subtitle="'Report Module Generation'" />
         <v-container fluid>
             <Overlay :value="overlay.value" />
             <v-form ref="form">
@@ -11,7 +11,7 @@
                     <v-btn color="primary" @click="btn_process()">Process</v-btn>
                 </v-row>
             </v-form>
-            <v-alert v-if="alert_status == false" type="error" outlined text>
+            <v-alert v-if="alert_status == false" type="error" outlined text dense>
                 No Records Found!!!
             </v-alert>
             <v-row no-gutters>
@@ -51,8 +51,8 @@
                                             <td>{{ formatDate(item.date) }}</td>
                                             <td style="text-align: center">{{ item.lastname + ", " + item.firstname + " " + item.middlename }}</td>
                                             <td style="text-align: center">{{ formatAge(item.age,item.agetype) + "/" + item.gender }}</td>
-                                            <td style="text-align: center">{{ item.submod_id }}</td>
-                                            <td style="text-align: center"><strong>{{ item.totalamount }}</strong></td>
+                                            <td style="text-align: center">{{ item.lab_test }}</td>
+                                            <td style="text-align: center"><strong>{{ item.total_amount }}</strong></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -143,6 +143,7 @@ export default {
                 }
                 await this.$guest.post('/api/reports/Rebates', this.$form_data.generate(data))
                 .then(res => {
+                    console.log(res.data)
                     this.overlay.value = false
                     this.table_items = res.data
                 })

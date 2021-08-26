@@ -20,7 +20,7 @@
                     <v-select v-model="filters.payperiod_id" :items="options.payperiod" item-text="pperiod" item-value="id" @change="getPayslip()" dense outlined hide-details></v-select>
                 </v-col>
             </v-row>
-            <v-alert v-if="alert_status == false" type="error" outlined text>
+            <v-alert v-if="alert_status == false" type="error" outlined text dense>
                 No Records Found!!!
             </v-alert>
             <v-row no-gutters>
@@ -87,66 +87,6 @@
                                         </li>
                                     </ul>
                                 </v-col>
-                                <!-- <v-divider vertical></v-divider>
-                                <v-col cols="6">
-                                    <ul class="ul">
-                                        <li>
-                                            <ul class="ul">
-                                                <li class="li-center"><strong>JULY 16-31 2021</strong></li>
-                                            </ul>
-                                            <ul class="ul">
-                                                <li style="display: inline-block; width: 120px;">NAME:</li>
-                                                <li style="display: inline-block; width: auto; text-align: center;"><strong>JOANA PAULA BONIOL</strong></li>
-                                            </ul>
-                                            <ul class="ul">
-                                                <li style="display: inline-block; width: 120px;">POSITION:</li>
-                                                <li style="display: inline-block;"><strong>MED TECH</strong></li>
-                                            </ul>
-                                            <ul class="ul">
-                                                <li style="display: inline-block; width: 120px;">SALARY:</li>
-                                                <li style="display: inline-block;"><strong>500.00</strong></li>
-                                            </ul>
-                                            <ul class="ul">
-                                                <li class="li-start" style="margin-top: 10px;">EARNINGS:</li>
-                                            </ul>
-                                            <ul class="ul" style="margin-left: 14px;">
-                                                <li style="display: inline-block; width: 120px;">REG HRS:</li>
-                                                <li style="display: inline-block; width: 100px; text-align: center;">96.00</li>
-                                                <li style="display: inline-block; width: 92px; text-align: right;">6000.00</li>
-                                            </ul>
-                                            <ul class="ul" style="margin-left: 14px;">
-                                                <li style="display: inline-block; width: 120px;">OT HRS:</li>
-                                                <li style="display: inline-block; width: 100px; text-align: center;">16.00</li>
-                                                <li style="display: inline-block; width: 92px; text-align: right;">0.00</li>
-                                            </ul>
-                                            <ul class="ul" style="margin-left: 14px;">
-                                                <li style="width: 190px;"><hr></li>
-                                            </ul>
-                                            <ul class="ul" style="margin-left: 14px;">
-                                                <li style="display: inline-block; width: 120px;">GROSS</li>
-                                                <li style="display: inline-block; width: 192px; text-align: right;">6000.00</li>
-                                            </ul>
-                                            <ul class="ul" style="margin-top: 10px;">
-                                                <li class="li-start">DEDUCTIONS:</li>
-                                            </ul>
-                                            <ul class="ul" style="margin-left: 14px;" v-for="(item,i) in deductions" :key="i">
-                                                <li style="display: inline-block; width: 120px;">{{ item.text }}</li>
-                                                <li style="display: inline-block; width: 192px; text-align: right;">{{ item.value }}</li>
-                                            </ul>
-                                            <ul class="ul" style="margin-left: 14px;">
-                                                <li style="width: 190px;"><hr></li>
-                                            </ul>
-                                            <ul class="ul" style="margin-left: 14px;">
-                                                <li style="display: inline-block; width: 120px;">TOTAL</li>
-                                                <li style="display: inline-block; width: 192px; text-align: right;">6000.00</li>
-                                            </ul>
-                                            <ul class="ul" style="margin-top: 10px;">
-                                                <li style="display: inline-block; width: 120px;"><strong>NET PAY:</strong></li>
-                                                <li style="display: inline-block; width: 208px; text-align: right;"><strong>6000.00</strong></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </v-col> -->
                             </v-row>
                         </v-container>
                     </v-card-text>
@@ -178,16 +118,6 @@ export default {
                 ]
             },
             employees: [],
-            // reports:{
-            //     employees: [],
-            //     dtrinout: [],
-            //     payperiod: []
-            // },
-            // deductions: [
-            //     { text: 'PHILHEALTH', value: '112.50' },
-            //     { text: 'PAGIBIG', value: '1000.00' },
-            //     { text: 'SSS', value: '272.50' },
-            // ]
         }
     },
     created(){
@@ -205,7 +135,6 @@ export default {
             .catch(err => { console.log(err) })
         },
         getPayperiod(){
-            // this.overlay.value = true
             if(this.filters.year != null){
                 let data = {
                     year: this.filters.year,
@@ -213,7 +142,6 @@ export default {
                 }
                 this.$guest.post('/api/reports/getPayperiod', this.$form_data.generate(data))
                 .then(res => {
-                    // this.overlay.value = false
                     this.options.payperiod = res.data
                     this.options.payperiod.splice(0,0, Object.assign({}, { id: null, pperiod: 'Please Select Payperiod...'}))
                 })
@@ -249,7 +177,6 @@ span{
     width: 100%;
     list-style: none;
     padding: 0%;
-    /* inline-size: auto; */
 }
 li{
     color: black;

@@ -15,7 +15,7 @@
                     <v-select v-model="filters.payperiod_id" :items="options.payperiod" item-text="pperiod" item-value="id" @change="getManhourprooflist()" dense outlined hide-details></v-select>
                 </v-col>
             </v-row>
-            <v-alert v-if="alert_status == false" type="error" outlined text>
+            <v-alert v-if="alert_status == false" type="error" outlined text dense>
                 No Records Found!!!
             </v-alert>
             <v-row no-gutters>

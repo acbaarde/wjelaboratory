@@ -11,18 +11,6 @@
             <v-spacer></v-spacer>
             <v-text-field class="shrink" v-model="search" append-icon="mdi-magnify" label="Search" outlined dense hide-details></v-text-field>
             <v-btn class="ml-2" color="primary" dark @click="dialog = !dialog">Add User</v-btn>
-            <!-- <v-dialog v-model="dialogDelete" max-width="400px">
-              <v-card>
-                <v-card-title class="headline">Confirm delete</v-card-title>
-                <v-card-text>Are you sure you want to delete this item?</v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="closeDelete">CANCEL</v-btn>
-                    <v-btn color="blue darken-1" text @click="confirmDelete">OK</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog> -->
-            <!-- END ADD USER -->
           </v-toolbar>
         </template>
 
@@ -194,12 +182,6 @@ export default {
           this.table_items = res.data
         })
         .catch(err => { console.log(err) })
-
-        // this.$guest.get('/api/users/getEmployees')
-        // .then(res => {
-        //   this.options = res.data
-        // })
-        // .catch(err => { console.log(err) })
       },
       btn_save(){
         if(this.$refs.form.validate()){

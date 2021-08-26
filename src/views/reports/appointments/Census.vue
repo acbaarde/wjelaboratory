@@ -12,43 +12,11 @@
                     <v-btn color="primary" @click="btn_process()">Process</v-btn>
                 </v-row>
             </v-form>
-            <v-alert v-if="alert_status == false" type="error" outlined text>
+            <v-alert v-if="alert_status == false" type="error" outlined text dense>
                 No Records Found!!!
             </v-alert>
             <v-row no-gutters>
                 <v-col>
-                    <!-- <v-data-table fixed-header :items="table_items" dense :items-per-page="-1" hide-default-header hide-default-footer>
-                        <template v-slot:header>
-                            <tr>
-                                <th></th>
-                                <th :style="'background-color: '+ header.color" :colspan="header.submodules.length" v-for="header in table_headers" :key="header.id" :id="'th_' + header.id">
-                                    {{ header.title }}
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 100px;">DATE</th>
-                                <th :style="'background-color: '+ submod.color" v-for="(submod,i) in submodules()" :key="i">
-                                    {{ submod.abbr }}
-                                </th>
-                            </tr>
-                        </template>
-                        <template v-slot:body>
-                            <tr v-for="(item,i) in table_items" :key="i">
-                                <td>{{ item.date }}</td>
-                                <td v-for="(value,index) in item.results" :key="index">
-                                    {{ value }}
-                                </td>
-                            </tr>
-                        </template>
-                        <template v-slot:foot>
-                            <tr v-for="(item,i) in table_items" :key="i">
-                                <td>TOTAL</td>
-                                <td v-for="(value,index) in item.results" :key="index">
-                                    {{ value }}
-                                </td>
-                            </tr>
-                        </template>
-                    </v-data-table> -->
                     <div style="overflow-x: auto;" id="print-form">
                         <table border="1">
                             <thead>
@@ -176,9 +144,6 @@ export default {
 </script>
 
 <style scoped>
-/* .v-data-table{
-    line-height: 1;
-} */
 table {
     table-layout:fixed;
     width: 100%;
@@ -192,13 +157,11 @@ table, tr, td {
 tr th{
     text-align: center;
     font-size: small;
-    max-width: 120px;
 }
 th{
     padding-right: 2px;
 }
-/* tr td{
-    text-align: center;
-    font-size: small;
-} */
+tfoot tr{
+    background: rgba(165, 158, 158, 0.432);
+}
 </style>

@@ -22,22 +22,10 @@ const router = new VueRouter({
                 import ("@/views/Login.vue"),
         },
         {
-            path: '/appointments/view',
-            name: 'Appointments',
+            path: '/appointments/patientlists',
+            name: 'Patient_lists_form',
             component: () => 
-                import ("@/views/Appointments.vue")
-        },
-        {
-            path: '/appointments/releasing',
-            name: 'Releasing_form',
-            component: () => 
-                import ("@/views/appointments/Releasing_form.vue"),
-        },
-        {
-            path: '/appointments/view/patient',
-            name: 'Patient_form',
-            component: () => 
-                import ("@/views/appointments/Patient_form.vue"),
+                import ("@/views/appointments/Patient_lists_form.vue")
         },
         {
             path: '/appointments/entries',
@@ -166,52 +154,10 @@ const router = new VueRouter({
                 import ("@/views/utilities/datamaintenance/Physicians.vue"),
         },
         {
-            path: '/hematology',
-            name: 'hematology',
+            path: '/utilities/dm/companyinfo',
+            name: 'Company_info',
             component: () => 
-                import ("@/views/reports/Hematology.vue"),
-        },
-        {
-            path: '/fecalysis',
-            name: 'fecalysis',
-            component: () => 
-                import ("@/views/reports/Fecalysis.vue"),
-        },
-        {
-            path: '/urinalysis',
-            name: 'urinalysis',
-            component: () => 
-                import ("@/views/reports/Urinalysis.vue"),
-        },
-        {
-            path: '/koh',
-            name: 'KOH',
-            component: () => 
-                import ("@/views/reports/KOH.vue"),
-        },
-        {
-            path: '/hgsag',
-            name: 'HGSAG',
-            component: () => 
-                import ("@/views/reports/HGSAG.vue"),
-        },
-        {
-            path: '/rbs',
-            name: 'RBS',
-            component: () => 
-                import ("@/views/reports/RBS.vue"),
-        },
-        {
-            path: '/thyroid',
-            name: 'THYROID',
-            component: () => 
-                import ("@/views/reports/Thyroid.vue"),
-        },
-        {
-            path: '/bloodchem',
-            name: 'BLOOD_CHEMISTRY',
-            component: () => 
-                import ("@/views/reports/Blood_chemistry.vue"),
+                import ("@/views/utilities/datamaintenance/Company_info.vue"),
         },
     ],
     mode: 'history'

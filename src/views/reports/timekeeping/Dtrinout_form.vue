@@ -14,7 +14,7 @@
                     <v-select v-model="filters.payperiod_id" :items="options.payperiod" item-text="pperiod" item-value="id" @change="getDtrinout()" dense outlined hide-details></v-select>
                 </v-col>
             </v-row>
-            <v-alert v-if="alert_status == false" type="error" outlined text>
+            <v-alert v-if="alert_status == false" type="error" outlined text dense>
                 No Records Found!!!
             </v-alert>
             <v-row no-gutters>
@@ -85,42 +85,6 @@
                                         <td>{{ td.ut_end == '0000-00-00 00:00:00' ? '' : td.ut_end.substr(11,5) }}</td>
                                     </tr>
                                 </template>
-                                <!-- <template v-slot:[`item.sched_amin`]="props">
-                                    {{ props.item.sched_amin == '0000-00-00 00:00:00' ? '' : props.item.sched_amin.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.sched_amout`]="props">
-                                    {{ props.item.sched_amout == '0000-00-00 00:00:00' ? '' : props.item.sched_amout.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.sched_pmin`]="props">
-                                    {{ props.item.sched_pmin == '0000-00-00 00:00:00' ? '' : props.item.sched_pmin.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.sched_pmout`]="props">
-                                    {{ props.item.sched_pmout == '0000-00-00 00:00:00' ? '' : props.item.sched_pmout.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.encoded_amin`]="props">
-                                    {{ props.item.encoded_amin == '0000-00-00 00:00:00' ? '' : props.item.encoded_amin.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.encoded_amout`]="props">
-                                    {{ props.item.encoded_amout == '0000-00-00 00:00:00' ? '' : props.item.encoded_amout.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.encoded_pmin`]="props">
-                                    {{ props.item.encoded_pmin == '0000-00-00 00:00:00' ? '' : props.item.encoded_pmin.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.encoded_pmout`]="props">
-                                    {{ props.item.encoded_pmout == '0000-00-00 00:00:00' ? '' : props.item.encoded_pmout.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.ot_start`]="props">
-                                    {{ props.item.ot_start == '0000-00-00 00:00:00' ? '' : props.item.ot_start.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.ot_end`]="props">
-                                    {{ props.item.ot_end == '0000-00-00 00:00:00' ? '' : props.item.ot_end.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.ut_start`]="props">
-                                    {{ props.item.ut_start == '0000-00-00 00:00:00' ? '' : props.item.ut_start.substr(11,5) }}
-                                </template>
-                                <template v-slot:[`item.ut_end`]="props">
-                                    {{ props.item.ut_end == '0000-00-00 00:00:00' ? '' : props.item.ut_end.substr(11,5) }}
-                                </template> -->
                             </v-data-table>
                         </v-card-text>
                     </v-card>

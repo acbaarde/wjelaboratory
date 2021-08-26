@@ -1,6 +1,5 @@
 <template>
 <div class="ma-n3">
-    <!-- <myHeader :title="'Timekeeping'" :subtitle="'Manage Employee Timekeeping'" /> -->
     <v-container fluid>
     <v-alert v-if="alert_status == false" type="error" outlined text>
         No Payroll Period Established!
@@ -64,12 +63,15 @@
                         <v-tab key="Undertime">
                             Undertime
                         </v-tab>
+                        <v-tab key="CWS">
+                            CWS
+                        </v-tab>
                         <v-tab key="item1">
                             Adjustments
                         </v-tab>
                     </v-tabs>
                     <v-tabs-items v-model="tab">
-                        <v-tab-item>
+                        <v-tab-item> <!-- DTR -->
                             <v-container fluid>
                                 <v-row no-gutters>
                                     <v-col>
@@ -88,8 +90,188 @@
                                                     <th colspan="4">Encoded Time</th>
                                                 </tr>
                                                 <tr>
-                                                    <th style="width: 100px;">Date</th>
-                                                    <th style="width: 40px;">Day</th>
+                                                    <th style="width: 80px;">Date</th>
+                                                    <th style="width: 20px;">Day</th>
+                                                    <th style="width: 30px;">Type</th>
+                                                    <th style="width: 70px;">AM In</th>
+                                                    <th style="width: 70px;">AM Out</th>
+                                                    <th style="width: 70px;">PM In</th>
+                                                    <th style="width: 70px;">PM Out</th>
+                                                    <th style="width: 70px;">AM In</th>
+                                                    <th style="width: 70px;">AM Out</th>
+                                                    <th style="width: 70px;">PM In</th>
+                                                    <th style="width: 70px;">PM Out</th>
+                                                </tr>
+                                            </template>
+                                            <template v-slot:[`item.sched_amin`]="props">
+                                                {{ props.item.cws_amin != '' ? props.item.cws_amin : props.item.sched_amin.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.sched_amout`]="props">
+                                                {{ props.item.cws_amout != '' ? props.item.cws_amout : props.item.sched_amout.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.sched_pmin`]="props">
+                                                {{ props.item.cws_pmin != '' ? props.item.cws_pmin : props.item.sched_pmin.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.sched_pmout`]="props">
+                                                {{ props.item.cws_pmout != '' ? props.item.cws_pmout : props.item.sched_pmout.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.encoded_amin`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.encoded_amin" v-mask="'##:##'" @input="handleInput(props.item,'amin')" single-line dense outlined hide-details></v-text-field>
+                                            </template>
+                                            <template v-slot:[`item.encoded_amout`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.encoded_amout" v-mask="'##:##'" @input="handleInput(props.item,'amout')" single-line dense hide-details outlined></v-text-field>
+                                            </template>
+                                            <template v-slot:[`item.encoded_pmin`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.encoded_pmin" v-mask="'##:##'" @input="handleInput(props.item,'pmin')" single-line dense hide-details outlined></v-text-field>
+                                            </template>
+                                            <template v-slot:[`item.encoded_pmout`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.encoded_pmout" v-mask="'##:##'" @input="handleInput(props.item,'pmout')" single-line dense hide-details outlined></v-text-field>
+                                            </template>
+                                        
+                                        </v-data-table>
+                                    
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-tab-item>
+                        <v-tab-item><!-- OVERTIME -->
+                            <v-container fluid>
+                                <v-row no-gutters>
+                                    <v-col>
+                                        <v-btn small color="primary" class="mr-1" @click="savedtr()">SAVE</v-btn>
+                                        <v-btn small color="green" dark class="mr-1" @click="initialize()">REFRESH</v-btn>
+                                        <v-btn small color="error">DELETE</v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters class="mt-3">
+                                    <v-col>
+                                        <v-data-table :headers="overtime_headers" :items="overtime_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
+                                            <template v-slot:header={}>
+                                                <tr>
+                                                    <th colspan="3"></th>
+                                                    <th colspan="4">Original Schedule</th>
+                                                    <th colspan="4">Encoded Time</th>
+                                                    <th colspan="2">Overtime</th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 80px;">Date</th>
+                                                    <th style="width: 20px;">Day</th>
+                                                    <th style="width: 30px;">Type</th>
+                                                    <th style="width: 70px;">AM In</th>
+                                                    <th style="width: 70px;">AM Out</th>
+                                                    <th style="width: 70px;">PM In</th>
+                                                    <th style="width: 70px;">PM Out</th>
+                                                    <th style="width: 70px;">AM In</th>
+                                                    <th style="width: 70px;">AM Out</th>
+                                                    <th style="width: 70px;">PM In</th>
+                                                    <th style="width: 70px;">PM Out</th>
+                                                    <th style="width: 70px;">Start</th>
+                                                    <th style="width: 70px;">End</th>
+                                                </tr>
+                                            </template>
+                                            <template v-slot:[`item.sched_amin`]="props">
+                                                {{ props.item.cws_amin != '' ? props.item.cws_amin : props.item.sched_amin.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.sched_amout`]="props">
+                                                {{ props.item.cws_amout != '' ? props.item.cws_amout : props.item.sched_amout.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.sched_pmin`]="props">
+                                                {{ props.item.cws_pmin != '' ? props.item.cws_pmin : props.item.sched_pmin.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.sched_pmout`]="props">
+                                                {{ props.item.cws_pmout != '' ? props.item.cws_pmout : props.item.sched_pmout.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.ot_start`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.ot_start" v-mask="'##:##'" @blur="handleInput_ot(props.item,'ot_start')" single-line dense hide-details outlined></v-text-field>
+                                            </template>
+                                            <template v-slot:[`item.ot_end`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.ot_end" v-mask="'##:##'" @blur="handleInput_ot(props.item,'ot_end')" single-line dense hide-details outlined></v-text-field>
+                                            </template>
+                                            
+                                        </v-data-table>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-tab-item>
+                        <v-tab-item><!-- UNDERTIME -->
+                            <v-container fluid>
+                                <v-row no-gutters>
+                                    <v-col>
+                                        <v-btn small color="primary" class="mr-1" @click="savedtr()">SAVE</v-btn>
+                                        <v-btn small color="green" dark class="mr-1" @click="initialize()">REFRESH</v-btn>
+                                        <v-btn small color="error" @click="deletedtr()">DELETE</v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters class="mt-3">
+                                    <v-col>
+                                        <v-data-table :headers="undertime_headers" :items="undertime_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
+                                            <template v-slot:header={}>
+                                                <tr>
+                                                    <th colspan="3"></th>
+                                                    <th colspan="4">Original Schedule</th>
+                                                    <th colspan="4">Encoded Time</th>
+                                                    <th colspan="2">Undertime</th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 80px;">Date</th>
+                                                    <th style="width: 20px;">Day</th>
+                                                    <th style="width: 30px;">Type</th>
+                                                    <th style="width: 70px;">AM In</th>
+                                                    <th style="width: 70px;">AM Out</th>
+                                                    <th style="width: 70px;">PM In</th>
+                                                    <th style="width: 70px;">PM Out</th>
+                                                    <th style="width: 70px;">AM In</th>
+                                                    <th style="width: 70px;">AM Out</th>
+                                                    <th style="width: 70px;">PM In</th>
+                                                    <th style="width: 70px;">PM Out</th>
+                                                    <th style="width: 70px;">Start</th>
+                                                    <th style="width: 70px;">End</th>
+                                                </tr>
+                                            </template>
+                                            <template v-slot:[`item.ut_start`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.ut_start" v-mask="'##:##'" single-line dense hide-details outlined></v-text-field>
+                                            </template>
+                                            <template v-slot:[`item.ut_end`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.ut_end" v-mask="'##:##'" single-line dense hide-details outlined></v-text-field>
+                                            </template>
+                                            <template v-slot:[`item.sched_amin`]="props">
+                                                {{ props.item.cws_amin != '' ? props.item.cws_amin : props.item.sched_amin.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.sched_amout`]="props">
+                                                {{ props.item.cws_amout != '' ? props.item.cws_amout : props.item.sched_amout.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.sched_pmin`]="props">
+                                                {{ props.item.cws_pmin != '' ? props.item.cws_pmin : props.item.sched_pmin.substr(0,5) }}
+                                            </template>
+                                            <template v-slot:[`item.sched_pmout`]="props">
+                                                {{ props.item.cws_pmout != '' ? props.item.cws_pmout : props.item.sched_pmout.substr(0,5) }}
+                                            </template>
+                                        </v-data-table>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-tab-item>
+                        <v-tab-item><!-- CWS -->
+                            <v-container fluid>
+                                <v-row no-gutters>
+                                    <v-col>
+                                        <v-btn small color="primary" class="mr-1" @click="savedtr()">SAVE</v-btn>
+                                        <v-btn small color="green" dark class="mr-1" @click="initialize()">REFRESH</v-btn>
+                                        <v-btn small color="error" @click="deletedtr()">DELETE</v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters class="mt-3">
+                                    <v-col>
+                                        <v-data-table :headers="cws_headers" :items="cws_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
+                                            <template v-slot:header={}>
+                                                <tr>
+                                                    <th colspan="3"></th>
+                                                    <th colspan="4">Original Schedule</th>
+                                                    <th colspan="4">Encoded CWS</th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 80px;">Date</th>
+                                                    <th style="width: 20px;">Day</th>
                                                     <th style="width: 30px;">Type</th>
                                                     <th style="width: 70px;">AM In</th>
                                                     <th style="width: 70px;">AM Out</th>
@@ -113,109 +295,24 @@
                                             <template v-slot:[`item.sched_pmout`]="props">
                                                 {{ props.item.sched_pmout.substr(0,5) }}
                                             </template>
-                                            <template v-slot:[`item.encoded_amin`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.encoded_amin" v-mask="'##:##'" @input="handleInput(props.item,'amin')" single-line dense outlined hide-details></v-text-field>
+                                            <template v-slot:[`item.cws_amin`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.cws_amin" v-mask="'##:##'" @input="handleInput_cws(props.item,'amin')" single-line dense outlined hide-details></v-text-field>
                                             </template>
-                                            <template v-slot:[`item.encoded_amout`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.encoded_amout" v-mask="'##:##'" @input="handleInput(props.item,'amout')" single-line dense hide-details outlined></v-text-field>
+                                            <template v-slot:[`item.cws_amout`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.cws_amout" v-mask="'##:##'" @input="handleInput_cws(props.item,'amout')" single-line dense hide-details outlined></v-text-field>
                                             </template>
-                                            <template v-slot:[`item.encoded_pmin`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.encoded_pmin" v-mask="'##:##'" @input="handleInput(props.item,'pmin')" single-line dense hide-details outlined></v-text-field>
+                                            <template v-slot:[`item.cws_pmin`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.cws_pmin" v-mask="'##:##'" @input="handleInput_cws(props.item,'pmin')" single-line dense hide-details outlined></v-text-field>
                                             </template>
-                                            <template v-slot:[`item.encoded_pmout`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.encoded_pmout" v-mask="'##:##'" @input="handleInput(props.item,'pmout')" single-line dense hide-details outlined></v-text-field>
-                                            </template>
-                                        
-                                        </v-data-table>
-                                    
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </v-tab-item>
-                        <v-tab-item>
-                            <v-container fluid>
-                                <v-row no-gutters>
-                                    <v-col>
-                                        <v-btn small color="primary" class="mr-1" @click="savedtr()">SAVE</v-btn>
-                                        <v-btn small color="green" dark class="mr-1" @click="initialize()">REFRESH</v-btn>
-                                        <v-btn small color="error">DELETE</v-btn>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters class="mt-3">
-                                    <v-col>
-                                        <v-data-table :headers="overtime_headers" :items="overtime_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
-                                            <template v-slot:header={}>
-                                                <tr>
-                                                    <th colspan="3"></th>
-                                                    <th colspan="4">Encoded Time</th>
-                                                    <th colspan="4">Overtime</th>
-                                                </tr>
-                                                <tr>
-                                                    <th style="width: 100px;">Date</th>
-                                                    <th style="width: 40px;">Day</th>
-                                                    <th style="width: 30px;">Type</th>
-                                                    <th style="width: 70px;">AM In</th>
-                                                    <th style="width: 70px;">AM Out</th>
-                                                    <th style="width: 70px;">PM In</th>
-                                                    <th style="width: 70px;">PM Out</th>
-                                                    <th style="width: 70px;">Start</th>
-                                                    <th style="width: 70px;">End</th>
-                                                </tr>
-                                            </template>
-                                            <template v-slot:[`item.ot_start`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.ot_start" v-mask="'##:##'" @blur="handleInput_ot(props.item,'ot_start')" single-line dense hide-details outlined></v-text-field>
-                                            </template>
-                                            <template v-slot:[`item.ot_end`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.ot_end" v-mask="'##:##'" @blur="handleInput_ot(props.item,'ot_end')" single-line dense hide-details outlined></v-text-field>
-                                            </template>
-                                            
-                                        </v-data-table>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </v-tab-item>
-                        <v-tab-item>
-                            <v-container fluid>
-                                <v-row no-gutters>
-                                    <v-col>
-                                        <v-btn small color="primary" class="mr-1" @click="savedtr()">SAVE</v-btn>
-                                        <v-btn small color="green" dark class="mr-1" @click="initialize()">REFRESH</v-btn>
-                                        <v-btn small color="error" @click="deletedtr()">DELETE</v-btn>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters class="mt-3">
-                                    <v-col>
-                                        <v-data-table :headers="undertime_headers" :items="undertime_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
-                                            <template v-slot:header={}>
-                                                <tr>
-                                                    <th colspan="3"></th>
-                                                    <th colspan="4">Encoded Time</th>
-                                                    <th colspan="4">Undertime</th>
-                                                </tr>
-                                                <tr>
-                                                    <th style="width: 100px;">Date</th>
-                                                    <th style="width: 40px;">Day</th>
-                                                    <th style="width: 30px;">Type</th>
-                                                    <th style="width: 70px;">AM In</th>
-                                                    <th style="width: 70px;">AM Out</th>
-                                                    <th style="width: 70px;">PM In</th>
-                                                    <th style="width: 70px;">PM Out</th>
-                                                    <th style="width: 70px;">Start</th>
-                                                    <th style="width: 70px;">End</th>
-                                                </tr>
-                                            </template>
-                                            <template v-slot:[`item.ut_start`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.ut_start" v-mask="'##:##'" single-line dense hide-details outlined></v-text-field>
-                                            </template>
-                                            <template v-slot:[`item.ut_end`]="props">
-                                                <v-text-field class="font-weight" v-model="props.item.ut_end" v-mask="'##:##'" single-line dense hide-details outlined></v-text-field>
+                                            <template v-slot:[`item.cws_pmout`]="props">
+                                                <v-text-field class="font-weight" v-model="props.item.cws_pmout" v-mask="'##:##'" @input="handleInput_cws(props.item,'pmout')" single-line dense hide-details outlined></v-text-field>
                                             </template>
                                         </v-data-table>
                                     </v-col>
                                 </v-row>
                             </v-container>
                         </v-tab-item>
-                        <v-tab-item>
+                        <v-tab-item><!-- ADJUSTMENTS -->
                             <v-container fluid>
                                 <v-row>
                                     <v-col>
@@ -350,6 +447,10 @@ export default {
                 { value: 'date', align: 'center' },
                 { value: 'day', align: 'center' },
                 { value: 'type', align: 'center' },
+                { value: 'sched_amin', align: 'center' },
+                { value: 'sched_amout', align: 'center' },
+                { value: 'sched_pmin', align: 'center' },
+                { value: 'sched_pmout', align: 'center' },
                 { value: 'encoded_amin', align: 'center' },
                 { value: 'encoded_amout', align: 'center' },
                 { value: 'encoded_pmin', align: 'center' },
@@ -362,6 +463,10 @@ export default {
                 { value: 'date', align: 'center' },
                 { value: 'day', align: 'center' },
                 { value: 'type', align: 'center' },
+                { value: 'sched_amin', align: 'center' },
+                { value: 'sched_amout', align: 'center' },
+                { value: 'sched_pmin', align: 'center' },
+                { value: 'sched_pmout', align: 'center' },
                 { value: 'encoded_amin', align: 'center' },
                 { value: 'encoded_amout', align: 'center' },
                 { value: 'encoded_pmin', align: 'center' },
@@ -370,16 +475,26 @@ export default {
                 { value: 'ut_end', align: 'center' },
             ],
             undertime_items:[],
+            cws_headers:[
+                { value: 'date', align: 'center' },
+                { value: 'day', align: 'center' },
+                { value: 'type', align: 'center' },
+                { value: 'sched_amin', align: 'center' },
+                { value: 'sched_amout', align: 'center' },
+                { value: 'sched_pmin', align: 'center' },
+                { value: 'sched_pmout', align: 'center' },
+                { value: 'cws_amin', align: 'center' },
+                { value: 'cws_amout', align: 'center' },
+                { value: 'cws_pmin', align: 'center' },
+                { value: 'cws_pmout', align: 'center' },
+            ],
+            cws_items: [],
             adjustment_headers:[
                 { value: 'actions', align: 'center' },
                 { value: 'description', align: 'left' },
                 { value: 'amount', align: 'right' },
             ],
-            adjustment_items:[
-                // { description: 'SSS', amount: '500' },
-                // { description: 'HDMF', amount: '100' },
-                // { description: 'Philhealt', amount: '1500' },
-            ],
+            adjustment_items:[],
             adjustment: {
                 regular: '',
                 gross: '',
@@ -432,6 +547,7 @@ export default {
             }
             await this.$guest.post('/api/timekeeping/getEmployee', this.$form_data.generate(data))
             .then(res => {
+                console.log(res.data)
                 this.alert_status = res.data.status
                 if(res.data.status == true){
                     this.employee = res.data.result.employee
@@ -439,6 +555,7 @@ export default {
                     this.dtr_items = res.data.result.dtr
                     this.overtime_items = res.data.result.dtr
                     this.undertime_items = res.data.result.dtr
+                    this.cws_items = res.data.result.dtr
                     this.adjustment = res.data.result.salary_adjustments
                     this.adjustment_items = res.data.result.salary_adjustments_breakdown
                     this.$nextTick(() => {
@@ -486,6 +603,16 @@ export default {
                 this.dtr_items[itemIndex][encoded] = ''
             }
             
+        },
+        handleInput_cws(item,input){
+            let itemIndex = this.dtr_items.indexOf(item)
+            let encoded = "cws_"+input
+            let time = this.dtr_items[itemIndex][encoded].split(":")
+            let hrs = parseInt(time[0])
+            let min = parseInt(time[1])
+            if(hrs >= 24 || min >= 60){
+                this.dtr_items[itemIndex][encoded] = ''
+            }
         },
 
         handleInput_ot(item,input){

@@ -13,16 +13,6 @@
               <v-btn class="ml-2" color="primary" @click="dialog = !dialog" dark>Add Work Schedule</v-btn>
             </v-toolbar>
         </template>
-
-        <!-- <template v-slot:[`item.firstname`]="{ item }">
-            <p class="text-uppercase ma-0">{{ item.firstname }}</p>
-        </template>
-        <template v-slot:[`item.lastname`]="{ item }">
-            <p class="text-uppercase ma-0">{{ item.lastname }}</p>
-        </template>
-        <template v-slot:[`item.middlename`]="{ item }">
-            <p class="text-uppercase ma-0">{{ item.middlename }}</p>
-        </template> -->
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn dense x-small @click="btn_update(item)" color="primary">UPDATE</v-btn>
         </template>

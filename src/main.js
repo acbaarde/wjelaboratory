@@ -56,6 +56,11 @@ Vue.mixin({
             return formatage
           },
 
+          paginationLength(totalRows,limit){
+            let pageLen = (parseInt(totalRows) / parseInt(limit))
+            return (pageLen - (Math.floor(pageLen)) !== 0) ? parseInt(pageLen) + 1 : parseInt(pageLen)
+          },
+
           print_form(){
             // Get HTML to print from element
             const prtHtml = document.getElementById('print-form').innerHTML;
@@ -93,6 +98,5 @@ new Vue({
     icons: {
       iconfont: 'mdi'
     },
-    // store,
     render: h => h(App)
 }).$mount('#app');

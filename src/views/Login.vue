@@ -54,20 +54,21 @@ export default {
                 }
                 this.$guest.post('/login', this.$form_data.generate(data))
                 .then(res => {
-                    this.msg = res.data.message;
+                    this.msg = res.data.message
                     if(res.data.status == true){
                         let posn = res.data.user_id == 'admin' ? 'admin' : res.data.user_posn
-                        this.type = 'success';
-                        this.$session.start();
-                        this.$session.set('user-session', res.data.fullname);
-                        this.$session.set('userid-session', res.data.user_id);
-                        this.$session.set('user-access', res.data.user_access);
-                        this.$session.set('usertype-session', res.data.user_type);
-                        this.$session.set('userposn-session', posn);
-                        this.$session.set('userposnid-session', res.data.user_posn_id);
-                        this.$router.push('/');
+                        let posnid = res.data.user_id == 'admin' ? 'admin' : res.data.user_posn_id
+                        this.type = 'success'
+                        this.$session.start()
+                        this.$session.set('user-session', res.data.fullname)
+                        this.$session.set('userid-session', res.data.user_id)
+                        this.$session.set('user-access', res.data.user_access)
+                        this.$session.set('usertype-session', res.data.user_type)
+                        this.$session.set('userposn-session', posn)
+                        this.$session.set('userposnid-session', posnid)
+                        this.$router.push('/')
                     }else{
-                        this.type = 'error';
+                        this.type = 'error'
                         setTimeout(() => {
                             this.msg = ''
                             this.password = ''
@@ -75,18 +76,18 @@ export default {
                     }
                 })
                 .catch(err => {
-                    console.log(err);
+                    console.log(err)
                 })
             }
         },
 
         formValidate(){
             if(this.username && this.password){
-                return true;
+                return true
             }else{
-                this.msg = "Fill Required fields!";
-                this.type = 'error';
-                return false;
+                this.msg = "Fill Required fields!"
+                this.type = 'error'
+                return false
             }
         }
     }

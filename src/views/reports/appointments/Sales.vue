@@ -13,38 +13,49 @@
                     <v-btn color="primary" @click="btn_process()">Process</v-btn>
                 </v-row>
             </v-form>
-            <v-alert v-if="alert_status == false" type="error" outlined text>
+            <v-alert v-if="alert_status == false" type="error" outlined text dense>
                 No Records Found!!!
             </v-alert>
             <div id="print-form">
                 <v-row no-gutters>
-                    <v-col class="px-4 mb-2">
-                        <tr>
-                            <td style="width: 100px;">Date:</td>
-                            <td><strong>{{ DateNow() }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td style="width: 100px;">Total Sales:</td>
-                            <td><strong>{{ total_amount }}</strong></td>
-                        </tr>
-                    </v-col>
-                </v-row>
-                <v-row no-gutters>
                     <v-col>
-                        <v-data-table :headers="table_headers" :items="table_items" dense :items-per-page="-1" hide-default-footer>
-                            <template v-slot:[`item.fullname`]="{ item }">
-                                {{ item.fullname }}
-                            </template>
-                            <template v-slot:[`item.age`]="{ item }">
-                                {{ formatAge(item.age,item.agetype) }}
-                            </template>
-                            <template v-slot:[`item.gender`]="{ item }">
-                                {{ item.gender == 'F' ? 'FEMALE' : 'MALE' }}
-                            </template>
-                            <template v-slot:[`item.physician`]="{ item }">
-                                {{ item.physician }}
-                            </template>
-                        </v-data-table>
+                        <table width="100%">
+                            <thead>
+                                <tr>
+                                    <th>CONTROL #.</th>
+                                    <th style="text-align: left;">FULLNAME</th>
+                                    <th>AGE</th>
+                                    <th>GENDER</th>
+                                    <th>PHYSICIAN</th>
+                                    <th>DISCOUNT TYPE</th>
+                                    <th>DISCOUNT %</th>
+                                    <th>CASH</th>
+                                    <th>TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item,index) in table_items" :key="index">
+                                    <td>{{ item.control_no }}</td>
+                                    <td style="text-align: left;">{{ item.fullname }}</td>
+                                    <td>{{ item.age }}</td>
+                                    <td>{{ item.gender }}</td>
+                                    <td>{{ item.physician }}</td>
+                                    <td>{{ item.discount }}</td>
+                                    <td>{{ item.discount_percent }}</td>
+                                    <td>{{ item.cash }}</td>
+                                    <td>{{ item.total_amount }}</td>
+                                </tr>
+                            </tbody>
+                            
+                            <tfoot>
+                                <tr>
+                                    <td colspan="6"></td>
+                                    <td>TOTAL</td>
+                                    <td>{{ total_cash }}</td>
+                                    <td>{{ total_amount }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </v-col>
                 </v-row>
             </div>
@@ -65,17 +76,8 @@ export default {
             },
             date: '',
             total_amount: 0,
+            total_cash: 0,
             dateRules: [ v => !!v || 'Please Select Date...' ],
-            table_headers: [
-                { text: 'Full Name', value: 'fullname', align: 'left' },
-                { text: 'Age', value: 'age', align: 'center' },
-                { text: 'Gender', value: 'gender', align: 'center' },
-                { text: 'Physician', value: 'physician', align: 'center' },
-                { text: 'Discount Type', value: 'discount_type', align: 'center' },
-                { text: 'Discount %', value: 'discount', align: 'center' },
-                { text: 'Cash', value: 'payment', align: 'center' },
-                { text: 'Total', value: 'totalamount', align: 'center' },
-            ],
             table_items: []
         }
     },
@@ -96,10 +98,12 @@ export default {
                 }
                 await this.$guest.post('/api/reports/Sales', this.$form_data.generate(data))
                 .then(res => {
+                    console.log(res.data)
                     this.alert_status = res.data.status
                     if(res.data.status){
                         this.table_items = res.data.results
                         this.total_amount = res.data.total_amount
+                        this.total_cash = res.data.total_cash
                     }
                     this.overlay.value = false
                 })
@@ -114,5 +118,15 @@ export default {
 </script>
 
 <style scoped>
-
+tr td{
+    text-align: center;
+}
+table{
+    font-size: 12px;
+    border-collapse: collapse;
+}
+tfoot{
+    font-weight: bold;
+    background: #eeeeee;
+}
 </style>

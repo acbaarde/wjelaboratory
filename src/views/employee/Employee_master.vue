@@ -182,7 +182,6 @@ export default {
           { text: 'Employee Status', value: 'employee_status_id', align: 'center', filterable: false },
           { text: 'Employment Status', value: 'employment_status_id', align: 'center', filterable: false },
           { text: 'Position', value: 'position_id', align: 'center', filterable: false },
-          // { text: 'Hired Date', value: 'hired_date', align: 'center', filterable: false },
           { text: 'Actions', value: 'actions', align: 'center', filterable: false},
         ],
         gender: [],

@@ -13,11 +13,11 @@
             <v-container>
                 <v-row>
                     <v-col cols="12" class="px-1" style="padding-top: 0;">
-                        <div v-for="(item,index) in results" :key="item.id" class="mb-2">
+                        <!-- <div v-for="(i,v) in results" :key="v" class="mb-2"> -->
                             <table style="width:100%">
                                 <thead>
                                     <tr>
-                                        <th colspan="3">{{ item.title }}</th>
+                                        <th colspan="3">{{ results.title }}</th>
                                     </tr>
                                     <tr>
                                         <th>TEST</th>
@@ -26,20 +26,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="v in subsubmodules(index)" :key="v.id">
-                                        <td>{{ v.title }}</td>
-                                        <td>{{ v.result }}</td>
-                                        <td>{{ v.result_range }}</td>
+                                    <tr v-for="(i,v) in results.lab_results" :key="v">
+                                        <td>{{ i.result_title }}</td>
+                                        <td>{{ i.result_value }}</td>
+                                        <td>{{ i.result_range }}</td>
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        
+                            <p>* Remarks: <span>{{ results.remarks }}</span></p>
+                        <!-- </div> -->
                     </v-col>
                 </v-row>
             </v-container>
         </v-card-text>
-
         <v-row>
             <result-footer />
         </v-row>
@@ -55,57 +54,29 @@ export default {
     name: 'Hematology',
     data(){
         return{
-            results: []
+            header_data: this.$route.params.info,
+            results: Object.assign({}, this.$route.params.results),
+            fullPath: this.$route.params.url
         }
     },
     components: {
         ResultHeader,
         ResultFooter,
     },
-    created(){
-        // let mod = this.$route.params.mod
-        // mod.forEach((el) => {
-        //     if(el.result != 0){
-        //         this.results[el.title] = el.result
-        //     }
-        // })
-        let data = { 
-            appointment_id: 1, 
-            released: true, 
-            user_id: this.$session.get('userid-session') 
-        }
-        this.$guest.post('/api/laboratory/loadLabmodule', this.$form_data.generate(data))
-        .then(res => {
-            this.results = res.data.modules
-        })
-        .catch(err => { console.log(err) })
-
-    },
-    computed: {
-        header_data(){
-            // let age = []
-            // age.push(this.$route.params.active_item.age,this.$route.params.active_item.agetype)
-            // return {
-            //     fullname: this.$route.params.active_item.fullname,
-            //     age: age,
-            //     gender: this.$route.params.active_item.gender == "M" ? "MALE" : "FEMALE",
-            //     physician: this.$route.params.active_item.physician,
-            //     title: this.$route.params.active_item.title
-            // }
-            return{
-                fullname: 'TEST', age: ['999','test'], gender: 'TEST',physician: 'TEST'
-            }
-        },
-    },
     methods: {
-        subsubmodules(index){
-            let submod_id = ['1','2','14']
-            return this.results[index]['subsubmodules'].filter(e => submod_id.includes(e.submod_id))
+        async print(){
+            let data = {
+                item_id: this.header_data.item_id,
+                user_id: this.$session.get('userid-session')
+            }
+            await this.$guest.post('/api/appointment/postPrintItem', this.$form_data.generate(data))
+            .then(res => {
+                if(res.data.status == true){
+                    this.$router.push(this.fullPath)
+                    this.print_form()
+                }
+            })
         },
-
-        print(){
-            this.print_form()
-        }
     }
     
 }

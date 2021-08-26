@@ -21,7 +21,6 @@
               </v-col>
             </v-row>
             <v-row no-gutters v-if="id != ''">
-                <!-- <v-col cols="4" v-for="(mitem, i) in menus" :key="i"> -->
                     <v-card class="ma-2" flat outlined>
                       <v-treeview
                         v-model="selected"
@@ -32,7 +31,6 @@
                         open-all
                       ></v-treeview>
                     </v-card>
-                <!-- </v-col> -->
             </v-row>
         </v-container>
     </v-card>
@@ -93,10 +91,6 @@ export default {
         })
         .catch(err => { console.log(err) })
       },
-
-      // menu(id){
-      //   return this.menus.filter(e => e.id == id)
-      // },
       async btn_save(){
         this.overlay.value = true
         let data = {

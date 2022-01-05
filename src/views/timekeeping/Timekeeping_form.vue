@@ -19,15 +19,15 @@
                             <li>
                                 <ul>
                                     <li style="width: 120px;">Employee id:</li>
-                                    <li>{{ employee.id }}</li>
+                                    <li><strong>{{ employee.id }}</strong></li>
                                 </ul>
                                 <ul>
                                     <li style="width: 120px;">Employee Status:</li>
-                                    <li>{{ employee.employment_status_desc }}</li>
+                                    <li><strong>{{ employee.employment_status_desc }}</strong></li>
                                 </ul>
                                 <ul>
                                     <li style="width: 120px;">Position:</li>
-                                    <li>{{ employee.position_desc }}</li>
+                                    <li><strong>{{ employee.position_desc }}</strong></li>
                                 </ul>
                             </li>
                         </ul>
@@ -38,11 +38,11 @@
                             <li>
                                 <ul>
                                     <li style="width: 100px;">Pay Period:</li>
-                                    <li>{{ payperiod.pperiod }}</li>
+                                    <li><strong>{{ payperiod.pperiod }}</strong></li>
                                 </ul>
                                 <ul>
                                     <li style="width: 100px;">Cutoff:</li>
-                                    <li style="color: red;">{{ payperiod.cfrom + " - " +  payperiod.cto}}</li>
+                                    <li style="color: red;"><strong>{{ payperiod.cfrom + " - " +  payperiod.cto}}</strong></li>
                                 </ul>
                             </li>
                         </ul>

@@ -152,7 +152,7 @@ export default {
 
     beforeCreate: function(){
         if(!this.$session.has('user-session')){
-            this.$router.push('/login');
+            this.$router.push({ path: '/login' });
         }
         let user_access = this.$session.get('user-access')
         let cpath = this.$route.path
@@ -161,7 +161,7 @@ export default {
           modpath.push(el.mod_path)
         })
         if(modpath.indexOf(cpath) == -1){
-          this.$router.push('/')
+          this.$router.push({ path: '/' })
         }
     },
     computed:{

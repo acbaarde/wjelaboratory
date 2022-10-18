@@ -3,7 +3,7 @@
       <v-app-bar flat app dense>
           <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
           <v-app-bar-title>
-              <!-- <span>WJE Diagnostic Laboratory</span> -->
+              <!-- <span>{{ $router.currentRoute.path.split('/')[1].charAt(0).toUpperCase() + $router.currentRoute.path.split('/')[1].slice(1) }}</span> -->
                 <!-- <v-breadcrumbs :items="items">
                     <template v-slot:divider>
                         <v-icon>mdi-chevron-right</v-icon>
@@ -259,7 +259,7 @@ export default {
     methods: {
       logout(){
         this.$session.destroy();
-        this.$router.push('/login');
+        this.$router.push({ path: '/login' });
       },
         async btn_save(){
             if(this.$refs.form.validate()){

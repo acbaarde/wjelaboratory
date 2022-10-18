@@ -1,14 +1,15 @@
 import Vue from 'vue';
 import Axios from 'axios';
 
+var apilink = process.env.NODE_ENV === 'production' ? 'http://' + location.hostname + ':' + location.port + '/myapp_api' : process.env.VUE_APP_APILINK;
 const guest = Axios.create({
-    baseURL: 'http://localhost:88/myapp_api',
+    baseURL: apilink,
     headers: {
         "Content-type": "application/x-www-form-urlencoded"
     },
     auth: {
-        username: 'admin',
-        password: 'admin'
+        username: process.env.VUE_APP_API_USERNAME,
+        password: process.env.VUE_APP_API_PASSWORD
     }
 });
 

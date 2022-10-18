@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <v-card class="my-16 mx-auto" max-width="400" elevation="2">
+        <v-card class="my-16 mx-auto" max-width="400" elevation="5">
             <v-card-title class="justify-center">
                 <div>
                     <v-img src="../assets/wjelogo.png"></v-img>
@@ -9,15 +9,20 @@
             <v-card-text class="justify-center">
                 <v-container>
                     <v-form @submit.prevent="handleSubmit()" v-model="is_valid">
-                        <v-text-field label="Username" v-model="username" :rules="usernameRules" outlined dense required></v-text-field>
+                        <v-text-field label="Username" v-model="username" :rules="usernameRules" outlined dense required
+                        prepend-icon="mdi-account-circle-outline"
+                        placeholder="Type your username"
+                        ></v-text-field>
                         <v-text-field label="Password" v-model="password" outlined dense required
+                            prepend-icon="mdi-lock-outline"
+                            placeholder="Type your password"
                             @click:append="passwordShow = !passwordShow"
                             :rules="passwordRules" 
                             :append-icon="passwordShow ? 'mdi-eye-off' : 'mdi-eye'" 
                             :type="passwordShow ? 'text' : 'password'"></v-text-field>
 
                         <v-alert v-if="msg" dense outlined :type="type">{{ msg }}</v-alert>
-                        <v-btn color="primary" block type="submit" class="mt-5">Log In</v-btn>
+                        <v-btn color="primary" outlined block type="submit" class="mt-5" text>Log In</v-btn>
                     </v-form>
 
                 </v-container>
@@ -31,7 +36,7 @@ export default {
     name: 'Login',
     beforeCreate: function(){
         if(this.$session.has('user-session')){
-            this.$router.push('/');
+            this.$router.push({ path: '/' });
         }
     }, 
     data(){
@@ -66,7 +71,7 @@ export default {
                         this.$session.set('usertype-session', res.data.user_type)
                         this.$session.set('userposn-session', posn)
                         this.$session.set('userposnid-session', posnid)
-                        this.$router.push('/')
+                        this.$router.push({ path: '/' })
                     }else{
                         this.type = 'error'
                         setTimeout(() => {

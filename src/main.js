@@ -3,15 +3,33 @@ import App from './App.vue';
 import vuetify from './plugins/vuetify';
 import router from './routes';
 import { guest } from './plugins/axios';
-import VueSession from 'vue-session';
+// import VueSession from 'vue-session';
+import VueEasySession from 'vue-easysession';
 import VueMask from 'v-mask';
 import MyFormData from "./scipts/formdata";
 import '@mdi/font/css/materialdesignicons.css';
 
 Vue.config.productionTip = false;
-Vue.use(VueSession, { persist: true });
+// Vue.use(VueSession, { persist: true });
 Vue.use(MyFormData)
 Vue.use(VueMask)
+
+var options = {
+  persist: true,
+  keySession: 'wjeSession',
+  expireSessionCallback: function(){
+    window.location.href = 'login'
+  }
+}
+
+Vue.use(VueEasySession.install, options)
+Vue.prototype.$session.start(18000000);
+
+router.afterEach(() => {
+  Vue.nextTick(() => {
+    document.title = process.env.VUE_APP_APPNAME;
+  });
+});
 
 Vue.mixin({
     methods: {
@@ -67,11 +85,11 @@ Vue.mixin({
 
             // Get all stylesheets HTML
             let stylesHtml = '';
-            for (const node of [...document.querySelectorAll('link[rel="prefetch"], style')]) {
+            for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
                 stylesHtml += node.outerHTML;
             }
             // Open the print window
-            const WinPrint = window.open();
+            const WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
             WinPrint.document.write(`<!DOCTYPE html>
             <html>
             <head>
@@ -85,7 +103,13 @@ Vue.mixin({
             WinPrint.document.close();
             WinPrint.focus();
             WinPrint.print();
-            WinPrint.close();
+            // WinPrint.close();
+            WinPrint.addEventListener('afterprint', () => {
+                WinPrint.close();
+            });
+            WinPrint.onafterprint( () => {
+                WinPrint.close();
+            });
           }
     }
 })

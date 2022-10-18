@@ -1,168 +1,328 @@
 <template>
   <div class="ma-n3">
-    <v-container fluid>
-      <Overlay :value="overlay.value" />
-      <v-card flat outlined>
-        <v-card-text>
-          <v-row no-gutters class="mb-2">
-            <v-col cols="2" class="mr-2">
-              <v-text-field v-model="active_item.patient_id" readonly dense outlined hide-details label="Patient ID No."></v-text-field>
-            </v-col>
-            <v-dialog v-model="dialog" persistent width="80%">
-              <template v-slot:activator="{on, attrs}">
-                <v-btn v-if="route_stat==''" fab small elevation="1" dark class="mr-2" color="info" v-bind="attrs" v-on="on" @click="loadPatients()">
-                  <v-icon>mdi-magnify</v-icon>
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-title>
-                  <span>Search Patient</span>
-                  <v-spacer></v-spacer>
-                  <v-btn icon small @click="dialog=false"><v-icon>mdi-close</v-icon></v-btn>
-                </v-card-title>
-                <v-divider></v-divider>
-                <v-card-text>
-                  <v-data-table :headers="patient_table_headers" :items="patient_table_items" dense hide-default-footer :items-per-page="-1">
-                    <template v-slot:top>
-                      <v-toolbar flat>
+    <v-row>
+        <v-col cols="9" style="padding: 0;">
+          <v-container fluid>
+            <Overlay :value="overlay.value" />
+            <v-card flat outlined>
+              <v-card-text>
+                <v-row no-gutters class="mb-2">
+                  <!-- <v-col cols="2" class="mr-2">
+                    <v-text-field v-model="active_item.patient_id" readonly dense outlined hide-details label="Patient ID No."></v-text-field>
+                  </v-col> -->
+                  <!-- <v-dialog v-model="dialog" persistent width="80%">
+                    <template v-slot:activator="{on, attrs}">
+                      <v-btn x-small color="info" block v-bind="attrs" v-on="on" @click="loadPatients()">PATIENT INFO</v-btn>
+                      <v-btn v-if="route_stat==''" elevation="1" dark class="mr-2" color="info" v-bind="attrs" v-on="on" @click="loadPatients()">
+                        <v-icon left>mdi-magnify</v-icon><span>Patient</span>
+                      </v-btn>
+                    </template>
+                    <v-card>
+                      <v-card-title>
+                        <span>Search Patient</span>
                         <v-spacer></v-spacer>
-                        <v-flex md1 class="mx-1">
-                          <v-select v-model="rowFilter" @change="key_search()" :items="rowItems" item-text="text" item-value="value" hide-details dense outlined label="ROWS"></v-select>
-                        </v-flex>
-                        <v-text-field class="shrink" v-model="search" @keyup="key_search()" append-icon="mdi-magnify" label="Search" outlined dense hide-details></v-text-field>
-                      </v-toolbar>
-                    </template>
-                    <template v-slot:[`item.id`]="{ item }">
-                      <v-btn text small color="success" @click="btn_patient(item)">{{ item.id }}</v-btn>
-                    </template>
-                    <template v-slot:footer={}>
+                        <v-btn icon small @click="dialog=false"><v-icon>mdi-close</v-icon></v-btn>
+                      </v-card-title>
                       <v-divider></v-divider>
-                      <div class="pt-2">
-                        <v-pagination v-model="page" @input="currentPage" :length="pageLength" :total-visible="7"></v-pagination>
-                      </div>
-                    </template>
-                  </v-data-table>
-                </v-card-text>
-              </v-card>
-            </v-dialog>
+                      <v-card-text>
+                        <v-data-table :headers="patient_table_headers" :items="patient_table_items" dense hide-default-footer :items-per-page="-1">
+                          <template v-slot:top>
+                            <v-toolbar flat>
+                              <v-spacer></v-spacer>
+                              <v-flex md1 class="mx-1">
+                                <v-select v-model="rowFilter" @change="key_search()" :items="rowItems" item-text="text" item-value="value" hide-details dense outlined label="ROWS"></v-select>
+                              </v-flex>
+                              <v-text-field class="shrink" v-model="search" @keyup="key_search()" append-icon="mdi-magnify" label="Search" outlined dense hide-details></v-text-field>
+                            </v-toolbar>
+                          </template>
+                          <template v-slot:[`item.id`]="{ item }">
+                            <v-btn text small color="success" @click="btn_patient(item)">{{ item.id }}</v-btn>
+                          </template>
+                          <template v-slot:footer={}>
+                            <v-divider></v-divider>
+                            <div class="pt-2">
+                              <v-pagination v-model="page" @input="currentPage" :length="pageLength" :total-visible="7"></v-pagination>
+                            </div>
+                          </template>
+                        </v-data-table>
+                      </v-card-text>
+                    </v-card>
+                  </v-dialog> -->
+                  <v-text-field class="shrink" v-model="route_ctrlno" label="Control #." dense outlined hide-details readonly></v-text-field>
+                </v-row>
+                <!-- <v-row no-gutters class="mb-2">
+                  <v-col cols="4" class="mr-2">
+                    <v-text-field v-model="fullname" readonly dense outlined hide-details label="Patient Name"></v-text-field>
+                  </v-col>
+                  <v-col cols="2" class="mr-2">
+                    <v-text-field v-model="gender" readonly dense outlined hide-details label="Gender"></v-text-field>
+                  </v-col>
+                  <v-col cols="1" class="mr-2">
+                    <v-text-field v-model="age" readonly dense outlined hide-details label="Age"></v-text-field>
+                  </v-col>
+                  <v-col>
+                    <v-text-field v-model="active_item.address" readonly dense outlined hide-details label="Address"></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters class="mb-2">
+                  <v-col cols="4" class="mr-2">
+                    <v-select :disabled="route_stat=='D'||route_stat=='C'" v-model="physician_selected.value" @change="physician_changed()" label="Physician" :prefix="physicianprefix" :items="physicians" item-text="text" item-value="value" dense outlined hide-details></v-select>
+                  </v-col>
+                  <v-col cols="2" class="mr-2">
+                    <v-select :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_selected.id" @change="discount_changed()" :readonly="route_stat!=''" label="Discount Type" :items="discount" item-text="text" item-value="id" dense outlined hide-details></v-select>
+                  </v-col>
+                  <v-col cols="1" class="mr-2">
+                    <v-text-field v-model="discount_selected.percent" :readonly="discount_selected.id == 3 ? false : true" dense outlined hide-details label="Disc. %"></v-text-field>
+                  </v-col>
+                  <v-col>
+                    <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_rmks" clearable dense outlined hide-details label=" Discount Remarks"></v-text-field>
+                  </v-col>
+                </v-row> -->
+                <v-row no-gutters class="mb-2" v-if="route_stat==''">
+                  <v-col cols="6" class="mr-2">
+                    <v-dialog v-model="dialog" persistent width="80%">
+                      <template v-slot:activator="{on, attrs}">
+                        <v-btn x-small color="info" block v-bind="attrs" v-on="on" @click="loadPatients()">PATIENT INFO</v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>
+                          <span>Search Patient</span>
+                          <v-spacer></v-spacer>
+                          <v-btn icon small @click="dialog=false"><v-icon>mdi-close</v-icon></v-btn>
+                        </v-card-title>
+                        <v-divider></v-divider>
+                        <v-card-text>
+                          <v-data-table :headers="patient_table_headers" :items="patient_table_items" dense hide-default-footer :items-per-page="-1">
+                            <template v-slot:top>
+                              <v-toolbar flat>
+                                <v-spacer></v-spacer>
+                                <v-flex md1 class="mx-1">
+                                  <v-select v-model="rowFilter" @change="key_search()" :items="rowItems" item-text="text" item-value="value" hide-details dense outlined label="ROWS"></v-select>
+                                </v-flex>
+                                <v-text-field class="shrink" v-model="search" @keyup="key_search()" append-icon="mdi-magnify" label="Search" outlined dense hide-details></v-text-field>
+                                <v-btn color="primary" class="ml-2" dark @click="add_patient()">ADD</v-btn>
+                              </v-toolbar>
+                            </template>
+                            <template v-slot:[`item.id`]="{ item }">
+                              <v-btn text small color="success" @click="btn_patient(item)">{{ item.id }}</v-btn>
+                            </template>
+                            <template v-slot:footer={}>
+                              <v-divider></v-divider>
+                              <div class="pt-2">
+                                <v-pagination v-model="page" @input="currentPage" :length="pageLength" :total-visible="7"></v-pagination>
+                              </div>
+                            </template>
+                          </v-data-table>
+                        </v-card-text>
+                      </v-card>
+                    </v-dialog>
+                  </v-col>
+                  <v-col>
+                    <v-dialog v-model="dialog_phy" width="50%">
+                      <template v-slot:activator="{on, attrs}">
+                        <v-btn x-small color="info" block v-bind="attrs" v-on="on">PHYSICIAN INFO</v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>
+                          <span>Update Details</span>
+                          <v-spacer></v-spacer>
+                          <v-btn icon small @click="dialog_phy=false"><v-icon>mdi-close</v-icon></v-btn>
+                        </v-card-title>
+                        <v-divider></v-divider>
+                        <v-card-text>
+                          <v-row no-gutters class="my-2">
+                            <v-col>
+                              <v-select class="mb-2" clearable @click:clear="clearPhysician" :disabled="route_stat=='D'||route_stat=='C'" v-model="physician_selected.value" @change="physician_changed()" label="Physician" :prefix="physicianprefix" :items="physicians" item-text="text" item-value="value" dense outlined hide-details></v-select>
+                              <v-select class="mb-2" clearable @click:clear="clearDiscount" :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_selected.id" @change="discount_changed()" :readonly="route_stat!=''" label="Discount Type" :items="discount" item-text="text" item-value="id" dense outlined hide-details></v-select>
+                              <v-text-field class="mb-2" v-model="discount_selected.percent"  :readonly="discount_selected.id == 3 ? false : true" dense outlined hide-details label="Disc. %"></v-text-field>
+                              <v-text-field class="mb-2" :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_rmks" clearable dense outlined hide-details label=" Discount Remarks"></v-text-field>
+                            </v-col>
+                          </v-row>
+                        </v-card-text>
+                      </v-card>
+                    </v-dialog>
+                  </v-col>
+                </v-row>
 
-            <v-spacer></v-spacer>
-            <v-text-field class="shrink" v-model="route_ctrlno" label="Control #." dense outlined hide-details readonly></v-text-field>
-          </v-row>
-          <v-row no-gutters class="mb-2">
-            <v-col cols="4" class="mr-2">
-              <v-text-field v-model="fullname" readonly dense outlined hide-details label="Patient Name"></v-text-field>
-            </v-col>
-            <v-col cols="2" class="mr-2">
-              <v-text-field v-model="gender" readonly dense outlined hide-details label="Gender"></v-text-field>
-            </v-col>
-            <v-col cols="1" class="mr-2">
-              <v-text-field v-model="age" readonly dense outlined hide-details label="Age"></v-text-field>
-            </v-col>
-            <v-col>
-              <v-text-field v-model="active_item.address" readonly dense outlined hide-details label="Address"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="mb-2">
-            <v-col cols="4" class="mr-2">
-              <v-select :disabled="route_stat=='D'||route_stat=='C'" v-model="physician_selected.value" @change="physician_changed()" label="Physician" :prefix="physicianprefix" :items="physicians" item-text="text" item-value="value" dense outlined hide-details></v-select>
-            </v-col>
-            <v-col cols="2" class="mr-2">
-              <v-select :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_selected.id" @change="discount_changed()" :readonly="route_stat!=''" label="Discount Type" :items="discount" item-text="text" item-value="id" dense outlined hide-details></v-select>
-            </v-col>
-            <v-col cols="1" class="mr-2">
-              <v-text-field v-model="discount_selected.percent" :readonly="discount_selected.id == 3 ? false : true" dense outlined hide-details label="Disc. %"></v-text-field>
-            </v-col>
-            <v-col>
-              <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_rmks" clearable dense outlined hide-details label=" Discount Remarks"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="mb-2">
-            <v-spacer></v-spacer>
-            <v-dialog v-model="lab_dialog" persistent scrollable width="70%">
-              <template v-slot:activator="on,attrs">
-                <v-btn :disabled="route_stat=='D'||route_stat=='C'" color="green" dark v-bind="attrs" v-on="on" @click="btn_add_lab_test()"><v-icon left>mdi-plus</v-icon>ADD LAB TEST</v-btn>
-              </template>
-              <v-card>
-                <v-card-title>
-                  <span>Add Laboratory Test</span>
+                <v-row no-gutters class="ml-2 mb-2">
+                  <v-col cols="6" class="mr-2">
+                    <ul>
+                      <li>
+                        <ul style="padding-left: 5;">
+                            <li style="width: 120px;">Patient ID:</li>
+                            <li style="color: #4caf50;"><strong>{{ active_item.patient_id }}</strong></li>
+                        </ul>
+                        <ul>
+                            <li style="width: 120px;">Patient Name:</li>
+                            <li><strong>{{ fullname }}</strong></li>
+                        </ul>
+                        <ul>
+                            <li style="width: 120px;">Gender:</li>
+                            <li><strong>{{ gender }}</strong></li>
+                        </ul>
+                        <ul>
+                            <li style="width: 120px;">Age:</li>
+                            <li><strong>{{ age }}</strong></li>
+                        </ul>
+                        <ul>
+                            <li style="width: 120px;">Address:</li>
+                            <li><strong>{{ active_item.address }}</strong></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </v-col>
+                  <v-col>
+                    <ul>
+                      <li>
+                        <ul style="padding-left: 5;">
+                            <li style="width: 120px;">Physician Name:</li>
+                            <li><strong>{{ physicianprefix + ' ' + physician_name }}</strong></li>
+                        </ul>
+                        <ul>
+                            <li style="width: 120px;">Discount Type:</li>
+                            <li><strong>{{ discount_type }}</strong></li>
+                        </ul>
+                        <ul>
+                            <li style="width: 120px;">Discount %:</li>
+                            <li><strong>{{ discount_selected.percent > 0 ? discount_selected.percent : '' }}</strong></li>
+                        </ul>
+                        <ul>
+                            <li style="width: 120px;">Disc. Remarks:</li>
+                            <li><strong>{{ discount_rmks }}</strong></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </v-col>
+                </v-row>
+
+                <v-row no-gutters class="mb-2">
                   <v-spacer></v-spacer>
-                  <v-btn icon small @click="lab_dialog=false"><v-icon>mdi-close</v-icon></v-btn>
-                </v-card-title>
-                <v-divider></v-divider>
-                <v-card-text class="pa-0">
-                  <v-tabs v-model="tab" show-arrows>
-                      <v-tab v-for="item in tab_headers" :key="item.id">
-                        {{ item.title }}
-                      </v-tab>
-                  </v-tabs>
-                  <v-divider></v-divider>
-                  <v-card class="ma-4" flat outlined>
-                    <v-tabs-items v-model="tab">
-                    <v-tab-item v-for="item in tab_headers" :key="item.id">
-                      <v-data-table :headers="lab_table_headers" :items="lab_table_items(item.id)" dense>
-                        <template v-slot:[`item.actions`]="{item}">
-                          <v-btn small dark color="success" @click="btn_save_lab_test(item)">ADD</v-btn>
+                  <v-dialog v-model="lab_dialog" persistent scrollable width="90%">
+                    <template v-slot:activator="on,attrs">
+                      <v-btn :disabled="route_stat=='D'||route_stat=='C'||active_item.patient_id==''" :dark="active_item.patient_id!=''" color="green" block v-bind="attrs" v-on="on" @click="btn_add_lab_test()"><v-icon left>mdi-plus</v-icon>ADD LABORATORY TEST</v-btn>
+                    </template>
+                    <v-card>
+                      <v-card-title>
+                        <span>Add Laboratory Test</span>
+                        <v-spacer></v-spacer>
+                        <v-btn icon small @click="lab_dialog=false"><v-icon>mdi-close</v-icon></v-btn>
+                      </v-card-title>
+                      <v-divider></v-divider>
+                      <v-card-text class="pa-0">
+                        <v-tabs v-model="tab" show-arrows>
+                            <v-tab v-for="item in tab_headers" :key="item.id">
+                              {{ item.title }}
+                            </v-tab>
+                        </v-tabs>
+                        <v-divider></v-divider>
+                        <v-card class="ma-4" flat outlined>
+                          <v-tabs-items v-model="tab">
+                          <v-tab-item v-for="item in tab_headers" :key="item.id">
+                            <v-data-table :headers="lab_table_headers" :items="lab_table_items(item.id)" dense>
+                              <template v-slot:[`item.actions`]="{item}">
+                                <v-btn small dark color="success" @click="btn_save_lab_test(item)">ADD</v-btn>
+                              </template>
+                            </v-data-table>
+                          </v-tab-item>
+                        </v-tabs-items>
+                        </v-card>
+
+                      </v-card-text>
+                    </v-card>
+                  </v-dialog>
+                </v-row>
+              <v-divider></v-divider>
+                      <v-data-table :headers="table_headers" :items="table_items" :items-per-page="-1" dense hide-default-footer>
+                        <template v-slot:[`item.title`]="{item}">
+                          {{ item.title }} {{ item.send_out==1 ? "(SEND OUT)" : ''  }}
+                        </template>
+                        <template v-slot:[`item.status`]="{ item }">
+                          <div v-if="item.status=='P'">
+                            <v-btn v-if="route_apprvd=='Y'||discount_selected.id!=3" small text color="info">FOR PRINT</v-btn>
+                            <v-btn v-if="route_apprvd==''&&discount_selected.id==3" text small color="info">FOR APPROVAL</v-btn>
+                          </div>
+                          <v-btn v-if="item.send_out==0 && item.status=='D' && $session.get('usertype-session')=='ADMIN'" text small color="info" @click="btn_reprint(item)">RE-PRINT</v-btn>
+                          <v-btn v-if="item.status=='D'" text small color="success">DONE</v-btn>
+                          <v-btn v-if="item.status==''" text small color="warning">PENDING</v-btn>
+                          <v-btn v-if="item.status=='C'" text small color="error">CANCELLED</v-btn>
+                        </template>
+                        <template v-slot:[`item.actions`]="{ item }">
+                          <v-btn v-if="item.status=='' && item.send_out==1 && ($session.get('userposnid-session')==1 || $session.get('usertype-session')=='ADMIN')" x-small color="success" @click="btn_sendout(item)">SEND OUT</v-btn>
+                          <v-btn v-if="(item.status=='' || item.status=='P') && item.send_out==0 && ($session.get('userposnid-session')==1 || $session.get('usertype-session')=='ADMIN')" x-small color="info" @click="btn_results(item)">RESULTS</v-btn>
+                          
+                          <template v-if="item.status=='' || typeof item.status == 'undefined'">
+                            <v-btn v-if="item.so_status==''" x-small color="error" @click="btn_remove_item(item)">REMOVE</v-btn>
+                          </template>
+                          <template v-if="route_stat!='D'">
+                            <v-btn v-if="(item.status==''&&item.so_status=='0') || item.status=='P' && ($session.get('userposnid-session')==1 || $session.get('usertype-session')=='ADMIN')" x-small color="error" @click="btn_cancel_item(item)">CANCEL</v-btn>
+                          </template>
+
+                          <template v-if="item.status=='C'">
+                            <v-btn x-small color="error" @click="btn_viewreason(item)">VIEW REASON</v-btn>
+                          </template>
                         </template>
                       </v-data-table>
-                    </v-tab-item>
-                  </v-tabs-items>
-                  </v-card>
-
-                </v-card-text>
-              </v-card>
-            </v-dialog>
-          </v-row>
-        <v-divider></v-divider>
-                <v-data-table :headers="table_headers" :items="table_items" dense hide-default-footer>
-                  <template v-slot:[`item.title`]="{item}">
-                    {{ item.title }} {{ item.send_out==1 ? "(SEND OUT)" : ''  }}
+                      <v-btn v-if="btn_s==true" small block color="primary" class="mt-2" @click="btn_save()">SAVE</v-btn>
+              </v-card-text>
+              <!-- <v-divider></v-divider>
+              <v-card-actions>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="total_cash" :error="cash_err" placeholder="0.00" color="success" outlined label="CASH" class="shrink mr-2" hide-details></v-text-field>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="total_change" placeholder="0.00" outlined label="CHANGE" class="shrink mr-2" readonly hide-details></v-text-field>
+                <v-spacer></v-spacer>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="total_fee" outlined label="LAB FEE(s)" class="shrink mr-2" readonly hide-details></v-text-field>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="total_amount" success color="info" outlined label="TOTAL AMOUNT" class="shrink mr-2" readonly hide-details></v-text-field>
+                
+                <template v-if="route_stat=='P'||route_stat==''" >
+                  <v-btn :disabled="active_item.patient_id == '' ? true:false" color="primary" @click="btn_save()">SAVE</v-btn>
+                  <template>
+                    <v-btn v-if="for_posting" color="info" @click="btn_post()">POST</v-btn>
+                    <v-btn v-else color="error" @click="btn_cancel()">CANCEL</v-btn>
                   </template>
-                  <template v-slot:[`item.status`]="{ item }">
-                    <div v-if="item.status=='P'">
-                      <v-btn v-if="route_apprvd=='Y'||discount_selected.id!=3" small text color="info">PRINT</v-btn>
-                      <v-btn v-if="route_apprvd==''&&discount_selected.id==3" text small color="info">FOR APPROVAL</v-btn>
-                    </div>
-                    <v-btn v-if="item.send_out==0 && item.status=='D' && $session.get('usertype-session')=='ADMIN'" text small color="info" @click="btn_reprint(item)">RE-PRINT</v-btn>
-                    <v-btn v-if="item.status=='D'" text small color="success">DONE</v-btn>
-                    <v-btn v-if="item.status==''" text small color="warning">PENDING</v-btn>
-                    <v-btn v-if="item.status=='C'" text small color="error">CANCELLED</v-btn>
-                  </template>
-                  <template v-slot:[`item.actions`]="{ item }">
-                    <v-btn v-if="item.status=='' && item.send_out==1 && ($session.get('userposnid-session')==1 || $session.get('usertype-session')=='ADMIN')" text small color="success" @click="btn_sendout(item)">SEND OUT</v-btn>
-                    <v-btn v-if="(item.status=='' || item.status=='P') && item.send_out==0 && ($session.get('userposnid-session')==1 || $session.get('usertype-session')=='ADMIN')" text small color="info"  @click="btn_results(item)">RESULTS</v-btn>
-                    
-                    <template v-if="item.status=='' || typeof item.status == 'undefined'">
-                      <v-btn v-if="item.so_status==''" text small color="error" @click="btn_remove_item(item)">REMOVE</v-btn>
-                    </template>
-                    <template v-if="route_stat!='D'">
-                      <v-btn v-if="(item.status==''&&item.so_status=='0') || item.status=='P' && ($session.get('userposnid-session')==1 || $session.get('usertype-session')=='ADMIN')" text small color="error" @click="btn_cancel_item(item)">CANCEL</v-btn>
-                    </template>
-
-                    <template v-if="item.status=='C'">
-                      <v-btn text small color="error" @click="btn_viewreason(item)">VIEW REASON</v-btn>
-                    </template>
-                  </template>
-                </v-data-table>
-        </v-card-text>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="total_cash" :error="cash_err" placeholder="0.00" color="success" outlined label="CASH" class="shrink mr-2" hide-details></v-text-field>
-          <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="total_change" placeholder="0.00" outlined label="CHANGE" class="shrink mr-2" readonly hide-details></v-text-field>
-          <v-spacer></v-spacer>
-          <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="total_fee" outlined label="LAB FEE(s)" class="shrink mr-2" readonly hide-details></v-text-field>
-          <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="total_amount" success color="info" outlined label="TOTAL AMOUNT" class="shrink mr-2" readonly hide-details></v-text-field>
+                </template>
+              </v-card-actions> -->
+            </v-card>
+          </v-container>
+        </v-col>
+        <v-col cols="3" style="padding: 0;">
+          <v-container fluid>
+            <v-card flat outlined>
+              <v-card-title>
+                <v-btn :disabled="route_stat=='D'||route_stat=='C'||table_items.length==0" block small text outlined color="info" @click="payment_dialog=true">ADD PAYMENT</v-btn>
+              </v-card-title>
+              <v-card-text no-gutters class="my-2">
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" dense append-icon="mdi-currency-php" label="TOTAL LAB FEE" value="0.00" v-model="total_fee" reverse readonly></v-text-field>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" dense append-icon="mdi-currency-php" label="DISCOUNT" value="0.00" v-model="total_disc" reverse readonly></v-text-field>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" dense append-icon="mdi-currency-php" label="CASH" value="0.00" v-model="total_cash" reverse readonly :error="cash_err"></v-text-field>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" dense append-icon="mdi-currency-php" label="CHANGE" value="0.00" v-model="total_change" reverse readonly></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-text-field hide-details :disabled="route_stat=='D'||route_stat=='C'" success outlined append-icon="mdi-currency-php" label="TOTAL AMOUNT" value="0.00" v-model="total_amount" reverse readonly></v-text-field>
+              </v-card-actions>
+            </v-card>
+          </v-container>
           
-          <template v-if="route_stat=='P'||route_stat==''" >
-            <v-btn :disabled="active_item.patient_id == '' ? true:false" color="primary" @click="btn_save()">SAVE</v-btn>
-            <template>
-              <v-btn v-if="for_posting" color="info" @click="btn_post()">POST</v-btn>
-              <v-btn v-else color="error" @click="btn_cancel()">CANCEL</v-btn>
+          <v-container fluid>
+            <template v-if="route_stat=='P'||route_stat==''" >
+                <v-btn v-if="for_posting" block color="info" text outlined @click="btn_post()">POST</v-btn>
+                <v-btn v-else block color="error" text outlined @click="btn_cancel()">CANCEL</v-btn>
             </template>
-          </template>
+          </v-container>
+        </v-col>
+      </v-row>
+
+    <v-dialog v-model="payment_dialog" persistent scrollable width="20%">
+      <v-card>
+        <v-card-title><span>ADD PAYMENT</span></v-card-title>
+        <v-card-text>
+          <v-row no-gutters class="mt-2">
+            <v-text-field dense append-icon="mdi-currency-php" label="CASH" placeholder="0.00" v-model="total_cash" @focus="cashFocus" reverse hide-details></v-text-field>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn small block color="primary" @click="btn_save()">SAVE</v-btn>
         </v-card-actions>
       </v-card>
-    </v-container>
+    </v-dialog>
 
     <v-dialog v-model="result_dialog" persistent scrollable width="60%">
       <v-card>
@@ -194,21 +354,22 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="cancel_dialog" persistent scrollable width="30%">
+    <v-dialog v-model="cancel_dialog" persistent scrollable width="50%">
       <v-card>
-        <v-card-title class="headline grey lighten-2">Cancel</v-card-title>
+        <v-card-title class="headline grey lighten-2">Cancel Laboratory test?</v-card-title>
         <v-divider></v-divider>
         <v-card-text class="text-left text-h6 pa-5">
-          <span>Cancellation can't be undone, Proceed anyway?</span>
+          <!-- <span>Cancellation can't be undone, Proceed anyway?</span> -->
           <v-form ref="form">
-            <v-text-field v-model="cancel_reason" outlined dense label="Reason" class="mt-4" required :rules="cancel_reasonRules"></v-text-field>
+            <!-- <v-text-field v-model="cancel_reason" outlined dense label="Reason" class="mt-4" required :rules="cancel_reasonRules"></v-text-field> -->
+            <v-textarea v-model="cancel_reason" outlined clearable auto-grow rows="4" label="Reason" mt-4 required :rules="cancel_reasonRules"></v-textarea>
           </v-form>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn small outlined color="primary" @click="btn_confirm()">Yes</v-btn>
-          <v-btn small outlined color="error" @click="cancel_dialog=false, $refs.form.reset(), cancel_reason=''">NO</v-btn>
+          <v-btn text color="primary" @click="cancel_dialog=false, $refs.form.reset(), cancel_reason=''">CLOSE</v-btn>
+          <v-btn text color="error" @click="btn_confirm()">OK</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -246,24 +407,24 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn small outlined color="primary" @click="postEntry()">YES</v-btn>
-          <v-btn small outlined color="error" @click="post_dialog=false">NO</v-btn>
+          <v-btn small text color="error" @click="post_dialog=false">CLOSE</v-btn>
+          <v-btn small text color="primary" @click="postEntry()">OK</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <v-dialog v-model="void_dialog" persistent scrollable width="30%">
       <v-card>
-        <v-card-title class="headline grey lighten-2">Confirm</v-card-title>
+        <v-card-title class="headline grey lighten-2">Cancel</v-card-title>
         <v-divider></v-divider>
         <v-card-text class="text-left text-h6 pa-5">
-          Proceed Cancel Entry?
+          Do you want to cancel transaction?
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn small outlined color="primary" @click="cancelEntry()">YES</v-btn>
-          <v-btn small outlined color="error" @click="void_dialog=false">NO</v-btn>
+          <v-btn small text color="error" @click="void_dialog=false">Close</v-btn>
+          <v-btn small text color="primary" @click="cancelEntry()">Ok</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -317,6 +478,7 @@ export default {
           value: false
         },
       dialog: false,
+      dialog_phy: false,
       lab_dialog: false,
       result_dialog: false,
       cancel_dialog: false,
@@ -324,6 +486,7 @@ export default {
       post_dialog: false,
       void_dialog: false,
       reason_dialog: false,
+      payment_dialog: false,
       cancelled: {
         reason: '',
         date: '',
@@ -381,19 +544,20 @@ export default {
       ],
       result_table_items: [],
       physicians: [{
-        text: ''
+        text: '', gender: '', value: 0
       }],
-      physician_selected: {},
+      physician_selected: { text: '', gender: '', value: 0 },
       discount: [],
       discount_selected: {},
       discount_rmks: '',
       tab_headers: [],
       tab_items: [],
-      total_cash: '',
+      total_cash: '0.00',
       result_remarks: '',
       cancel_reason: '',
       item_id: '',
       item_title: '',
+      btn_s: false,
     }
   },
 
@@ -417,13 +581,20 @@ export default {
       return gnder
     },
     physicianprefix(){
-      return this.physician_selected.gender == 'F' ? 'Dra.' : 'Dr.'
+      var gender = this.physicians.filter(e=> e.value == this.physician_selected.value).length > 0 ? this.physicians.filter(e=> e.value == this.physician_selected.value)[0].gender : '';
+      return gender == 'F' ? 'Dra.' : gender == 'M' ? 'Dr.' : '';
     },
 
     total_amount(){
-      let total = Object.values(this.table_items.filter(e=>e.status!='C')).reduce((total, { amount }) => total + parseFloat(amount), 0).toFixed(2)
-      let percent = typeof this.discount_selected.percent == 'undefined' ? 0 : this.discount_selected.percent
-      return total > 0 ? (total - ((percent/100) * total)).toFixed(2) : '0.00'
+      let total = Object.values(this.table_items.filter(e=>e.status!='C')).reduce((total, { amount }) => total + parseFloat(amount), 0).toFixed(2);
+      let percent = typeof this.discount_selected.percent == 'undefined' ? 0 : this.discount_selected.percent;
+      return total > 0 ? (total - ((percent/100) * total)).toFixed(2) : '0.00';
+    },
+
+    total_disc(){
+      let total = Object.values(this.table_items.filter(e=>e.status!='C')).reduce((total, { amount }) => total + parseFloat(amount), 0).toFixed(2);
+      let percent = typeof this.discount_selected.percent == 'undefined' ? 0 : this.discount_selected.percent;
+      return total > 0 ? ((percent/100) * total).toFixed(2) : '0.00';
     },
 
     total_fee(){
@@ -434,7 +605,7 @@ export default {
       if(parseInt(this.total_cash) > parseInt(this.total_amount)){
         return (this.total_cash - this.total_amount) > 0 ? (this.total_cash - this.total_amount).toFixed(2) : ""
       }else{
-        return ''
+        return '0.00'
       }
     },
 
@@ -444,14 +615,35 @@ export default {
 
     cash_err(){
       return parseInt(this.total_amount) > parseInt(this.total_cash==''?0:this.total_cash) ? true : false
-    }
+    },
+    physician_name(){
+      return this.physicians.filter(e=>e.value == this.physician_selected.value).length > 0 ? this.physicians.filter(e=>e.value == this.physician_selected.value)[0].text : '';
+    },
+    discount_type(){
+      return this.discount.filter(e=>e.id == this.discount_selected.id).length > 0 ? this.discount.filter(e=>e.id == this.discount_selected.id)[0].text : '';
+    },
+    table_items_helper(){
+      return JSON.parse(JSON.stringify(this.table_items));
+    },
   },
 
   created(){
-    this.initialize()
+    this.initialize();
+  },
+
+  watch: {
+    table_items_helper:{
+      handler: function(newVal, oldVal){
+        this.btn_s = newVal.filter(e=> typeof e.item_id == 'undefined').length > 0 ? true : newVal.length < oldVal.length ? true : false
+      },
+      deep: true
+    },
   },
 
   methods: {
+    cashFocus(){
+      this.total_cash > 0 ? this.total_cash : this.total_cash = '';
+    },
     async initialize(){
       this.overlay.value = true
       if(this.route_stat != ''){
@@ -460,6 +652,7 @@ export default {
         }
         await this.$guest.post('/api/appointment/getEntry', this.$form_data.generate(data))
         .then(res => {
+          console.log(res.data)
           this.active_item = res.data.patient
           this.table_items = res.data.submodule
           this.physician_selected.value = res.data.patient.physician_id
@@ -468,7 +661,7 @@ export default {
             percent: res.data.patient.discount_percent
           }
           this.discount_rmks = res.data.patient.discount_rmks
-          this.total_cash = res.data.patient.cash > 0 ? res.data.patient.cash : ''
+          this.total_cash = res.data.patient.cash > 0 ? res.data.patient.cash : '0.00'
         })
         .catch(err => { console.log(err) })
       }
@@ -481,11 +674,11 @@ export default {
       await this.$guest.get('/api/data_maintenance/getDiscount')
       .then(res => {
         this.discount = res.data
-        this.discount.push({ id: '', text: 'No Discount', percent: 0 })
+        // this.discount.push({ id: '', text: '', percent: '' })
         this.overlay.value = false
       })
       .catch(err => {console.log(err)})
-      
+
     },
     async currentPage(){
       this.loadPatients()
@@ -542,7 +735,7 @@ export default {
         await this.$guest.post(url, this.$form_data.generate(data))
         .then(res => {
           if(res.data.status == true){
-            this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(res.data.control_id), stat: btoa(res.data.appointment_status), apprvd: btoa(res.data.apprvd) } })
+            this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(res.data.control_id), stat: btoa(res.data.appointment_status), apprvd: btoa(res.data.apprvd) } }).catch(() => {})
             window.location.reload()
           }
         })
@@ -568,7 +761,6 @@ export default {
       this.table_items.splice(this.table_items.indexOf(item),1)
     },
     btn_viewreason(item){
-      console.log(item)
       this.reason_dialog = true
       this.cancelled.reason = item.cancel_reason
       this.cancelled.date = this.formatDateTime(item.cancelled_at)
@@ -639,7 +831,6 @@ export default {
     },
 
     btn_sendout(item){
-      console.log(item)
       this.sendout_dialog = true
       this.send_out.id = item.item_id
       this.send_out.clinic = item.so_clinic
@@ -728,7 +919,6 @@ export default {
       }
       this.$guest.post('/api/appointment/cancelEntry', this.$form_data.generate(data))
       .then(res => {
-        console.log(res.data)
         if(res.data.status == true){
           this.void_dialog = false
           this.snackbar = {
@@ -776,7 +966,8 @@ export default {
         if(e.id == this.discount_selected.id){
           const disc_sel = {
             'id': e.id,
-            'percent': e.percent
+            'percent': e.percent,
+            'text': e.text
           }
           this.discount_selected = Object.assign({}, disc_sel)
         }
@@ -787,7 +978,8 @@ export default {
         if(e.value == this.physician_selected.value){
           const phy_sel = {
             'value': e.value,
-            'gender': e.gender
+            'gender': e.gender,
+            'name': e.text
           }
           this.physician_selected = Object.assign({}, phy_sel)
         }
@@ -800,10 +992,38 @@ export default {
         tbl_items.push(el.id)
       })
       return this.tab_items.filter(e => e.mod_id == id && !tbl_items.includes(e.id))
+    },
+    clearPhysician(){
+      this.$nextTick(() => {
+        this.physician_selected = Object.assign({}, { value: 0 })
+      })
+    },
+    clearDiscount(){
+      this.$nextTick(() => {
+        this.discount_selected = Object.assign({}, { id: 0, text: '', percent: '' })
+      })
+    },
+    // discountLimit(value){
+    //   value >= 100 ? value : 
+    //   console.log(value)
+    // },
+    discountLength(value){
+      return value <= 100 ? '###' : value == 100 ? '###' : '##'; 
+    },
+    add_patient(){
+      this.$router.push({ name: 'Patient_lists_form'})
     }
   }
 }
 </script>
 
 <style scoped>
+ul li{
+    font-size: 15px;
+    display: inline-block;
+    list-style: none;
+}
+ul {
+  padding-left: 0;
+}
 </style>

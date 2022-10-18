@@ -53,7 +53,7 @@
 
             <v-card-text>
                 <v-divider></v-divider>
-                    <v-tabs v-model="tab" show-arrows>
+                    <v-tabs v-model="tab" show-arrows fixed-tabs>
                         <v-tab key="DTR">
                             DTR
                         </v-tab>
@@ -69,6 +69,9 @@
                         <v-tab key="item1">
                             Adjustments
                         </v-tab>
+                        <!-- <v-tab @click="goto(0)" key="TEST">
+                            DTR
+                        </v-tab> -->
                     </v-tabs>
                     <v-tabs-items v-model="tab">
                         <v-tab-item> <!-- DTR -->
@@ -82,7 +85,7 @@
                                 </v-row>
                                 <v-row no-gutters class="mt-3">
                                     <v-col>
-                                        <v-data-table :headers="dtr_headers" :items="dtr_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
+                                        <!-- <v-data-table :headers="dtr_headers" :items="dtr_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
                                             <template v-slot:header={}>
                                                 <tr>
                                                     <th colspan="3"></th>
@@ -128,7 +131,56 @@
                                                 <v-text-field class="font-weight" v-model="props.item.encoded_pmout" v-mask="'##:##'" @input="handleInput(props.item,'pmout')" single-line dense hide-details outlined></v-text-field>
                                             </template>
                                         
-                                        </v-data-table>
+                                        </v-data-table> -->
+
+                                        <v-simple-table dense>
+                                            <template v-slot:default>
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="3"></th>
+                                                        <th colspan="4" class="text-center">Original Schedule</th>
+                                                        <th colspan="4" class="text-center">Actual Time</th>
+                                                        <th colspan="4" class="text-center">Encoded Time</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-center">Date</th>
+                                                        <th class="text-center">Day</th>
+                                                        <th class="text-center">Type</th>
+                                                        <th class="text-center px-1">AM In</th>
+                                                        <th class="text-center px-1">AM Out</th>
+                                                        <th class="text-center px-1">PM In</th>
+                                                        <th class="text-center px-1">PM Out</th>
+                                                        <th class="text-center px-1">AM In</th>
+                                                        <th class="text-center px-1">AM Out</th>
+                                                        <th class="text-center px-1">PM In</th>
+                                                        <th class="text-center px-1">PM Out</th>
+                                                        <th class="text-center px-1">AM In</th>
+                                                        <th class="text-center px-1">AM Out</th>
+                                                        <th class="text-center px-1">PM In</th>
+                                                        <th class="text-center px-1">PM Out</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="(item, index) in dtr_items" :key="index">
+                                                        <td class="fields text-center">{{ item.date }}</td>
+                                                        <td class="fields text-center">{{ item.day }}</td>
+                                                        <td class="fields text-center">{{ item.type }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_amin != '' ? item.cws_amin.substr(0,5) : item.sched_amin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_amout != '' ? item.cws_amout.substr(0,5) : item.sched_amout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_pmin != '' ? item.cws_pmin.substr(0,5) : item.sched_pmin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_pmout != '' ? item.cws_pmout.substr(0,5) : item.sched_pmout.substr(0,5) }}</td>
+                                                        <td :class="['fields text-center px-1', (item.encoded_amin != '' ? 'success--text' : '')]">{{ item.encoded_amin != '' ? item.encoded_amin : item.actual_amin.substr(0,5) }}</td>
+                                                        <td :class="['fields text-center px-1', (item.encoded_amout != '' ? 'success--text' : '')]">{{ item.encoded_amout != '' ? item.encoded_amout : item.actual_amout.substr(0,5) }}</td>
+                                                        <td :class="['fields text-center px-1', (item.encoded_pmin != '' ? 'success--text' : '')]">{{ item.encoded_pmin != '' ? item.encoded_pmin : item.actual_pmin.substr(0,5) }}</td>
+                                                        <td :class="['fields text-center px-1', (item.encoded_pmout != '' ? 'success--text' : '')]">{{ item.encoded_pmout != '' ? item.encoded_pmout : item.actual_pmout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1"><input v-model="item.encoded_amin" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm" :style="item.actual_amin == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.encoded_amout" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm" :style="item.actual_amout == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.encoded_pmin" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm" :style="item.actual_pmin == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.encoded_pmout" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm" :style="item.actual_pmout == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </template>
+                                        </v-simple-table>
                                     
                                     </v-col>
                                 </v-row>
@@ -145,7 +197,7 @@
                                 </v-row>
                                 <v-row no-gutters class="mt-3">
                                     <v-col>
-                                        <v-data-table :headers="overtime_headers" :items="overtime_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
+                                        <!-- <v-data-table :headers="overtime_headers" :items="overtime_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
                                             <template v-slot:header={}>
                                                 <tr>
                                                     <th colspan="3"></th>
@@ -188,7 +240,52 @@
                                                 <v-text-field class="font-weight" v-model="props.item.ot_end" v-mask="'##:##'" @blur="handleInput_ot(props.item,'ot_end')" single-line dense hide-details outlined></v-text-field>
                                             </template>
                                             
-                                        </v-data-table>
+                                        </v-data-table> -->
+
+                                        <v-simple-table dense>
+                                            <template v-slot:default>
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="3"></th>
+                                                        <th colspan="4" class="text-center">Original Schedule</th>
+                                                        <th colspan="4" class="text-center">Actual Time</th>
+                                                        <th colspan="4" class="text-center">Overtime</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-center">Date</th>
+                                                        <th class="text-center">Day</th>
+                                                        <th class="text-center">Type</th>
+                                                        <th class="text-center px-1">AM In</th>
+                                                        <th class="text-center px-1">AM Out</th>
+                                                        <th class="text-center px-1">PM In</th>
+                                                        <th class="text-center px-1">PM Out</th>
+                                                        <th class="text-center px-1">AM In</th>
+                                                        <th class="text-center px-1">AM Out</th>
+                                                        <th class="text-center px-1">PM In</th>
+                                                        <th class="text-center px-1">PM Out</th>
+                                                        <th class="text-center px-1">Start</th>
+                                                        <th class="text-center px-1">End</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="(item, index) in dtr_items" :key="index">
+                                                        <td class="fields text-center">{{ item.date }}</td>
+                                                        <td class="fields text-center">{{ item.day }}</td>
+                                                        <td class="fields text-center">{{ item.type }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_amin != '' ? item.cws_amin.substr(0,5) : item.sched_amin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_amout != '' ? item.cws_amout.substr(0,5) : item.sched_amout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_pmin != '' ? item.cws_pmin.substr(0,5) : item.sched_pmin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_pmout != '' ? item.cws_pmout.substr(0,5) : item.sched_pmout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.encoded_amin != '' ? item.encoded_amin : item.actual_amin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.encoded_amout != '' ? item.encoded_amout : item.actual_amout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.encoded_pmin != '' ? item.encoded_pmin : item.actual_pmin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.encoded_pmout != '' ? item.encoded_pmout : item.actual_pmout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1"><input v-model="item.ot_start" class="form-control" v-mask="timeMask" @blur="handleInput_ot(item,'ot_start')" type="text" placeholder="HH:mm" :disabled="disabledField(item)" :style="item.ot_start == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.ot_end" class="form-control" v-mask="timeMask" @blur="handleInput_ot(item,'ot_end')" type="text" placeholder="HH:mm" :disabled="disabledField(item)" :style="item.ot_end == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </template>
+                                        </v-simple-table>
                                     </v-col>
                                 </v-row>
                             </v-container>
@@ -204,7 +301,7 @@
                                 </v-row>
                                 <v-row no-gutters class="mt-3">
                                     <v-col>
-                                        <v-data-table :headers="undertime_headers" :items="undertime_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
+                                        <!-- <v-data-table :headers="undertime_headers" :items="undertime_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
                                             <template v-slot:header={}>
                                                 <tr>
                                                     <th colspan="3"></th>
@@ -246,7 +343,52 @@
                                             <template v-slot:[`item.sched_pmout`]="props">
                                                 {{ props.item.cws_pmout != '' ? props.item.cws_pmout : props.item.sched_pmout.substr(0,5) }}
                                             </template>
-                                        </v-data-table>
+                                        </v-data-table> -->
+
+                                        <v-simple-table dense>
+                                            <template v-slot:default>
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="3"></th>
+                                                        <th colspan="4" class="text-center">Original Schedule</th>
+                                                        <th colspan="4" class="text-center">Actual Time</th>
+                                                        <th colspan="4" class="text-center">Undertime</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-center">Date</th>
+                                                        <th class="text-center">Day</th>
+                                                        <th class="text-center">Type</th>
+                                                        <th class="text-center px-1">AM In</th>
+                                                        <th class="text-center px-1">AM Out</th>
+                                                        <th class="text-center px-1">PM In</th>
+                                                        <th class="text-center px-1">PM Out</th>
+                                                        <th class="text-center px-1">AM In</th>
+                                                        <th class="text-center px-1">AM Out</th>
+                                                        <th class="text-center px-1">PM In</th>
+                                                        <th class="text-center px-1">PM Out</th>
+                                                        <th class="text-center px-1">Start</th>
+                                                        <th class="text-center px-1">End</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="(item, index) in dtr_items" :key="index">
+                                                        <td class="fields text-center">{{ item.date }}</td>
+                                                        <td class="fields text-center">{{ item.day }}</td>
+                                                        <td class="fields text-center">{{ item.type }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_amin != '' ? item.cws_amin.substr(0,5) : item.sched_amin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_amout != '' ? item.cws_amout.substr(0,5) : item.sched_amout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_pmin != '' ? item.cws_pmin.substr(0,5) : item.sched_pmin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.cws_pmout != '' ? item.cws_pmout.substr(0,5) : item.sched_pmout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.encoded_amin != '' ? item.encoded_amin : item.actual_amin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.encoded_amout != '' ? item.encoded_amout : item.actual_amout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.encoded_pmin != '' ? item.encoded_pmin : item.actual_pmin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.encoded_pmout != '' ? item.encoded_pmout : item.actual_pmout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1"><input v-model="item.ut_start" class="form-control" :style="item.ut_start == '' ? 'background-color: ' : 'background-color: #d9f8c080'" v-mask="timeMask" @blur="handleInput_ut(item, 'ut_start')" type="text" placeholder="HH:mm" :disabled="disabledField(item)" ></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.ut_end" class="form-control" :style="item.ut_end == '' ? 'background-color: ' : 'background-color: #d9f8c080'" v-mask="timeMask" @blur="handleInput_ut(item, 'ut_end')" type="text" placeholder="HH:mm" :disabled="disabledField(item)"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </template>
+                                        </v-simple-table>
                                     </v-col>
                                 </v-row>
                             </v-container>
@@ -262,7 +404,7 @@
                                 </v-row>
                                 <v-row no-gutters class="mt-3">
                                     <v-col>
-                                        <v-data-table :headers="cws_headers" :items="cws_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
+                                        <!-- <v-data-table :headers="cws_headers" :items="cws_items" :items-per-page="-1" dense flat disable-sort hide-default-header hide-default-footer>
                                             <template v-slot:header={}>
                                                 <tr>
                                                     <th colspan="3"></th>
@@ -307,7 +449,46 @@
                                             <template v-slot:[`item.cws_pmout`]="props">
                                                 <v-text-field class="font-weight" v-model="props.item.cws_pmout" v-mask="'##:##'" @input="handleInput_cws(props.item,'pmout')" single-line dense hide-details outlined></v-text-field>
                                             </template>
-                                        </v-data-table>
+                                        </v-data-table> -->
+                                        <v-simple-table dense>
+                                            <template v-slot:default>
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="3"></th>
+                                                        <th colspan="4" class="text-center">Original Schedule</th>
+                                                        <th colspan="4" class="text-center">Encoded CWS</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-center">Date</th>
+                                                        <th class="text-center">Day</th>
+                                                        <th class="text-center">Type</th>
+                                                        <th class="text-center px-1">AM In</th>
+                                                        <th class="text-center px-1">AM Out</th>
+                                                        <th class="text-center px-1">PM In</th>
+                                                        <th class="text-center px-1">PM Out</th>
+                                                        <th class="text-center px-1">AM In</th>
+                                                        <th class="text-center px-1">AM Out</th>
+                                                        <th class="text-center px-1">PM In</th>
+                                                        <th class="text-center px-1">PM Out</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="(item, index) in dtr_items" :key="index">
+                                                        <td class="fields text-center">{{ item.date }}</td>
+                                                        <td class="fields text-center">{{ item.day }}</td>
+                                                        <td class="fields text-center">{{ item.type }}</td>
+                                                        <td class="fields text-center px-1">{{ item.sched_amin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.sched_amout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.sched_pmin.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1">{{ item.sched_pmout.substr(0,5) }}</td>
+                                                        <td class="fields text-center px-1"><input v-model="item.cws_amin" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.cws_amout" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.cws_pmin" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.cws_pmout" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </template>
+                                        </v-simple-table>
                                     </v-col>
                                 </v-row>
                             </v-container>
@@ -365,6 +546,9 @@
                                 </v-row>
                             </v-container>
                         </v-tab-item>
+                        <!-- <v-tab-item>TEST -->
+                            <!-- <router-view></router-view>
+                        </v-tab-item> -->
                     </v-tabs-items>
                 </v-card-text>
 
@@ -373,12 +557,12 @@
                         <v-card-title>Add Adjustment</v-card-title>
                         <v-divider></v-divider>
                         <v-card-text class="mt-4">
-                            <v-form>
+                            <v-form ref="form">
                                 <v-container>
                                     <v-row dense>
                                         <v-col>
-                                            <v-text-field v-model="active_item.description" outlined dense required label="Description" type="text"></v-text-field>
-                                            <v-text-field v-model="active_item.amount" outlined dense required label="Amount" type="number"></v-text-field>
+                                            <v-text-field v-model="active_item.description" outlined dense required label="Description" type="text" :rules="descriptionRules"></v-text-field>
+                                            <v-text-field v-model="active_item.amount" outlined dense required label="Amount" type="number" :rules="amountRules"></v-text-field>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -501,6 +685,8 @@ export default {
                 adjustments: '',
                 net: ''
             },
+            descriptionRules: [v => !!v || "Description is required!"],
+            amountRules: [v => !!v || "Amount is required!"],
             itemIndex: -1,
             active_item: {
                 description: '',
@@ -511,12 +697,13 @@ export default {
                 lastname: '',
                 middlename: ''
             },
-            payperiod:[]
+            payperiod:[],
+            // tabr: [0]
         }
     },
     beforeCreate: function(){
         if(!this.$session.has('user-session')){
-            this.$router.push('/login');
+            this.$router.push({ path: '/login' });
         }
     },
 
@@ -534,20 +721,36 @@ export default {
             let middlename = this.employee.middlename.charAt(0).toUpperCase() + this.employee.middlename.slice(1)
             return lastname + ", " + firstname + " " + middlename
         },
-        // time_mask(){
-        //     return this.dtr_items.e
-        // }
     },
 
     methods: {
-        async initialize(){
+        // goto(tabr){
+        //     console.log(tabr)
+        //     this.$router.push({ name: 'dtr', query: { id: this.$route.query.id }, params: this.dtr_items })
+        // },
+        timeMask(value) {
+            const hours = [ /[0-2]/, value.charAt(0) === '2' ? /[0-3]/ : /[0-9]/, ];
+            const minutes = [/[0-5]/, /[0-9]/];
+            return value.length > 2 ? [...hours, ':', ...minutes] : hours;
+        },
+        initialize(){
             this.overlay.value = true
+            this.getEmployeeDtr();
+            this.$nextTick(() => {
+                this.overlay.value = false
+                this.snackbar.status = true
+                this.snackbar.text = 'Page Refreshed!'
+                this.snackbar.color = 'success'
+                this.snackbar.timeout = 2000
+            })
+            
+        },
+        async getEmployeeDtr(){
             let data = {
                 id: this.$route.query.id
             }
             await this.$guest.post('/api/timekeeping/getEmployee', this.$form_data.generate(data))
             .then(res => {
-                console.log(res.data)
                 this.alert_status = res.data.status
                 if(res.data.status == true){
                     this.employee = res.data.result.employee
@@ -558,36 +761,34 @@ export default {
                     this.cws_items = res.data.result.dtr
                     this.adjustment = res.data.result.salary_adjustments
                     this.adjustment_items = res.data.result.salary_adjustments_breakdown
-                    this.$nextTick(() => {
-                        this.overlay.value = false
-                        this.snackbar.status = true
-                        this.snackbar.text = 'Page Refreshed!'
-                        this.snackbar.color = 'success'
-                        this.snackbar.timeout = 2000
-                    })
                 }
             })
             .catch(err => { console.log(err) })
         },
-        async savedtr(){
-            let data = {
-                dtr: JSON.stringify(this.dtr_items)
-            }
-            await this.$guest.post('/api/timekeeping/savedtr', this.$form_data.generate(data))
-            .then(res => {
-                if(res.data.status == true){
-                    this.snackbar.status = true
-                    this.snackbar.text = 'Records Saved!'
-                    this.snackbar.color = 'success'
-                    this.snackbar.timeout = 2000
-                }else{
-                    this.snackbar.status = true
-                    this.snackbar.text = 'Error Saving Records!'
-                    this.snackbar.color = 'error'
-                    this.snackbar.timeout = 2000
+        savedtr(){
+            this.overlay.value = true;
+            setTimeout(() => {
+                let data = {
+                    dtr: JSON.stringify(this.dtr_items)
                 }
-            })
-            .catch(err => { console.log(err) })
+                this.$guest.post('/api/timekeeping/savedtr', this.$form_data.generate(data))
+                .then(res => {
+                    if(res.data.status == true){
+                        this.snackbar.status = true
+                        this.snackbar.text = 'Records Saved!'
+                        this.snackbar.color = 'info'
+                        this.snackbar.timeout = 2000
+                    }else{
+                        this.snackbar.status = true
+                        this.snackbar.text = 'Error Saving Records!'
+                        this.snackbar.color = 'error'
+                        this.snackbar.timeout = 2000
+                    }
+                    this.overlay.value = false;
+                    this.getEmployeeDtr();
+                })
+                .catch(err => { console.log(err) })
+            }, 1500)
         },
         deletedtr(){
             console.log(this.tab)
@@ -646,11 +847,27 @@ export default {
                 }
             }
         },
+        handleInput_ut(item, input){
+            console.log(item)
+            console.log(input)
+
+            
+        },
+        disabledField(item){
+            if(item.actual_amin!='' && item.actual_amout!='' && item.actual_pmin!='' && item.actual_pmout!=''){
+                return false;
+            }else if(item.actual_pmin!='' && item.actual_pmout!=''){
+                return false;
+            }else{
+                return true;
+            }
+        },
         btn_cancel(){
             this.close()
         },
         close(){
             this.dialog = !this.dialog
+            this.$refs.form.reset();
             this.itemIndex = -1
             this.active_item = {}
         },
@@ -668,17 +885,28 @@ export default {
             this.active_item = Object.assign({}, item)
         },
         async btn_save(){
-            this.overlay.value = true
-            this.active_item['adjustment_id'] = this.adjustment.id
-            this.active_item['user_id'] = this.$session.get('userid-session')
-            this.active_item['employee_id'] = this.$route.query.id
-            let url = this.itemIndex == -1 ? 'insertSalaryAdjustment' : 'updateSalaryAdjustment'
-            await this.$guest.post('/api/timekeeping/'+ url, this.$form_data.generate(this.active_item))
-            .then(() => {
-                this.close()
-                this.initialize()
-            })
-            .catch(err => { console.log(err) })
+            if(this.$refs.form.validate()){
+                if(typeof this.adjustment.id != 'undefined'){
+                    this.overlay.value = true
+                    this.active_item['adjustment_id'] = this.adjustment.id
+                    this.active_item['user_id'] = this.$session.get('userid-session')
+                    this.active_item['employee_id'] = this.$route.query.id
+                    let url = this.itemIndex == -1 ? 'insertSalaryAdjustment' : 'updateSalaryAdjustment'
+                    await this.$guest.post('/api/timekeeping/'+ url, this.$form_data.generate(this.active_item))
+                    .then(() => {
+                        this.close()
+                        this.initialize()
+                    })
+                    .catch(err => { console.log(err) })
+                }else{
+                    this.close()
+                    this.snackbar.status = true
+                    this.snackbar.text = 'Please process manhour before adding adjustments...'
+                    this.snackbar.color = 'error'
+                    this.snackbar.timeout = 3000
+                }
+            }
+            
         }
     }
 }
@@ -698,5 +926,17 @@ ul li{
     font-size: 13px;
     display: inline-block;
     list-style: none;
+}
+.fields{
+    font-size: 13px !important;
+}
+.form-control{
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    height: 25px;
+    width: 65px;
+    font-size: 13px;
+    text-align: center;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
 }
 </style>

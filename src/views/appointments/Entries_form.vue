@@ -17,7 +17,7 @@
                     </v-flex>
                     <v-text-field class="shrink" v-model="search" @keyup="key_search()" append-icon="mdi-magnify" label="Search" outlined dense hide-details></v-text-field>
                     <v-btn class="ml-2" color="primary" dark @click="btn_entry()">
-                        New Entry
+                        CREATE REQUEST
                     </v-btn>
                 </v-toolbar>
             </template>
@@ -77,15 +77,15 @@ export default {
             ],
             search: '',
             table_header: [
-                { text: 'CONTROL #.', value: 'id', align: 'center', sortable: false },
-                { text: 'STATUS', value: 'status', align: 'center', sortable: false },
-                { text: 'PATIENT ID #.', value: 'patient_id', align: 'center', sortable: false },
-                { text: 'LASTNAME', value: 'lastname', align: 'left', sortable: false },
-                { text: 'FIRSTNAME', value: 'firstname', align: 'left', sortable: false },
-                { text: 'MIDDLENAME', value: 'middlename', align: 'left', sortable: false },
-                { text: 'DATE', value: 'created_at', align: 'center', sortable: false },
-                { text: 'DISC. REQ.', value: 'approved', align: 'center', sortable: false },
-                { text: 'ACTIONS', value: 'actions', align: 'center', sortable: false },
+                { text: 'CONTROL #.', value: 'id', align: 'center' },
+                { text: 'STATUS', value: 'status', align: 'center' },
+                { text: 'PATIENT ID #.', value: 'patient_id', align: 'center' },
+                { text: 'LASTNAME', value: 'lastname', align: 'left' },
+                { text: 'FIRSTNAME', value: 'firstname', align: 'left' },
+                { text: 'MIDDLENAME', value: 'middlename', align: 'left' },
+                { text: 'DATE', value: 'created_at', align: 'center' },
+                { text: 'APPROVAL DISCOUNT', value: 'approved', align: 'center' },
+                { text: 'ACTIONS', value: 'actions', align: 'center' },
             ],
             table_items: [],
             overlay: {
@@ -95,7 +95,7 @@ export default {
     },
   beforeCreate: function(){
       if(!this.$session.has('user-session')){
-          this.$router.push('/login');
+          this.$router.push({ path: '/login' });
       }
       let user_access = this.$session.get('user-access')
         let cpath = this.$route.path
@@ -104,7 +104,7 @@ export default {
           modpath.push(el.mod_path)
         })
         if(modpath.indexOf(cpath) == -1){
-          this.$router.push('/')
+          this.$router.push({ path: '/' })
         }
   },
 
@@ -139,6 +139,7 @@ export default {
         async btn_entry(){
             await this.$guest.get('/api/appointment/getCtrlNo')
             .then(res => {
+                console.log(res.data)
                 this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(res.data.control_no), stat: btoa(''), apprvd: btoa('') } })
             })
             .catch(err => { console.log(err) })

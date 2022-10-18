@@ -3,10 +3,10 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
 
-const originalPush = VueRouter.prototype.push;
-VueRouter.prototype.push = function push(location) {
-  return originalPush.call(this, location).catch(err => err)
-};
+// const originalPush = VueRouter.prototype.push;
+// VueRouter.prototype.push = function push(location) {
+//   return originalPush.call(this, location).catch(err => err)
+// };
 
 const router = new VueRouter({
     routes: [{
@@ -52,16 +52,53 @@ const router = new VueRouter({
                 import ("@/views/payroll/Compute_payroll.vue"),
         },
         {
-            path: '/timekeeping/view',
-            name: 'Viewing',
+            path: '/timekeeping/entry',
+            name: 'Entry',
             component: () => 
-                import ("@/views/timekeeping/Viewing.vue"),
+                import ("@/views/timekeeping/Entry.vue"),
         },
         {
-            path: '/timekeeping/view/employee',
+            path: '/timekeeping/entry/employee',
             name: 'Timekeeping_form',
-            component: () => 
-                import ("@/views/timekeeping/Timekeeping_form.vue"),
+            component: () => import ("@/views/timekeeping/Timekeeping_form.vue"),
+            children: [
+                {
+                    path: 'test',
+                    name: 'test_form',
+                    component: () => import ("@/views/timekeeping/Test_form.vue"),
+                    meta: { isChild: true, parent: '/timekeeping/entry/employee' }
+                },
+                {
+                    path: 'dtr',
+                    name: 'dtr',
+                    component: () => import ("@/views/timekeeping/forms/Dtr.vue"),
+                    meta: { isChild: true, parent: '/timekeeping/entry/employee' }
+                },
+                {
+                    path: 'overtime',
+                    name: 'overtime',
+                    component: () => import ("@/views/timekeeping/forms/Overtime.vue"),
+                    meta: { isChild: true, parent: '/timekeeping/entry/employee' }
+                },
+                {
+                    path: 'undertime',
+                    name: 'undertime',
+                    component: () => import ("@/views/timekeeping/forms/Undertime.vue"),
+                    meta: { isChild: true, parent: '/timekeeping/entry/employee' }
+                },
+                {
+                    path: 'cws',
+                    name: 'cws',
+                    component: () => import ("@/views/timekeeping/forms/CWS.vue"),
+                    meta: { isChild: true, parent: '/timekeeping/entry/employee' }
+                },
+                {
+                    path: 'adjustments',
+                    name: 'adjustments',
+                    component: () => import ("@/views/timekeeping/forms/Adjustments.vue"),
+                    meta: { isChild: true, parent: '/timekeeping/entry/employee' }
+                },
+            ]
         },
         {
             path: '/timekeeping/processing',
@@ -159,8 +196,12 @@ const router = new VueRouter({
             component: () => 
                 import ("@/views/utilities/datamaintenance/Company_info.vue"),
         },
+        {
+        path: "/:catchAll(.*)",
+        redirect: '/'
+        }
     ],
-    mode: 'history'
+    base: process.env.BASE_URL
 });
 
 export default router;

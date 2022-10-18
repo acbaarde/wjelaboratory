@@ -4,7 +4,7 @@
     <Navbar v-if="$session.has('user-session')" />
     <v-main>
       
-      <v-container fluid>
+      <v-container>
         <router-view></router-view>
       </v-container>
     </v-main>
@@ -20,7 +20,7 @@ export default {
   },
   beforeCreate: function(){
     if(!this.$session.exists()){
-        this.$router.push('/login');
+        this.$router.push({ path: '/login' });
     }
   },
 }

@@ -73,7 +73,37 @@ export default {
             .then(res => {
                 if(res.data.status == true){
                     this.$router.push(this.fullPath)
-                    this.print_form()
+                    // this.print_form()
+                        // Get HTML to print from element
+                        const prtHtml = document.getElementById('print-form').innerHTML;
+
+                        // Get all stylesheets HTML
+                        let stylesHtml = '';
+                        for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
+                            stylesHtml += node.outerHTML;
+                        }
+                        // Open the print window
+                        const WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+                        WinPrint.document.write(`<!DOCTYPE html>
+                        <html>
+                        <head>
+                            ${stylesHtml}
+                        </head>
+                        <body>
+                            ${prtHtml}
+                        </body>
+                        </html>`);
+
+                        WinPrint.document.close();
+                        WinPrint.focus();
+                        WinPrint.print();
+                        // WinPrint.close();
+                        WinPrint.addEventListener('afterprint', () => {
+                            WinPrint.close();
+                        });
+                        WinPrint.onafterprint( () => {
+                            WinPrint.close();
+                        });
                 }
             })
         },

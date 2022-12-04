@@ -107,7 +107,7 @@ Vue.mixin({
             WinPrint.addEventListener('afterprint', () => {
                 WinPrint.close();
             });
-            WinPrint.onafterprint( () => {
+            WinPrint.addEventListener('onafterprint', () => {
                 WinPrint.close();
             });
           }

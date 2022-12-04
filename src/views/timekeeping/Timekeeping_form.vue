@@ -173,10 +173,10 @@
                                                         <td :class="['fields text-center px-1', (item.encoded_amout != '' ? 'success--text' : '')]">{{ item.encoded_amout != '' ? item.encoded_amout : item.actual_amout.substr(0,5) }}</td>
                                                         <td :class="['fields text-center px-1', (item.encoded_pmin != '' ? 'success--text' : '')]">{{ item.encoded_pmin != '' ? item.encoded_pmin : item.actual_pmin.substr(0,5) }}</td>
                                                         <td :class="['fields text-center px-1', (item.encoded_pmout != '' ? 'success--text' : '')]">{{ item.encoded_pmout != '' ? item.encoded_pmout : item.actual_pmout.substr(0,5) }}</td>
-                                                        <td class="fields text-center px-1"><input v-model="item.encoded_amin" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm" :style="item.actual_amin == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
-                                                        <td class="fields text-center px-1"><input v-model="item.encoded_amout" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm" :style="item.actual_amout == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
-                                                        <td class="fields text-center px-1"><input v-model="item.encoded_pmin" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm" :style="item.actual_pmin == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
-                                                        <td class="fields text-center px-1"><input v-model="item.encoded_pmout" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm" :style="item.actual_pmout == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.encoded_amin" class="form-control" v-mask="timeMask" type="text" @blur="onblur(item, 'encoded_amin')" placeholder="HH:mm" :style="item.actual_amin == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.encoded_amout" class="form-control" v-mask="timeMask" type="text" @blur="onblur(item, 'encoded_amout')" placeholder="HH:mm" :style="item.actual_amout == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.encoded_pmin" class="form-control" v-mask="timeMask" type="text" @blur="onblur(item, 'encoded_pmin')" placeholder="HH:mm" :style="item.actual_pmin == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.encoded_pmout" class="form-control" v-mask="timeMask" type="text" @blur="onblur(item, 'encoded_pmout')" placeholder="HH:mm" :style="item.actual_pmout == '' ? 'background-color: ' : 'background-color: #d9f8c080'"></td>
                                                     </tr>
                                                 </tbody>
                                             </template>
@@ -481,10 +481,10 @@
                                                         <td class="fields text-center px-1">{{ item.sched_amout.substr(0,5) }}</td>
                                                         <td class="fields text-center px-1">{{ item.sched_pmin.substr(0,5) }}</td>
                                                         <td class="fields text-center px-1">{{ item.sched_pmout.substr(0,5) }}</td>
-                                                        <td class="fields text-center px-1"><input v-model="item.cws_amin" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm"></td>
-                                                        <td class="fields text-center px-1"><input v-model="item.cws_amout" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm"></td>
-                                                        <td class="fields text-center px-1"><input v-model="item.cws_pmin" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm"></td>
-                                                        <td class="fields text-center px-1"><input v-model="item.cws_pmout" class="form-control" v-mask="timeMask" type="text" placeholder="HH:mm"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.cws_amin" class="form-control" v-mask="timeMask" @blur="onblur(item, 'cws_amin')" type="text" placeholder="HH:mm"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.cws_amout" class="form-control" v-mask="timeMask" @blur="onblur(item, 'cws_amout')" type="text" placeholder="HH:mm"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.cws_pmin" class="form-control" v-mask="timeMask" @blur="onblur(item, 'cws_pmin')" type="text" placeholder="HH:mm"></td>
+                                                        <td class="fields text-center px-1"><input v-model="item.cws_pmout" class="form-control" v-mask="timeMask" @blur="onblur(item, 'cws_pmout')" type="text" placeholder="HH:mm"></td>
                                                     </tr>
                                                 </tbody>
                                             </template>
@@ -512,13 +512,15 @@
                                     </v-col>
                                 </v-row>
                                 <v-row>
-                                    <v-col cols="6">
+                                    <v-col>
                                         <v-data-table :headers="adjustment_headers" :items="adjustment_items" dense :items-per-page="-1" hide-default-footer hide-default-header disable-sort>
                                             <template v-slot:header={}>
                                                 <tr>
-                                                    <th style="width: 80px;" @click="dialog = !dialog"><v-icon>mdi-plus-box</v-icon></th>
-                                                    <th style="text-align: left;">Description</th>
-                                                    <th style="text-align: right;">Amount</th>
+                                                    <th style="width: 80px;" @click="btn_adjustment()"><v-icon>mdi-plus-box</v-icon></th>
+                                                    <th style="text-align: center;">Type</th>
+                                                    <th style="text-align: center;">Description</th>
+                                                    <th style="text-align: center;">Amount</th>
+                                                    <th style="text-align: center;">Remarks</th>
                                                 </tr>
                                             </template>
                                             <template v-slot:[`item.actions`]="{ item }">
@@ -533,9 +535,17 @@
                                         <ul style="list-style: none; padding: 0;">
                                             <li>
                                                 <ul>
+                                                    <li style="width: 200px;"><h3>Earnings:</h3></li>
+                                                    <li><h3>{{ adjustment.earnings }}</h3></li>
+                                                </ul>
+                                                <ul>
+                                                    <li style="width: 200px;"><h3>Deductions:</h3></li>
+                                                    <li><h3>{{ adjustment.deductions }}</h3></li>
+                                                </ul>
+                                                <!-- <ul>
                                                     <li style="width: 200px;"><h3>Total Adjustment(s):</h3></li>
                                                     <li><h3>{{ adjustment.adjustments }}</h3></li>
-                                                </ul>
+                                                </ul> -->
                                                 <ul>
                                                     <li style="width: 200px;"><h3>Net Pay:</h3></li>
                                                     <li style="color: red;"><h3>{{ adjustment.net }}</h3></li>
@@ -554,15 +564,17 @@
 
                 <v-dialog v-model="dialog" persistent max-width="600px">
                     <v-card>
-                        <v-card-title>Add Adjustment</v-card-title>
+                        <v-card-title>{{ adjustment_title }}</v-card-title>
                         <v-divider></v-divider>
                         <v-card-text class="mt-4">
                             <v-form ref="form">
                                 <v-container>
                                     <v-row dense>
                                         <v-col>
+                                            <v-select v-model="active_item.adjustment_code" outlined required dense :items="adjustmentOptions" item-text="text" item-value="value" label="Type"></v-select>
                                             <v-text-field v-model="active_item.description" outlined dense required label="Description" type="text" :rules="descriptionRules"></v-text-field>
                                             <v-text-field v-model="active_item.amount" outlined dense required label="Amount" type="number" :rules="amountRules"></v-text-field>
+                                            <v-text-field v-model="active_item.remarks" outlined dense label="Remarks" type="text"></v-text-field>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -675,22 +687,29 @@ export default {
             cws_items: [],
             adjustment_headers:[
                 { value: 'actions', align: 'center' },
-                { value: 'description', align: 'left' },
-                { value: 'amount', align: 'right' },
+                { value: 'adjustment_desc', align: 'center' },
+                { value: 'description', align: 'center' },
+                { value: 'amount', align: 'center' },
+                { value: 'remarks', align: 'center' },
             ],
             adjustment_items:[],
+            adjustment_title: '',
             adjustment: {
-                regular: '',
-                gross: '',
-                adjustments: '',
-                net: ''
+                regular: '0.00',
+                gross: '0.00',
+                // adjustments: '',
+                net: '0.00',
+                earnings: '0.00',
+                deductions: '0.00',
             },
             descriptionRules: [v => !!v || "Description is required!"],
             amountRules: [v => !!v || "Amount is required!"],
             itemIndex: -1,
             active_item: {
                 description: '',
-                amount: ''
+                amount: '',
+                adjustment_code: 'A',
+                remarks: '',
             },
             employee:{
                 firstname: '',
@@ -699,6 +718,10 @@ export default {
             },
             payperiod:[],
             // tabr: [0]
+            adjustmentOptions: [
+                { value: 'A', text: 'Adjustment'  },
+                { value: 'D', text: 'Deduction'  }
+            ]
         }
     },
     beforeCreate: function(){
@@ -728,6 +751,13 @@ export default {
         //     console.log(tabr)
         //     this.$router.push({ name: 'dtr', query: { id: this.$route.query.id }, params: this.dtr_items })
         // },
+        onblur(item, key){
+            let itemIndex = this.dtr_items.indexOf(item)
+            let time = '00:00'
+            if(this.dtr_items[itemIndex][key].length > 0 && this.dtr_items[itemIndex][key].length < 5){
+                this.dtr_items[itemIndex][key] = this.dtr_items[itemIndex][key].concat(time.slice(this.dtr_items[itemIndex][key].length, 5))
+            }
+        },
         timeMask(value) {
             const hours = [ /[0-2]/, value.charAt(0) === '2' ? /[0-3]/ : /[0-9]/, ];
             const minutes = [/[0-5]/, /[0-9]/];
@@ -867,9 +897,17 @@ export default {
         },
         close(){
             this.dialog = !this.dialog
-            this.$refs.form.reset();
+            this.$refs.form.reset()
             this.itemIndex = -1
             this.active_item = {}
+            this.$nextTick(() => {
+                this.active_item.adjustment_code = 'A'
+            })
+        },
+        btn_adjustment(){
+            this.adjustment_title = 'Add Adjustment'
+            this.dialog = !this.dialog
+            this.itemIndex = -1
         },
         async btn_delete(item){
             this.overlay.value = true
@@ -880,6 +918,7 @@ export default {
             .catch(err => { console.log(err) })
         },
         btn_edit(item){
+            this.adjustment_title = 'Update Adjustment'
             this.dialog = true
             this.itemIndex = this.adjustment_items.indexOf(item)
             this.active_item = Object.assign({}, item)

@@ -27,8 +27,8 @@
                 <v-card class="justify-center" width="800px" flat outlined v-if="employees.length > 0">
                     <v-card-text style="line-height: 1rem;">
                         <v-container id="print-form">
-                            <v-row>
-                                <v-col cols="6" v-for="(item,i) in employees" :key="i">
+                            <v-row no-gutters v-for="(item,i) in employees" :key="i">
+                                <v-col cols="6" class="pl-2">
                                     <ul class="ul">
                                         <li>
                                             <ul class="ul">
@@ -46,10 +46,10 @@
                                                 <li style="display: inline-block; width: 120px;">SALARY:</li>
                                                 <li style="display: inline-block;"><strong>{{ item.salary }}</strong></li>
                                             </ul>
-                                            <ul class="ul">
-                                                <li class="li-start" style="margin-top: 10px;">EARNINGS:</li>
-                                            </ul>
-                                            <ul class="ul" style="margin-left: 14px;">
+                                            <!-- <ul class="ul">
+                                                <li class="li-start" style="margin-top: 10px;">GROSS:</li>
+                                            </ul> -->
+                                            <ul class="ul" style="margin: 14px 0 0 14px;">
                                                 <li style="display: inline-block; width: 120px;">REG HRS:</li>
                                                 <li style="display: inline-block; width: 100px; text-align: center;">{{ item.reg_hrs }}</li>
                                                 <li style="display: inline-block; width: 92px; text-align: right;">{{ item.reg_hrs_pay }}</li>
@@ -66,6 +66,24 @@
                                                 <li style="display: inline-block; width: 120px;">GROSS</li>
                                                 <li style="display: inline-block; width: 192px; text-align: right;">{{ item.gross }}</li>
                                             </ul>
+
+                                            <ul class="ul" style="margin-top: 10px;">
+                                                <li class="li-start">EARNINGS:</li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;" v-for="(item_adjust,ii) in item.earnings" :key="ii">
+                                                <li style="display: inline-block; width: 120px;">{{ item_adjust.description }}</li>
+                                                <li style="display: inline-block; width: 192px; text-align: right;">{{ item_adjust.amount }}</li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;">
+                                                <li style="width: 190px;"><hr></li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;">
+                                                <li style="display: inline-block; width: 120px;">TOTAL</li>
+                                                <li style="display: inline-block; width: 192px; text-align: right;">{{ item.total_earnings }}</li>
+                                            </ul>
+
+
+
                                             <ul class="ul" style="margin-top: 10px;">
                                                 <li class="li-start">DEDUCTIONS:</li>
                                             </ul>
@@ -78,11 +96,100 @@
                                             </ul>
                                             <ul class="ul" style="margin-left: 14px;">
                                                 <li style="display: inline-block; width: 120px;">TOTAL</li>
-                                                <li style="display: inline-block; width: 192px; text-align: right;">{{ item.total_adjustments }}</li>
+                                                <li style="display: inline-block; width: 192px; text-align: right;">{{ item.total_deductions }}</li>
                                             </ul>
                                             <ul class="ul" style="margin-top: 10px;">
                                                 <li style="display: inline-block; width: 120px;"><strong>NET PAY:</strong></li>
                                                 <li style="display: inline-block; width: 208px; text-align: right;"><strong>{{ item.net }}</strong></li>
+                                            </ul>
+                                            <ul class="ul" style="margin-top: 20px;">
+                                                <li style="display: inline-block; width: 120px;">Received by:</li>
+                                            </ul>
+                                            <ul class="ul" style="margin: 20px 0 20px 0;">
+                                                <li><hr></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </v-col>
+                                <v-col cols="6" class="pl-2">
+                                    <ul class="ul">
+                                        <li>
+                                            <ul class="ul">
+                                                <li class="li-center"><strong>{{ item.payperiod }}</strong></li>
+                                            </ul>
+                                            <ul class="ul">
+                                                <li style="display: inline-block; width: 120px;">NAME:</li>
+                                                <li style="display: inline-block; width: auto; text-align: center;"><strong>{{ item.firstname + " " + item.lastname }}</strong></li>
+                                            </ul>
+                                            <ul class="ul">
+                                                <li style="display: inline-block; width: 120px;">POSITION:</li>
+                                                <li style="display: inline-block;"><strong>{{ item.position }}</strong></li>
+                                            </ul>
+                                            <ul class="ul">
+                                                <li style="display: inline-block; width: 120px;">SALARY:</li>
+                                                <li style="display: inline-block;"><strong>{{ item.salary }}</strong></li>
+                                            </ul>
+                                            <!-- <ul class="ul">
+                                                <li class="li-start" style="margin-top: 10px;">GROSS:</li>
+                                            </ul> -->
+                                            <ul class="ul" style="margin: 14px 0 0 14px;">
+                                                <li style="display: inline-block; width: 120px;">REG HRS:</li>
+                                                <li style="display: inline-block; width: 100px; text-align: center;">{{ item.reg_hrs }}</li>
+                                                <li style="display: inline-block; width: 92px; text-align: right;">{{ item.reg_hrs_pay }}</li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;">
+                                                <li style="display: inline-block; width: 120px;">OT HRS:</li>
+                                                <li style="display: inline-block; width: 100px; text-align: center;">{{ item.reg_ot }}</li>
+                                                <li style="display: inline-block; width: 92px; text-align: right;">{{ item.reg_ot_pay }}</li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;">
+                                                <li style="width: 190px;"><hr></li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;">
+                                                <li style="display: inline-block; width: 120px;">GROSS</li>
+                                                <li style="display: inline-block; width: 192px; text-align: right;">{{ item.gross }}</li>
+                                            </ul>
+
+                                            <ul class="ul" style="margin-top: 10px;">
+                                                <li class="li-start">EARNINGS:</li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;" v-for="(item_adjust,ii) in item.earnings" :key="ii">
+                                                <li style="display: inline-block; width: 120px;">{{ item_adjust.description }}</li>
+                                                <li style="display: inline-block; width: 192px; text-align: right;">{{ item_adjust.amount }}</li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;">
+                                                <li style="width: 190px;"><hr></li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;">
+                                                <li style="display: inline-block; width: 120px;">TOTAL</li>
+                                                <li style="display: inline-block; width: 192px; text-align: right;">{{ item.total_earnings }}</li>
+                                            </ul>
+
+
+
+                                            <ul class="ul" style="margin-top: 10px;">
+                                                <li class="li-start">DEDUCTIONS:</li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;" v-for="(item_deduc,ii) in item.deductions" :key="ii">
+                                                <li style="display: inline-block; width: 120px;">{{ item_deduc.description }}</li>
+                                                <li style="display: inline-block; width: 192px; text-align: right;">{{ item_deduc.amount }}</li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;">
+                                                <li style="width: 190px;"><hr></li>
+                                            </ul>
+                                            <ul class="ul" style="margin-left: 14px;">
+                                                <li style="display: inline-block; width: 120px;">TOTAL</li>
+                                                <li style="display: inline-block; width: 192px; text-align: right;">{{ item.total_deductions }}</li>
+                                            </ul>
+                                            <ul class="ul" style="margin-top: 10px;">
+                                                <li style="display: inline-block; width: 120px;"><strong>NET PAY:</strong></li>
+                                                <li style="display: inline-block; width: 208px; text-align: right;"><strong>{{ item.net }}</strong></li>
+                                            </ul>
+                                            <ul class="ul" style="margin-top: 20px;">
+                                                <li style="display: inline-block; width: 120px;">Received by:</li>
+                                            </ul>
+                                            <ul class="ul" style="margin: 20px 0 20px 0;">
+                                                <li><hr></li>
                                             </ul>
                                         </li>
                                     </ul>
@@ -156,8 +263,10 @@ export default {
             this.overlay.value = true
             this.$guest.post('/api/reports/Payslip', this.$form_data.generate(this.filters))
             .then(res => {
+                console.log(res.data.results)
                 this.overlay.value = false
                 this.employees = Object.assign([], res.data.results)
+                console.log(this.employees)
                 this.alert_status = res.data.status
             })
             .catch(err => { console.log(err) })
@@ -191,7 +300,7 @@ li{
 
 .li-start{
     text-align: start;
-    width: 80px;
+    width: 100px;
 }
 li, h2{
     font-family: "Roboto", sans-serif;

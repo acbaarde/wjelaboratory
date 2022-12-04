@@ -22,16 +22,16 @@
                     <ul class="ul">
                         <li>
                             <ul class="ul">
-                                <li style="display: inline-block; width: 50px;">Name:</li>
+                                <li style="display: inline-block; width: 80px;">Patient Name:</li>
                                 <li style="display: inline-block;"><strong>{{ data.fullname }}</strong></li>
                             </ul>
                             <ul class="ul">
-                                <li style="display: inline-block; width: 50px;">Age:</li>
-                                <li style="display: inline-block;"><strong>{{ data.age }}</strong></li>
+                                <li style="display: inline-block; width: 60px;">Patient ID:</li>
+                                <li style="display: inline-block;"><strong>{{ data.patient_id }}</strong></li>
                             </ul>
                             <ul class="ul">
-                                <li style="display: inline-block; width: 50px;">Gender:</li>
-                                <li style="display: inline-block;"><strong>{{ data.gender }}</strong></li>
+                                <li style="display: inline-block; width: 70px;">Age/Gender:</li>
+                                <li style="display: inline-block;"><strong>{{ data.age + " / " + data.gender }}</strong></li>
                             </ul>
                         </li>
                     </ul>
@@ -60,12 +60,12 @@
                     <ul class="ul">
                         <li>
                             <ul class="ul">
-                                <li style="display: inline-block; width: 70px;">Physician:</li>
+                                <li style="display: inline-block; width: 60px;">Physician:</li>
                                 <li style="display: inline-block;"><strong>{{ data.physician }}</strong></li>
                             </ul>
                             <ul class="ul">
-                                <li style="display: inline-block; width: 70px;">Date:</li>
-                                <li style="display: inline-block;"><strong>{{ DateNow() }}</strong></li>
+                                <li style="display: inline-block; width: 40px;">Date:</li>
+                                <li style="display: inline-block;"><strong>{{ data.date }}</strong></li>
                             </ul>
                         </li>
                     </ul>

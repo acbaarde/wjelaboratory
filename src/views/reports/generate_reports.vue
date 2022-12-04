@@ -3,7 +3,8 @@
     <v-container fluid>
         <v-row>
             <v-col>
-                <v-btn small color="primary" @click="print()">PRINT</v-btn>
+                <!-- <v-btn small color="primary" @click="print()">PRINT</v-btn> -->
+                <v-btn small color="primary" @click="printLabTest()">PRINT LABORATORY TEST</v-btn>
             </v-col>
         </v-row>
     </v-container>
@@ -64,6 +65,28 @@ export default {
         ResultFooter,
     },
     methods: {
+        async printLabTest(){
+            let data = {
+                item_id: this.header_data.item_id,
+                patient_info: JSON.stringify(this.header_data),
+                results: JSON.stringify(this.results),
+                user: JSON.stringify({ id: this.$session.get('userid-session'), name: this.$session.get('user-session')})
+            }
+            await this.$guest.post('/api/appointment/printLabTest', this.$form_data.generate(data))
+            .then(res => {
+                if(res.status == 200){
+                    const winPrint = window.open(res.data, '', '');
+                    winPrint.focus();
+                    winPrint.print();
+                    winPrint.addEventListener('afterprint', () => {
+                        winPrint.close();
+                    });
+                    setTimeout(() => {
+                        this.$router.push(this.fullPath)
+                    }, 1000);
+                }
+            })
+        },
         async print(){
             let data = {
                 item_id: this.header_data.item_id,

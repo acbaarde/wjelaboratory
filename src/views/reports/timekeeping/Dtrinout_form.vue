@@ -18,7 +18,7 @@
                 No Records Found!!!
             </v-alert>
             <v-row no-gutters>
-                <v-col>
+                <v-col id="print-form">
                     <v-card v-for="(item,i) in reports.employees" :key="i" outlined class="mb-2">
                         <v-card-subtitle class="mb-n4">
                             <ul style="list-style: none; padding: 0;">
@@ -71,10 +71,10 @@
                                         <td>{{ td.date }}</td>
                                         <td>{{ td.day }}</td>
                                         <td>{{ td.type }}</td>
-                                        <td>{{ td.sched_amin.substr(11,5) == '00:00' ? '' : td.sched_amin.substr(11,5) }}</td>
-                                        <td>{{ td.sched_amout.substr(11,5) == '00:00' ? '' : td.sched_amout.substr(11,5) }}</td>
-                                        <td>{{ td.sched_pmin.substr(11,5) == '00:00' ? '' : td.sched_pmin.substr(11,5) }}</td>
-                                        <td>{{ td.sched_pmout.substr(11,5) == '00:00' ? '' : td.sched_pmout.substr(11,5) }}</td>
+                                        <td>{{ td.cws_amin.substr(11,5) == '00:00' ? td.sched_amin.substr(11,5) : td.cws_amin.substr(11,5) }}</td>
+                                        <td>{{ td.cws_amout.substr(11,5) == '00:00' ? td.sched_amout.substr(11,5) : td.cws_amout.substr(11,5) }}</td>
+                                        <td>{{ td.cws_pmin.substr(11,5) == '00:00' ? td.sched_pmin.substr(11,5) : td.cws_pmin.substr(11,5) }}</td>
+                                        <td>{{ td.cws_pmout.substr(11,5) == '00:00' ? td.sched_pmout.substr(11,5) : td.cws_pmout.substr(11,5) }}</td>
                                         <td>{{ td.encoded_amin == '0000-00-00 00:00:00' ? '' : td.encoded_amin.substr(11,5) }}</td>
                                         <td>{{ td.encoded_amout == '0000-00-00 00:00:00' ? '' : td.encoded_amout.substr(11,5) }}</td>
                                         <td>{{ td.encoded_pmin == '0000-00-00 00:00:00' ? '' : td.encoded_pmin.substr(11,5) }}</td>

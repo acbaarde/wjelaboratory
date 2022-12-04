@@ -38,10 +38,10 @@
             </template>
             
             <template v-slot:[`item.actions`]="{item}">
-                <v-btn small color="info" @click="btn_view(item)">VIEW</v-btn>
+                <v-btn x-small color="info" @click="btn_view(item)">VIEW</v-btn>
                 <template v-if="item.approved=='' && item.discount_id==3">
-                    <v-btn v-if="$session.get('usertype-session') == 'ADMIN'" small class="ml-2" color="success" @click="btn_approvedReject(item,'approved')">APPROVED</v-btn>
-                    <v-btn v-if="$session.get('usertype-session') == 'ADMIN'" small class="ml-2" color="error" @click="btn_approvedReject(item,'reject')">REJECT</v-btn>
+                    <v-btn v-if="$session.get('usertype-session') == 'ADMIN'" x-small class="ml-2" color="success" @click="btn_approvedReject(item,'approved')">APPROVED</v-btn>
+                    <v-btn v-if="$session.get('usertype-session') == 'ADMIN'" x-small class="ml-2" color="error" @click="btn_approvedReject(item,'reject')">REJECT</v-btn>
                 </template>
             </template>
 

@@ -82,7 +82,7 @@
                   <v-col cols="6" class="mr-2">
                     <v-dialog v-model="dialog" persistent width="80%">
                       <template v-slot:activator="{on, attrs}">
-                        <v-btn x-small color="info" block v-bind="attrs" v-on="on" @click="loadPatients()">PATIENT INFO</v-btn>
+                        <v-btn x-small color="info" block v-bind="attrs" v-on="on" @click="loadPatients()"><v-icon left x-small>mdi-plus-circle</v-icon>PATIENT INFO</v-btn>
                       </template>
                       <v-card>
                         <v-card-title>
@@ -120,7 +120,7 @@
                   <v-col>
                     <v-dialog v-model="dialog_phy" width="50%">
                       <template v-slot:activator="{on, attrs}">
-                        <v-btn x-small color="info" block v-bind="attrs" v-on="on">PHYSICIAN INFO</v-btn>
+                        <v-btn x-small color="info" block v-bind="attrs" v-on="on"><v-icon left x-small>mdi-plus-circle</v-icon>PHYSICIAN INFO</v-btn>
                       </template>
                       <v-card>
                         <v-card-title>
@@ -134,7 +134,7 @@
                             <v-col>
                               <v-select class="mb-2" clearable @click:clear="clearPhysician" :disabled="route_stat=='D'||route_stat=='C'" v-model="physician_selected.value" @change="physician_changed()" label="Physician" :prefix="physicianprefix" :items="physicians" item-text="text" item-value="value" dense outlined hide-details></v-select>
                               <v-select class="mb-2" clearable @click:clear="clearDiscount" :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_selected.id" @change="discount_changed()" :readonly="route_stat!=''" label="Discount Type" :items="discount" item-text="text" item-value="id" dense outlined hide-details></v-select>
-                              <v-text-field class="mb-2" v-model="discount_selected.percent"  :readonly="discount_selected.id == 3 ? false : true" dense outlined hide-details label="Disc. %"></v-text-field>
+                              <v-text-field class="mb-2" v-model="discount_selected.percent"  :readonly="discount_selected.id == 3 ? false : true" dense outlined hide-details type="number" label="Disc. %"></v-text-field>
                               <v-text-field class="mb-2" :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_rmks" clearable dense outlined hide-details label=" Discount Remarks"></v-text-field>
                             </v-col>
                           </v-row>
@@ -209,6 +209,12 @@
                       </v-card-title>
                       <v-divider></v-divider>
                       <v-card-text class="pa-0">
+
+                        <v-toolbar flat>
+                          <v-text-field clearable v-model="searchLabtest" block append-icon="mdi-magnify" label="Search" outlined dense hide-details></v-text-field>
+                        </v-toolbar>
+
+
                         <v-tabs v-model="tab" show-arrows>
                             <v-tab v-for="item in tab_headers" :key="item.id">
                               {{ item.title }}
@@ -217,14 +223,19 @@
                         <v-divider></v-divider>
                         <v-card class="ma-4" flat outlined>
                           <v-tabs-items v-model="tab">
-                          <v-tab-item v-for="item in tab_headers" :key="item.id">
-                            <v-data-table :headers="lab_table_headers" :items="lab_table_items(item.id)" dense>
-                              <template v-slot:[`item.actions`]="{item}">
-                                <v-btn small dark color="success" @click="btn_save_lab_test(item)">ADD</v-btn>
-                              </template>
-                            </v-data-table>
-                          </v-tab-item>
-                        </v-tabs-items>
+                            <v-tab-item v-for="item in tab_headers" :key="item.id">
+                              <v-data-table :headers="lab_table_headers" :items="lab_table_items(item.id,searchLabtest)" dense>
+                                <!-- <template v-slot:top>
+                                  <v-toolbar flat>
+                                    <v-text-field clearable v-model="searchLabtest" block append-icon="mdi-magnify" label="Search" outlined dense hide-details></v-text-field>
+                                  </v-toolbar>
+                                </template> -->
+                                <template v-slot:[`item.actions`]="{item}">
+                                  <v-btn small dark color="success" @click="btn_save_lab_test(item)">ADD</v-btn>
+                                </template>
+                              </v-data-table>
+                            </v-tab-item>
+                          </v-tabs-items>
                         </v-card>
 
                       </v-card-text>
@@ -248,7 +259,7 @@
                         </template>
                         <template v-slot:[`item.actions`]="{ item }">
                           <v-btn v-if="item.status=='' && item.send_out==1 && ($session.get('userposnid-session')==1 || $session.get('usertype-session')=='ADMIN')" x-small color="success" @click="btn_sendout(item)">SEND OUT</v-btn>
-                          <v-btn v-if="(item.status=='' || item.status=='P') && item.send_out==0 && ($session.get('userposnid-session')==1 || $session.get('usertype-session')=='ADMIN')" x-small color="info" @click="btn_results(item)">RESULTS</v-btn>
+                          <v-btn v-if="(item.status=='' || item.status=='P' || item.status=='D') && item.send_out==0 && ($session.get('userposnid-session')==1 || $session.get('usertype-session')=='ADMIN')" x-small color="info" @click="btn_results(item)">RESULTS</v-btn>
                           
                           <template v-if="item.status=='' || typeof item.status == 'undefined'">
                             <v-btn v-if="item.so_status==''" x-small color="error" @click="btn_remove_item(item)">REMOVE</v-btn>
@@ -305,6 +316,7 @@
             <template v-if="route_stat=='P'||route_stat==''" >
                 <v-btn v-if="for_posting" block color="info" text outlined @click="btn_post()">POST</v-btn>
                 <v-btn v-else block color="error" text outlined @click="btn_cancel()">CANCEL</v-btn>
+                <v-btn class="mt-2" block color="info" text outlined @click="btn_back()">BACK</v-btn>
             </template>
           </v-container>
         </v-col>
@@ -335,7 +347,7 @@
         <v-card-text>
           <v-data-table :headers="result_table_headers" :items="result_table_items" dense :items-per-page="-1" hide-default-footer> 
             <template v-slot:[`item.result_value`]="{item}">
-              <v-text-field :readonly="route_stat=='D'" v-model="item.result_value" dense hide-details outlined class="shrink"></v-text-field>
+              <v-text-field :readonly="(route_stat=='D'||print_stat=='D')" v-model="item.result_value" dense hide-details outlined class="shrink"></v-text-field>
             </template>
           </v-data-table>
         </v-card-text>
@@ -345,9 +357,9 @@
             <template v-if="print_stat=='P'">
               <v-btn v-if="route_apprvd=='Y'||discount_selected.id!=3" elevation="0" color="info" class="mr-2" @click="btn_print()">PRINT</v-btn>
             </template>
-            <v-text-field :readonly="route_stat=='D'" v-model="result_remarks" dense hide-details outlined label="Remarks"></v-text-field>
+            <v-text-field :readonly="(route_stat=='D'||print_stat=='D')" v-model="result_remarks" dense hide-details outlined label="Remarks"></v-text-field>
             <v-spacer></v-spacer>
-            <template v-if="route_stat!='D'">
+            <template v-if="route_stat!='D'&&print_stat!='D'">
               <v-btn color="primary" :disabled="result_table_items.length > 0 ? false : true" @click="btn_result_save()">SAVE</v-btn>
             </template>
           </v-card-actions>
@@ -368,8 +380,8 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text color="primary" @click="cancel_dialog=false, $refs.form.reset(), cancel_reason=''">CLOSE</v-btn>
-          <v-btn text color="error" @click="btn_confirm()">OK</v-btn>
+          <v-btn text color="primary" @click="btn_confirm()">OK</v-btn>
+          <v-btn text color="error" @click="cancel_dialog=false, $refs.form.reset(), cancel_reason=''">CLOSE</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -407,8 +419,8 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn small text color="error" @click="post_dialog=false">CLOSE</v-btn>
           <v-btn small text color="primary" @click="postEntry()">OK</v-btn>
+          <v-btn small text color="error" @click="post_dialog=false">CLOSE</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -423,8 +435,8 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn small text color="error" @click="void_dialog=false">Close</v-btn>
           <v-btn small text color="primary" @click="cancelEntry()">Ok</v-btn>
+          <v-btn small text color="error" @click="void_dialog=false">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -494,6 +506,7 @@ export default {
       },
       tab: 0,
       search: '',
+      searchLabtest: '',
       send_out:{
         id: '',
         clinic: '',
@@ -652,7 +665,6 @@ export default {
         }
         await this.$guest.post('/api/appointment/getEntry', this.$form_data.generate(data))
         .then(res => {
-          console.log(res.data)
           this.active_item = res.data.patient
           this.table_items = res.data.submodule
           this.physician_selected.value = res.data.patient.physician_id
@@ -735,8 +747,7 @@ export default {
         await this.$guest.post(url, this.$form_data.generate(data))
         .then(res => {
           if(res.data.status == true){
-            this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(res.data.control_id), stat: btoa(res.data.appointment_status), apprvd: btoa(res.data.apprvd) } }).catch(() => {})
-            window.location.reload()
+            this.$router.go(this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(res.data.control_id), stat: btoa(res.data.appointment_status), apprvd: btoa(res.data.apprvd) } }).catch(() => {}))
           }
         })
         .catch(err => {console.log(err)})
@@ -771,9 +782,11 @@ export default {
 
       let print_info = {
         item_id: this.item_id,
+        patient_id: this.active_item.patient_id,
         fullname: this.fullname,
         age: this.age,
         gender: this.gender,
+        date: this.DateNow(),
         physician: this.physician_selected.value > 0 ? this.physicians.filter(e => this.physician_selected.value == e.value)[0]['text'] : '' 
       }
       let results_info = {
@@ -853,13 +866,19 @@ export default {
     async btn_post(){
       if(this.table_items.filter(e=>e.status=="").length > 0){
         this.snackbar = {
-          text: 'Pending Laboratory Test!!!',
+          text: 'Pending Laboratory Test',
           status: true,
           color: 'error'
         }
       }else if(parseInt(this.total_amount) > (this.total_cash)){
         this.snackbar = {
           text: 'Insufficient Cash...',
+          status: true,
+          color: 'error'
+        }
+      }else if(this.route_apprvd == '' && this.discount_selected.id == 3){
+         this.snackbar = {
+          text: 'Waiting for Approval',
           status: true,
           color: 'error'
         }
@@ -871,7 +890,7 @@ export default {
         .then(res => {
           //direct check if theres pending lab test
           if(res.data == true){
-            window.location.reload()
+            this.$router.go(this.$router.currentRoute)
           }else{
             //direct check if payment has been made
             this.$guest.post('/api/appointment/checkPayment', this.$form_data.generate(data))
@@ -936,6 +955,9 @@ export default {
     btn_cancel(){
       this.void_dialog = true
     },
+    btn_back(){
+      this.$router.push({ name: 'Dashboard'})
+    },
     btn_cancel_item(item){
       this.item_id = item.item_id
       this.cancel_dialog = true
@@ -986,12 +1008,12 @@ export default {
       })
     },
 
-    lab_table_items(id){
+    lab_table_items(id, keysearch){
       let tbl_items = []
       this.table_items.forEach(el => {
         tbl_items.push(el.id)
       })
-      return this.tab_items.filter(e => e.mod_id == id && !tbl_items.includes(e.id))
+      return keysearch == '' || keysearch == null ? this.tab_items.filter(e => e.mod_id == id && !tbl_items.includes(e.id)) : this.tab_items.filter(e=> e.title.includes(keysearch.toUpperCase()) && !tbl_items.includes(e.id) )
     },
     clearPhysician(){
       this.$nextTick(() => {

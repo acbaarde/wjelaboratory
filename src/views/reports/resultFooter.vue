@@ -3,6 +3,7 @@
     <v-row>
       <v-col cols="6">
         <ul style="margin-top: 16px;">
+          <li>{{ rmt_name }}</li>
           <li>_____________________________</li>
           <li>MEDICAL TECHNOLOGIST</li>
           <!-- <li>Lic. No. 69669</li> -->
@@ -29,7 +30,8 @@ export default {
         pathologist:{
           name: '',
           lic_no: ''
-        }
+        },
+        rmt_name: ''
       }
     },
     created(){
@@ -41,6 +43,13 @@ export default {
             .then(res => {
               this.pathologist.name = res.data.pathologist_name
               this.pathologist.lic_no = res.data.pathologist_lic_no
+            })
+            .catch(err => {console.log(err)})
+
+            await this.$guest.get('/api/employee/getEmployees')
+            .then(res => {
+              let rmt = res.data.filter(e => e.id == this.$session.get('userid-session'));
+              this.rmt_name = rmt.length > 0 ? rmt[0].firstname + ' ' + rmt[0].middlename.charAt(0).toUpperCase() + ' ' + rmt[0].lastname : this.$session.get('user-session')
             })
             .catch(err => {console.log(err)})
         }

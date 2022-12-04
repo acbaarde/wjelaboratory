@@ -1,7 +1,7 @@
 <template>
 
   <v-app>
-    <Navbar v-if="$session.has('user-session')" />
+    <Navbar v-if="$session.has('user-session')" :key="$route.fullPath"/>
     <v-main>
       
       <v-container>

@@ -2,30 +2,32 @@
     <v-container fluid>
         <v-card class="my-16 mx-auto" max-width="400" elevation="5">
             <v-card-title class="justify-center">
-                <div>
+                <div class="text-center mt-2">
                     <v-img src="../assets/wjelogo.png"></v-img>
+                    <!-- <h1>WELCOME</h1>
+                    <div class="img-src mt-6">
+                        <img src="@/assets/ProfileIconFilled.png" />
+                    </div> -->
                 </div>
             </v-card-title>
-            <v-card-text class="justify-center">
+            <v-card-text class="text-center">
                 <v-container>
                     <v-form @submit.prevent="handleSubmit()" v-model="is_valid">
                         <v-text-field label="Username" v-model="username" :rules="usernameRules" outlined dense required
-                        prepend-icon="mdi-account-circle-outline"
                         placeholder="Type your username"
                         ></v-text-field>
                         <v-text-field label="Password" v-model="password" outlined dense required
-                            prepend-icon="mdi-lock-outline"
                             placeholder="Type your password"
                             @click:append="passwordShow = !passwordShow"
                             :rules="passwordRules" 
-                            :append-icon="passwordShow ? 'mdi-eye-off' : 'mdi-eye'" 
+                            :append-icon="passwordShow ? 'mdi-eye' : 'mdi-eye-off'" 
                             :type="passwordShow ? 'text' : 'password'"></v-text-field>
 
                         <v-alert v-if="msg" dense outlined :type="type">{{ msg }}</v-alert>
-                        <v-btn color="primary" outlined block type="submit" class="mt-5" text>Log In</v-btn>
+                        <v-btn color="primary" block type="submit" class="mt-5">LOG-IN</v-btn>
                     </v-form>
-
                 </v-container>
+                <p>Forgot password? Click <strong><u>here!</u></strong></p>
             </v-card-text>
         </v-card>
     </v-container>
@@ -99,6 +101,5 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
 </style>

@@ -11,6 +11,52 @@
                 </v-breadcrumbs> -->
           </v-app-bar-title>
           <v-spacer></v-spacer>
+          <v-badge 
+                bordered
+                offset-x="15"
+                offset-y="17"
+                :content="totalPending"
+                :value="totalPending"
+                color="warning"
+                overlap>
+                <v-menu
+                    open-on-hover
+                    left
+                    >
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn fab small text v-on="on" v-bind="attrs">
+                            <v-icon>mdi-calendar-multiple</v-icon>
+                        </v-btn>
+                    </template>
+
+                    <v-card max-width="300" class="mx-auto">
+                        <v-list dense>
+                            <div class="d-flex justify-center"><p class="overline">ALL PENDING TRANSACTIONS</p></div>
+                            <v-divider class="mt-n3"></v-divider>
+                            <v-list-item-group>
+                                <v-virtual-scroll
+                                    :items="notif_items"
+                                    :item-height="70"
+                                    height="300"
+                                    width="300"
+                                    >
+                                    <template v-slot:default="{ item }">
+                                        <v-list-item :key="item.patient.id" @click="getItem(item.patient)">
+                                            <v-list-item-content>
+                                                <v-list-item-title>#: {{ item.patient.id }}</v-list-item-title>
+                                                <v-list-item-subtitle>{{ item.patient.lastname + ", " + item.patient.firstname + " " + item.patient.middlename }}</v-list-item-subtitle>
+                                                <v-list-item-subtitle>{{ item.patient.message }}</v-list-item-subtitle>
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                        <v-divider></v-divider>
+                                    </template>
+                                </v-virtual-scroll>
+                            </v-list-item-group>
+                        </v-list>
+                    </v-card>
+                </v-menu>
+            </v-badge>
+
             <v-menu right bottom transition="slide-y-transition" offset-y>
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn text v-bind="attrs" v-on="on">
@@ -213,11 +259,17 @@ export default {
     data(){
         return{
             // navigationTitle: process.env.VUE_APP_APPNAME,
+            items: [
+                // { id: 1, control_id: "2022110001", patient_name: "Fullname" },
+                // { id: 2, control_id: "2022110002", patient_name: "Fullname" },
+                // { id: 3, control_id: "2022110003", patient_name: "Fullname" },
+            ],
             snackbar:{
                 status: false,
                 text: '',
                 color: ''
             },
+            totalPending: 0,
             drawer: true,
             dialog: false,
             alert_status: false,
@@ -238,6 +290,8 @@ export default {
             this.mod_menus = res.data
         })
         .catch(err => { console.log(err) })
+
+        this.initialize()
     },
 
     computed:{
@@ -252,11 +306,34 @@ export default {
                 usermod.push(el.mod_id)
             })
             return this.mod_menus.filter(e => usermod.includes(e.id))
+        },
+        notif_items(){
+            return Array.from({ length: this.items.length }, (k, v) => {
+                return {
+                    patient: this.items[v]
+                    // id: this.items[v].id,
+                    // lastname: this.items[v].lastname,
+                    // firstname: this.items[v].firstname,
+                    // middlename: this.items[v].middlename,
+                    // message: this.items[v].message
+                }
+            })
         }
         
     },
 
     methods: {
+        getItem(item){
+            this.$router.go(this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(item.id), stat: btoa(item.status), apprvd: btoa(item.approved) } }))
+        },
+        async initialize(){
+            await this.$guest.get('/api/appointment/getAllPending')
+            .then(res => {
+                this.totalPending = res.data.length
+                this.items = res.data
+            })
+            .catch(err => { console.log(err) })
+        },
       logout(){
         this.$session.destroy();
         this.$router.push({ path: '/login' });

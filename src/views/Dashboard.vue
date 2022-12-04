@@ -14,7 +14,9 @@
     </v-row>
     <v-row dense class="mb-2">
       <v-col v-for="(item, i) in items" :key="i" cols="3">
-        <v-card :color="item.color" dark height="100%" class="flexcard">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-card :color="item.color" v-bind="attrs" v-on="on" dark height="100%" rounded="xl" class="flexcard">
               <v-container fluid class="pa-0 mb-10">
                 <v-row dense>
                   <v-col cols="8">
@@ -32,8 +34,58 @@
               <v-card-actions color="success" style="background: #98989863;">
                 <v-btn block small text @click="btn_view(item.id)">MORE INFO<v-icon right>mdi-arrow-right-drop-circle-outline</v-icon></v-btn>
               </v-card-actions>
-        </v-card>
-        
+            </v-card>
+          </template>
+          <span>{{ item.tooltip }}</span>
+        </v-tooltip>
+      </v-col>
+    </v-row>
+    <v-row dense class="mb-2">
+      <v-col v-for="(item, i) in row_item_2" :key="i" cols="4">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-card :color="item.color" v-bind="attrs" v-on="on" dark height="100%" rounded="lg" class="flexcard">
+              <v-container fluid class="pa-0">
+                <v-row dense>
+                  <v-col cols="8">
+                    <v-card-title class="mb-2">
+                      <span><h2>{{ item.count }}</h2></span>
+                    </v-card-title>
+                    <v-card-subtitle><span>{{ item.title }}</span></v-card-subtitle>
+                  </v-col>
+                  <v-col class="d-flex justify-center align-center">
+                    <v-icon x-large>{{ item.icon }}</v-icon>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card>
+          </template>
+          <span>{{ item.tooltip }}</span>
+        </v-tooltip>
+      </v-col>
+    </v-row>
+    <v-row dense class="mb-2">
+      <v-col v-for="(item, i) in row_item_3" :key="i" cols="3">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-card :color="item.color" v-bind="attrs" v-on="on" dark height="100%" rounded="lg" class="flexcard">
+              <v-container fluid class="pa-0">
+                <v-row dense>
+                  <v-col cols="8">
+                    <v-card-title class="mb-2">
+                      <span><h3>{{ item.count }}</h3></span>
+                    </v-card-title>
+                    <v-card-subtitle><span>{{ item.title }}</span></v-card-subtitle>
+                  </v-col>
+                  <v-col class="d-flex justify-center align-center">
+                    <v-icon x-large>{{ item.icon }}</v-icon>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card>
+          </template>
+          <span>{{ item.tooltip }}</span>
+        </v-tooltip>
       </v-col>
     </v-row>
     <v-dialog v-model="census_dialog" width="100%" persistent scrollable>
@@ -216,10 +268,21 @@ export default {
         forrealeased_items: [],
         total_patient_items: [],
         items: [
-          { id: '1', title: 'PENDING APPOINTMENTS', color: 'primary',icon: 'mdi-text-box-multiple', count: 0 },
-          { id: '2', title: 'COMPLETED TESTS', color: 'info',icon: 'mdi-account-multiple-check', count: 0 },
-          { id: '3', title: 'APPOINTMENT FOR APPROVAL', color: '#21638e',icon: 'mdi-account-alert', count: 0 },
-          { id: '4', title: 'ALL APPOINTMENTS', color: '#952175',icon: 'mdi-account-details', count: 0 },
+          { id: '1', title: 'PENDING APPOINTMENTS',tooltip: 'DAILY PENDING APPOINTMENTS', color: '#00a6a7',icon: 'mdi-calendar-alert', count: 0 },
+          { id: '2', title: 'TEST RESULTS',tooltip: 'DAILY TEST RESULTS', color: '#00a6a7',icon: 'mdi-flask', count: 0 },
+          { id: '3', title: 'APPOINTMENT FOR APPROVAL',tooltip: 'DAILY APPOINTMENT FOR APPROVAL', color: '#00a6a7',icon: 'mdi-calendar-question', count: 0 },
+          { id: '4', title: 'ALL APPOINTMENTS',tooltip: 'DAILY TOTAL APPOINTMENTS', color: '#00a6a7',icon: 'mdi-calendar-check', count: 0 },
+        ],
+        row_item_2: [
+          { id: '1', title: 'CASH',tooltip: 'CASH DAILY', color: '#3CB371',icon: 'mdi-currency-php', count: 0 },
+          { id: '2', title: 'CHANGE',tooltip: 'CHANGE DAILY', color: '#3CB371',icon: 'mdi-currency-php', count: 0 },
+          { id: '3', title: 'SALES',tooltip: 'TOTAL CASH DAILY', color: '#3CB371',icon: 'mdi-currency-php', count: 0 },
+        ],
+        row_item_3: [
+          { id: '1', title: 'PATIENT(s)', tooltip: 'TOTAL PATIENT COUNT', color: 'info',icon: 'mdi-account-group', count: 0 },
+          { id: '2', title: 'PENDING(s)', tooltip: 'ALL PENDING APPOINTMENT MONTHLY', color: 'info',icon: 'mdi-calendar-multiple', count: 0 },
+          { id: '3', title: 'CANCELLED', tooltip: 'ALL CANCELLED APPOINTMENT MONTHLY', color: 'info',icon: 'mdi-calendar-remove', count: 0 },
+          { id: '4', title: 'COMPLETED', tooltip: 'ALL COMPLETED APPOINTMENT MONTHLY', color: 'info',icon: 'mdi-calendar-multiple-check', count: 0 },
         ]
       }
     },
@@ -268,6 +331,13 @@ export default {
           this.items[1].count = res.data.released
           this.items[2].count = res.data.for_approval
           this.items[3].count = res.data.all
+          this.row_item_2[0].count = res.data.cash
+          this.row_item_2[1].count = res.data.change
+          this.row_item_2[2].count = res.data.total_cash
+          this.row_item_3[0].count = res.data.all_patient
+          this.row_item_3[1].count = res.data.all_pending
+          this.row_item_3[2].count = res.data.all_cancelled
+          this.row_item_3[3].count = res.data.completed
           res.data.submod.forEach(el => {
             this.chart_data.labels.push(el.abbr)
             this.chart_data.datasets[0]['data'].push(el.value)

@@ -925,7 +925,7 @@ export default {
               color: 'success'
             }
             setTimeout(() => {
-              this.$router.push({ name: 'Entries_form' })
+              this.$router.push({ name: 'Dashboard' })
             }, 1500);
           }
         })

@@ -56,9 +56,15 @@ Vue.mixin({
             return d.toLocaleDateString("en-us", options)
           },
           formatDateYYYYmmdd(){
+            // let dateNow =  new Date()
+            // let mm = dateNow.getMonth() < 10 ? '0' + dateNow.getMonth() : dateNow.getMonth()
+            // let dd = dateNow.getDay() < 10 ? '0' + dateNow.getDay() : dateNow.getDay()
+            // let yyyy = dateNow.getFullYear()
+            // return yyyy+"-"+mm+"-"+dd
             let dateNow =  new Date()
-            let mm = dateNow.getMonth() < 10 ? '0' + dateNow.getMonth() : dateNow.getMonth()
-            let dd = dateNow.getDay() < 10 ? '0' + dateNow.getDay() : dateNow.getDay()
+            let mm = dateNow.getMonth() + 1
+            mm = mm < 10 ? '0' + mm : mm
+            let dd = dateNow.getDate() < 10 ? '0' + dateNow.getDate() : dateNow.getDate()
             let yyyy = dateNow.getFullYear()
             return yyyy+"-"+mm+"-"+dd
           },

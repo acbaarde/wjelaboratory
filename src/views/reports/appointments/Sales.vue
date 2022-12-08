@@ -35,7 +35,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="(item,index) in table_items" :key="index">
-                                    <td>{{ item.control_no }}</td>
+                                    <td>{{ item.control_id }}</td>
                                     <td style="text-align: left;">{{ item.fullname }}</td>
                                     <td>{{ item.age }}</td>
                                     <td>{{ item.gender }}</td>
@@ -74,21 +74,21 @@ export default {
             overlay: {
                 value: false
             },
-            date: '',
+            date: this.formatDateYYYYmmdd(),
             total_amount: 0,
             total_cash: 0,
             dateRules: [ v => !!v || 'Please Select Date...' ],
             table_items: []
         }
     },
-    created(){
-        let dateNow =  new Date()
-        let mm = dateNow.getMonth() + 1
-        mm = mm < 10 ? '0' + mm : mm
-        let dd = dateNow.getDate() < 10 ? '0' + dateNow.getDate() : dateNow.getDate()
-        let yyyy = dateNow.getFullYear()
-        this.date = yyyy+"-"+mm+"-"+dd
-    },
+    // created(){
+    //     let dateNow =  new Date()
+    //     let mm = dateNow.getMonth() + 1
+    //     mm = mm < 10 ? '0' + mm : mm
+    //     let dd = dateNow.getDate() < 10 ? '0' + dateNow.getDate() : dateNow.getDate()
+    //     let yyyy = dateNow.getFullYear()
+    //     this.date = yyyy+"-"+mm+"-"+dd
+    // },
     methods: {
         async btn_process(){
             if(this.$refs.form.validate()){
@@ -98,7 +98,6 @@ export default {
                 }
                 await this.$guest.post('/api/reports/Sales', this.$form_data.generate(data))
                 .then(res => {
-                    console.log(res.data)
                     this.alert_status = res.data.status
                     if(res.data.status){
                         this.table_items = res.data.results

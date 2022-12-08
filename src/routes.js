@@ -149,6 +149,12 @@ const router = new VueRouter({
                 import ("@/views/reports/appointments/Sales.vue"),
         },
         {
+            path: '/reports/appointments/sendout',
+            name: 'Salesout',
+            component: () => 
+                import ("@/views/reports/appointments/Sendout.vue"),
+        },
+        {
             path: '/reports/employees/payslip',
             name: 'Employee_payslip',
             component: () => 

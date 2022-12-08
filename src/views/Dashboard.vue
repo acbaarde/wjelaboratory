@@ -13,7 +13,7 @@
       <v-btn text><v-icon left>mdi-calendar-today</v-icon><h4>{{ DateNow() }}</h4></v-btn>
     </v-row>
     <v-row dense class="mb-2">
-      <v-col v-for="(item, i) in items" :key="i" cols="3">
+      <v-col v-for="(item, i) in items" :key="i" :cols="(12/item.length)">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-card :color="item.color" v-bind="attrs" v-on="on" dark height="100%" rounded="xl" class="flexcard">
@@ -142,6 +142,9 @@
             <template v-slot:[`item.fullname`]="{item}">
               {{ item.lastname + ', ' + item.firstname + ' ' + item.middlename }}
             </template>
+            <template v-slot:[`item.status`] = "{ item }">
+              <div><span :style="item.status=='DONE'? 'color:#4caf50' : 'color:#fb8c00'">{{ item.status }}</span></div>
+            </template>
           </v-data-table>
         </v-card-text>
       </v-card>
@@ -200,6 +203,26 @@
           </v-data-table>
         </v-card-text>
       </v-card>
+      <v-card v-if="card_id == 5">
+        <v-card-title>
+          <span>{{ items.filter(e=>e.id==card_id)[0].title }}</span>
+          <v-spacer></v-spacer>
+          <v-btn icon text @click="btn_close()">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <v-data-table :headers="sendout_table_headers" :items="forsendout_items" dense>
+            <template v-slot:[`item.status_text`] = "{ item }">
+              <div><span :style="item.status_text=='PENDING'? 'color:#fb8c00' : 'color:#4caf50'">{{ item.status_text }}</span></div>
+            </template>
+            <template v-slot:[`item.actions`] = "{ item }">
+              <v-btn x-small color="primary" @click="btn_open(item)">VIEW</v-btn>
+            </template>
+          </v-data-table>
+        </v-card-text>
+      </v-card>
     </v-dialog>
   </v-container>
 </template>
@@ -243,7 +266,7 @@ export default {
           ],
         },
         table_headers: [
-          { text: 'CONTROL No.', value: 'id', align: 'center', sortable: false },
+          { text: 'CONTROL NO.', value: 'id', align: 'center', sortable: false },
           { text: 'PATIENT ID', value: 'patient_id', align: 'center', sortable: false },
           { text: 'FULLNAME', value: 'fullname', align: 'left', sortable: false },
           { text: 'AGE', value: 'age', align: 'center', sortable: false },
@@ -253,7 +276,7 @@ export default {
           { text: 'DISCOUNT %', value: 'discount_percent', align: 'center', sortable: false },
           { text: 'CASH', value: 'cash', align: 'center', sortable: false },
           { text: 'CHANGE', value: 'balance', align: 'center', sortable: false },
-          { text: 'TIME', value: 'created_at', align: 'center', sortable: false },
+          { text: 'ENCODED TIME', value: 'created_at', align: 'center', sortable: false },
           { text: 'STATUS', value: 'approved', align: 'center', sortable: false },
           { text: 'ACTIONS', value: 'actions', align: 'center', sortable: false },
         ],
@@ -265,13 +288,26 @@ export default {
           { text: 'ABBR', value: 'abbr', align: 'center', sortable: false },
           { text: 'STATUS', value: 'status', align: 'center', sortable: false }
         ],
+        sendout_table_headers: [
+          { text: 'CONTROL No.', value: 'control_id', align: 'center', sortable: false },
+          { text: 'PATIENT ID', value: 'patient_id', align: 'center', sortable: false },
+          { text: 'FULLNAME', value: 'fullname', align: 'left', sortable: false },
+          { text: 'LAB TEST', value: 'title', align: 'center', sortable: false },
+          { text: 'AMOUNT', value: 'amount', align: 'center', sortable: false },
+          { text: 'TO CLINIC', value: 'so_clinic', align: 'center', sortable: false },
+          { text: 'CREATED DATE', value: 'created_at', align: 'center', sortable: false },
+          { text: 'STATUS', value: 'status_text', align: 'center', sortable: false },
+          { text: 'ACTIONS', value: 'actions', align: 'center', sortable: false }
+        ],
         forrealeased_items: [],
         total_patient_items: [],
+        forsendout_items: [],
         items: [
           { id: '1', title: 'PENDING APPOINTMENTS',tooltip: 'DAILY PENDING APPOINTMENTS', color: '#00a6a7',icon: 'mdi-calendar-alert', count: 0 },
           { id: '2', title: 'TEST RESULTS',tooltip: 'DAILY TEST RESULTS', color: '#00a6a7',icon: 'mdi-flask', count: 0 },
           { id: '3', title: 'APPOINTMENT FOR APPROVAL',tooltip: 'DAILY APPOINTMENT FOR APPROVAL', color: '#00a6a7',icon: 'mdi-calendar-question', count: 0 },
           { id: '4', title: 'ALL APPOINTMENTS',tooltip: 'DAILY TOTAL APPOINTMENTS', color: '#00a6a7',icon: 'mdi-calendar-check', count: 0 },
+          { id: '5', title: 'SEND OUT',tooltip: 'SEND OUT REPORTS', color: '#00a6a7',icon: 'mdi-bike-fast', count: 0 },
         ],
         row_item_2: [
           { id: '1', title: 'CASH',tooltip: 'CASH DAILY', color: '#3CB371',icon: 'mdi-currency-php', count: 0 },
@@ -327,10 +363,10 @@ export default {
         }
         await this.$guest.post('/api/data_maintenance/dashboardData', this.$form_data.generate(data))
         .then(res => {
-          this.items[0].count = res.data.pending
-          this.items[1].count = res.data.released
-          this.items[2].count = res.data.for_approval
-          this.items[3].count = res.data.all
+          // this.items[0].count = res.data.pending
+          // this.items[1].count = res.data.released
+          // this.items[2].count = res.data.for_approval
+          // this.items[3].count = res.data.all
           this.row_item_2[0].count = res.data.cash
           this.row_item_2[1].count = res.data.change
           this.row_item_2[2].count = res.data.total_cash
@@ -342,9 +378,6 @@ export default {
             this.chart_data.labels.push(el.abbr)
             this.chart_data.datasets[0]['data'].push(el.value)
           })
-          setTimeout(() => {
-            this.overlay = false
-          }, 500);
         })
         .catch(err => { console.log(err) })
 
@@ -352,6 +385,16 @@ export default {
         .then(res => {
           this.total_patient_items = res.data.all
           this.forrealeased_items = res.data.for_released
+          this.forsendout_items = res.data.for_sendout
+
+          this.items[0].count = res.data.all.filter(e => e.status == 'P').length
+          this.items[1].count = res.data.for_released.length
+          this.items[2].count = res.data.all.filter(e => e.status == 'P' && e.discount_id == 3).length
+          this.items[3].count = res.data.all.length
+          this.items[4].count = res.data.for_sendout.length
+          setTimeout(() => {
+            this.overlay = false
+          }, 1000);
         })
         .catch(err => { console.log(err) })
       },
@@ -366,12 +409,16 @@ export default {
         window.location.reload()
       },
       btn_open(item){
-        this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(item.id), stat: btoa(item.status), apprvd: btoa(item.approved) } })
+        let id = typeof item.id == 'undefined' ? item.control_id : item.id;
+        this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(id), stat: btoa(item.status), apprvd: btoa(item.approved) } })
       },
       btn_view(id){
+        this.overlay = true
         this.initialize()
         this.card_id = id
-        this.dialog = !this.dialog
+        setTimeout(() => {
+          this.dialog = !this.dialog
+        }, 1000);
       },
       btn_close(){
         this.card_id = 0

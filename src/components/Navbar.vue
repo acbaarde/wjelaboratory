@@ -37,7 +37,7 @@
                                 <v-virtual-scroll
                                     :items="notif_items"
                                     :item-height="70"
-                                    height="300"
+                                    :height="screenHeight"
                                     width="300"
                                     >
                                     <template v-slot:default="{ item }">
@@ -281,10 +281,13 @@ export default {
             confirmpassword: '',
             passwordRules: [v => !!v || 'Password is Required!'],
             confirmpasswordRules: [v => !!v || 'Confirm Password is Required!'],
+            screenHeight: screen.availHeight - 200
         }
     },
 
     created(){
+        console.log(screen.availHeight)
+        console.log(screen.height)
         this.$guest.get('/api/menu/moduleMenu')
         .then(res => {
             this.mod_menus = res.data

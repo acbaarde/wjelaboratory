@@ -6,7 +6,7 @@
           <li>{{ rmt_name }}</li>
           <li>_____________________________</li>
           <li>MEDICAL TECHNOLOGIST</li>
-          <!-- <li>Lic. No. 69669</li> -->
+          <li>Lic. No. {{ rmt_licno }}</li>
         </ul>
       </v-col>
       <v-col cols="6">
@@ -31,7 +31,8 @@ export default {
           name: '',
           lic_no: ''
         },
-        rmt_name: ''
+        rmt_name: '',
+        rmt_licno: ''
       }
     },
     created(){
@@ -49,6 +50,7 @@ export default {
             await this.$guest.get('/api/employee/getEmployees')
             .then(res => {
               let rmt = res.data.filter(e => e.id == this.$session.get('userid-session'));
+              this.rmt_licno = rmt[0].license_no
               this.rmt_name = rmt.length > 0 ? rmt[0].firstname + ' ' + rmt[0].middlename.charAt(0).toUpperCase() + ' ' + rmt[0].lastname : this.$session.get('user-session')
             })
             .catch(err => {console.log(err)})

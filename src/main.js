@@ -8,7 +8,9 @@ import VueEasySession from 'vue-easysession';
 import VueMask from 'v-mask';
 import MyFormData from "./scipts/formdata";
 import '@mdi/font/css/materialdesignicons.css';
+import JsonExcel from 'vue-json-excel';
 
+Vue.component("downloadExcel", JsonExcel);
 Vue.config.productionTip = false;
 // Vue.use(VueSession, { persist: true });
 Vue.use(MyFormData)

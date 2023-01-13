@@ -18,19 +18,19 @@
                             <table style="width:100%">
                                 <thead>
                                     <tr>
-                                        <th colspan="3">{{ results.title }}</th>
+                                        <th :colspan="colTitle?3:2">{{ results.title }}</th>
                                     </tr>
                                     <tr>
-                                        <th>TEST</th>
+                                        <th :style="colTitle?'':'width: 50%'">TEST</th>
                                         <th>RESULT</th>
-                                        <th>REFERENCE VALUE</th>
+                                        <th v-if="colTitle">REFERENCE VALUE</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(i,v) in results.lab_results" :key="v">
                                         <td>{{ i.result_title }}</td>
                                         <td>{{ i.result_value }}</td>
-                                        <td>{{ i.result_range }}</td>
+                                        <td v-if="colTitle">{{ i.result_range }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -57,7 +57,8 @@ export default {
         return{
             header_data: this.$route.params.info,
             results: Object.assign({}, this.$route.params.results),
-            fullPath: this.$route.params.url
+            fullPath: this.$route.params.url,
+            colTitle: this.$route.params.headerCount > 2 ? true : false
         }
     },
     components: {

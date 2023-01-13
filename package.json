@@ -20,6 +20,7 @@
     "vue-axios": "^3.2.4",
     "vue-chartjs": "^3.5.1",
     "vue-easysession": "^0.0.13",
+    "vue-json-excel": "^0.3.0",
     "vue-print-nb": "^1.7.3",
     "vue-router": "^3.5.1",
     "vue-session": "^1.0.0",

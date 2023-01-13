@@ -6,6 +6,8 @@
             <v-row no-gutters class="d-flex justify-end align-end mb-4">
                 <v-col v-if="reports.employees.length > 0">
                     <v-btn small color="primary" @click="print()">PRINT</v-btn>
+                    <v-btn small color="primary" @click="test()">TEST</v-btn>
+                    <download-excel :data="excel_items" :fields="excel_fields" name="dtrinout" :before-generate="startDL" :before-finish="endDL"><a href="#" @click.prevent="exportToExcel()">Export to Excel</a></download-excel>
                 </v-col>
                 <v-col cols="2" class="mr-2">
                     <v-select v-model="filters.year" :items="options.year" item-text="desc" item-value="id" @change="getPayperiod()" dense outlined hide-details></v-select>
@@ -20,7 +22,7 @@
             <v-row no-gutters>
                 <v-col id="print-form">
                     <v-card v-for="(item,i) in reports.employees" :key="i" outlined class="mb-2">
-                        <v-card-subtitle class="mb-n4">
+                        <!-- <v-card-subtitle class="mb-n4">
                             <ul style="list-style: none; padding: 0;">
                                 <li>
                                     <ul>
@@ -37,33 +39,48 @@
                                     </ul>
                                 </li>
                             </ul>
-                        </v-card-subtitle>
+                        </v-card-subtitle> -->
                         <v-card-text>
                             <v-data-table :headers="table_headers" :items="table_items(item.id)" :items-per-page="-1" hide-default-header hide-default-footer dense>
                                 <template v-slot:header="{}">
                                     <tr>
-                                        <th colspan="3"></th>
-                                        <th colspan="4">Original Schedule</th>
-                                        <th colspan="4">Encoded Time</th>
-                                        <th colspan="2">Over Time</th>
-                                        <th colspan="2">Under Time</th>
+                                        <th colspan="3" style="text-align: left; padding-left: 2px">Full Name:</th>
+                                        <th colspan="12" style="text-align: left;">{{ fullname(item) }}</th>
+                                    </tr>    
+                                    <tr>
+                                        <th colspan="3" style="text-align: left; padding-left: 2px">Position:</th>
+                                        <th colspan="12" style="text-align: left;">{{ item.position_desc }}</th>
+                                    </tr> 
+                                    <tr>
+                                        <th colspan="3" style="text-align: left; padding-left: 2px">Payperiod:</th>
+                                        <th colspan="12" style="text-align: left; color: red;">{{ reports.payperiod['pperiod'] + " => " + reports.payperiod['cfrom'].substr(5,5) + " - " + reports.payperiod['cto'].substr(5,5) }}</th>
+                                    </tr> 
+                                    <tr style="border-bottom:1px solid black">
+                                        <th colspan="100%"></th>
                                     </tr>
                                     <tr>
-                                        <th style="width: 110px;">Date</th>
-                                        <th style="width: 40px;">Day</th>
-                                        <th style="width: 30px;">Type</th>
-                                        <th style="width: 70px;">AM In</th>
-                                        <th style="width: 70px;">AM Out</th>
-                                        <th style="width: 70px;">PM In</th>
-                                        <th style="width: 70px;">PM Out</th>
-                                        <th style="width: 70px;">AM In</th>
-                                        <th style="width: 70px;">AM Out</th>
-                                        <th style="width: 70px;">PM In</th>
-                                        <th style="width: 70px;">PM Out</th>
-                                        <th style="width: 70px;">Start</th>
-                                        <th style="width: 70px;">End</th>
-                                        <th style="width: 70px;">Start</th>
-                                        <th style="width: 70px;">End</th>
+                                        <th class="bgcolor" colspan="3"></th>
+                                        <th class="bgcolor" colspan="4">Original Schedule</th>
+                                        <th class="bgcolor" colspan="4">Encoded Time</th>
+                                        <th class="bgcolor" colspan="2">Over Time</th>
+                                        <th class="bgcolor" colspan="2">Under Time</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="bgcolor" style="width: 110px;">Date</th>
+                                        <th class="bgcolor" style="width: 40px;">Day</th>
+                                        <th class="bgcolor" style="width: 30px;">Type</th>
+                                        <th class="bgcolor" style="width: 70px;">AM In</th>
+                                        <th class="bgcolor" style="width: 70px;">AM Out</th>
+                                        <th class="bgcolor" style="width: 70px;">PM In</th>
+                                        <th class="bgcolor" style="width: 70px;">PM Out</th>
+                                        <th class="bgcolor" style="width: 70px;">AM In</th>
+                                        <th class="bgcolor" style="width: 70px;">AM Out</th>
+                                        <th class="bgcolor" style="width: 70px;">PM In</th>
+                                        <th class="bgcolor" style="width: 70px;">PM Out</th>
+                                        <th class="bgcolor" style="width: 70px;">Start</th>
+                                        <th class="bgcolor" style="width: 70px;">End</th>
+                                        <th class="bgcolor" style="width: 70px;">Start</th>
+                                        <th class="bgcolor" style="width: 70px;">End</th>
                                     </tr>
                                 </template>
                                 <template v-slot:body={}>
@@ -137,6 +154,16 @@ export default {
                 { value: 'ut_start', align: 'center' },
                 { value: 'ut_end', align: 'center' },
             ],
+            excel_items: [
+                { col1: 'item 1', col2: 'item 1', col3: 'item 1' },
+                { col1: 'item 2', col2: 'item 2', col3: 'item 2' },
+                { col1: 'item 3', col2: 'item 3', col3: 'item 3' },
+            ],
+            excel_fields: {
+                fullname: 'col1',
+                position: 'col2',
+                payperiod: 'col3',
+            }
         }
     },
     created(){
@@ -205,6 +232,17 @@ export default {
         },
         print(){
             this.print_form()
+        },
+        exportToExcel(){
+        },
+        test(){
+            console.log()
+        },
+        startDL(){
+            this.overlay.value = true;
+        },
+        endDL(){
+            this.overlay.value = false;
         }
     }
 }
@@ -226,7 +264,7 @@ ul li{
 tr td{
     text-align: center;
 }
-tr th{
+.bgcolor{
     background-color: rgb(217, 248, 192);
 }
 </style>

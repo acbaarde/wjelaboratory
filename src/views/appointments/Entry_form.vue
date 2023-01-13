@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-n3">
+  <div class="ma-n3" ref="entryformRefs">
     <v-row>
         <v-col cols="9" style="padding: 0;">
           <v-container fluid>
@@ -550,7 +550,8 @@ export default {
         { text: 'ADDRESS', value: 'address', align: 'center', sortable: false, filterable: false },
       ],
       patient_table_items: [],
-      result_table_headers: [
+      result_table_headers: [],
+      result_table_headers_default: [
         { text: 'TITLE', value: 'result_title', align: 'left', sortable: false },
         { text: 'RESULT RANGE', value: 'result_range', align: 'left', sortable: false },
         { text: 'RESULT VALUE', value: 'result_value', align: 'center', sortable: false },
@@ -642,6 +643,7 @@ export default {
 
   created(){
     this.initialize();
+    this.$root.$refs.Entry_form = this
   },
 
   watch: {
@@ -649,15 +651,23 @@ export default {
       handler: function(newVal, oldVal){
         this.btn_s = newVal.filter(e=> typeof e.item_id == 'undefined').length > 0 ? true : newVal.length < oldVal.length ? true : false
       },
-      deep: true
+      deep: true,
     },
   },
 
   methods: {
+    compEntryform(){
+      console.log("Entry form")
+    },
     cashFocus(){
       this.total_cash > 0 ? this.total_cash : this.total_cash = '';
     },
     async initialize(){
+      this.route_stat = atob(this.$route.query.stat)
+      this.route_apprvd = atob(this.$route.query.apprvd)
+      this.route_ctrlno = atob(this.$route.query.ctrlno)
+      this.table_items = []
+
       this.overlay.value = true
       if(this.route_stat != ''){
         let data = {
@@ -747,7 +757,12 @@ export default {
         await this.$guest.post(url, this.$form_data.generate(data))
         .then(res => {
           if(res.data.status == true){
-            this.$router.go(this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(res.data.control_id), stat: btoa(res.data.appointment_status), apprvd: btoa(res.data.apprvd) } }).catch(() => {}))
+            // this.$router.go(this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(res.data.control_id), stat: btoa(res.data.appointment_status), apprvd: btoa(res.data.apprvd) } }).catch(() => {}))
+            this.$router.replace({ name: 'Entry_form', query: { ctrlno: btoa(res.data.control_id), stat: btoa(res.data.appointment_status), apprvd: btoa(res.data.apprvd) } }).catch(() => {})
+            this.$nextTick(() => {
+              this.initialize()
+              this.payment_dialog = false
+            })
           }
         })
         .catch(err => {console.log(err)})
@@ -795,7 +810,7 @@ export default {
         lab_results: this.result_table_items
       }
       if(this.$session.get('userposnid-session')==1||this.$session.get('usertype-session')=='ADMIN'){
-        this.$router.push({ name: 'Generate_reports', params: { info: print_info, results: results_info, url: this.$route.fullPath } })
+        this.$router.push({ name: 'Generate_reports', params: { info: print_info, results: results_info, url: this.$route.fullPath, headerCount: this.result_table_headers.length } })
       }
     },
     btn_reprint(item){
@@ -825,6 +840,7 @@ export default {
       .then(res => {
         this.result_remarks = res.data.result_remarks
         this.result_table_items = res.data.lab_results
+        this.result_table_headers = res.data.lab_results.filter(e => !(e.result_range==null||e.result_range=="")).length > 0 ? this.result_table_headers_default : this.result_table_headers_default.filter(ee=>ee.value!='result_range');
       })
       .catch(err => { console.log(err) })
     },

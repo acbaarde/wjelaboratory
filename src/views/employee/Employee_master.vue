@@ -94,6 +94,7 @@
                                 <v-select v-model="active_item.original_restday" outlined dense :items="days" item-text="desc" item-value="id" label="Original Restday" required :rules="original_restday_idRules"></v-select>
                                 <v-text-field v-model="active_item.hired_date" dense outlined type="date" label="Hired Date" required :rules="hired_dateRules"></v-text-field>
                                 <v-select v-model="active_item.ws_code" outlined dense :items="work_shift" item-text="desc" item-value="ws_code" label="Work Schedule" required :rules="work_shift_idRules"></v-select>
+                                <v-text-field v-model="active_item.license_no" dense outlined label="License Number"></v-text-field>
                               </v-col>
                               <v-divider vertical></v-divider>
                               <v-col cols="6" class="pl-2">
@@ -241,6 +242,7 @@ export default {
           ordinary_restday: '',
           original_restday: '',
           ws_code: '',
+          license_no: ''
         },
         employee_details: {
           id: 0, 

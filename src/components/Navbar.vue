@@ -324,7 +324,16 @@ export default {
 
     methods: {
         getItem(item){
-            this.$router.go(this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(item.id), stat: btoa(item.status), apprvd: btoa(item.approved) } }))
+            if(this.$router.currentRoute.name == 'Entry_form'){
+                this.$router.replace({ name: 'Entry_form', query: { ctrlno: btoa(item.id), stat: btoa(item.status), apprvd: btoa(item.approved) } })
+                setTimeout(() => {
+                    this.$root.$refs.Entry_form.initialize()
+                }, 500);
+                
+                // this.$router.go(this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(item.id), stat: btoa(item.status), apprvd: btoa(item.approved) } }))
+            }else{
+                this.$router.push({ name: 'Entry_form', query: { ctrlno: btoa(item.id), stat: btoa(item.status), apprvd: btoa(item.approved) } })
+            }
         },
         async initialize(){
             await this.$guest.get('/api/appointment/getAllPending')

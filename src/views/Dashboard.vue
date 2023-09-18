@@ -41,7 +41,7 @@
       </v-col>
     </v-row>
     <v-row dense class="mb-2">
-      <v-col v-for="(item, i) in row_item_2" :key="i" cols="4">
+      <v-col v-for="(item, i) in row_item_2" :key="i" :cols="(12/item.length)">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-card :color="item.color" v-bind="attrs" v-on="on" dark height="100%" rounded="lg" class="flexcard">
@@ -312,7 +312,8 @@ export default {
         row_item_2: [
           { id: '1', title: 'CASH',tooltip: 'CASH DAILY', color: '#3CB371',icon: 'mdi-currency-php', count: 0 },
           { id: '2', title: 'CHANGE',tooltip: 'CHANGE DAILY', color: '#3CB371',icon: 'mdi-currency-php', count: 0 },
-          { id: '3', title: 'SALES',tooltip: 'TOTAL CASH DAILY', color: '#3CB371',icon: 'mdi-currency-php', count: 0 },
+          { id: '4', title: 'BALANCE',tooltip: 'TOTAL BALANCE', color: '#3CB371',icon: 'mdi-currency-php', count: 0 },
+          { id: '3', title: 'SEND OUT',tooltip: 'TOTAL SEND OUT', color: '#3CB371',icon: 'mdi-currency-php', count: 0 },
         ],
         row_item_3: [
           { id: '1', title: 'PATIENT(s)', tooltip: 'TOTAL PATIENT COUNT', color: 'info',icon: 'mdi-account-group', count: 0 },
@@ -369,7 +370,9 @@ export default {
           // this.items[3].count = res.data.all
           this.row_item_2[0].count = res.data.cash
           this.row_item_2[1].count = res.data.change
-          this.row_item_2[2].count = res.data.total_cash
+          this.row_item_2[2].count = res.data.total_balc
+          this.row_item_2[3].count = res.data.total_sendout
+
           this.row_item_3[0].count = res.data.all_patient
           this.row_item_3[1].count = res.data.all_pending
           this.row_item_3[2].count = res.data.all_cancelled

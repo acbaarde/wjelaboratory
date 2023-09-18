@@ -49,6 +49,29 @@
                     </v-card>
                   </v-dialog> -->
                   <v-text-field class="shrink" v-model="route_ctrlno" label="Control #." dense outlined hide-details readonly></v-text-field>
+                  <v-spacer></v-spacer>
+                  
+                  <div v-if="route_stat==''">
+                    <v-tooltip top>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn v-on="on" v-bind="attrs" dark color="success" small @click="loadPatients()"><v-icon left dark>mdi-account</v-icon>Patient</v-btn>
+                      </template>
+                      <span>ADD PATIENT</span>
+                    </v-tooltip>
+                    
+                    <v-tooltip top>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn v-on="on" v-bind="attrs" dark color="primary" small @click="dialog_phy=!dialog_phy" class="mx-2"><v-icon left dark>mdi-account</v-icon>Physician</v-btn>
+                      </template>
+                      <span>ADD PHYSICIAN</span>
+                    </v-tooltip>
+                  </div>
+                  
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn v-on="on" v-bind="attrs" :disabled="route_stat=='D'||route_stat=='C'||active_item.patient_id==''" :dark="active_item.patient_id!=''" color="warning" small @click="btn_add_lab_test()"><v-icon left dark>mdi-flask-empty-plus-outline</v-icon>Lab test</v-btn>
+                    </template>
+                  </v-tooltip>
                 </v-row>
                 <!-- <v-row no-gutters class="mb-2">
                   <v-col cols="4" class="mr-2">
@@ -81,9 +104,11 @@
                 <v-row no-gutters class="mb-2" v-if="route_stat==''">
                   <v-col cols="6" class="mr-2">
                     <v-dialog v-model="dialog" persistent width="80%">
-                      <template v-slot:activator="{on, attrs}">
-                        <v-btn x-small color="info" block v-bind="attrs" v-on="on" @click="loadPatients()"><v-icon left x-small>mdi-plus-circle</v-icon>PATIENT INFO</v-btn>
-                      </template>
+                      <!-- <template v-slot:activator="{on, attrs}">
+                        <div class="d-flex justify-center">
+                          <v-btn rounded x-small color="success" v-bind="attrs" v-on="on" @click="loadPatients()"><v-icon left x-small>mdi-plus-circle</v-icon>PATIENT INFO</v-btn>
+                        </div>
+                      </template> -->
                       <v-card>
                         <v-card-title>
                           <span>Search Patient</span>
@@ -119,9 +144,11 @@
                   </v-col>
                   <v-col>
                     <v-dialog v-model="dialog_phy" width="50%">
-                      <template v-slot:activator="{on, attrs}">
-                        <v-btn x-small color="info" block v-bind="attrs" v-on="on"><v-icon left x-small>mdi-plus-circle</v-icon>PHYSICIAN INFO</v-btn>
-                      </template>
+                      <!-- <template v-slot:activator="{on, attrs}"> -->
+                        <!-- <div class="d-flex justify-center"> -->
+                          <!-- <v-btn x-small color="success" rounded v-bind="attrs" v-on="on"><v-icon left x-small>mdi-plus-circle</v-icon>PHYSICIAN INFO</v-btn> -->
+                        <!-- </div> -->
+                      <!-- </template> -->
                       <v-card>
                         <v-card-title>
                           <span>Update Details</span>
@@ -130,15 +157,19 @@
                         </v-card-title>
                         <v-divider></v-divider>
                         <v-card-text>
-                          <v-row no-gutters class="my-2">
+                          <v-row no-gutters>
                             <v-col>
-                              <v-select class="mb-2" clearable @click:clear="clearPhysician" :disabled="route_stat=='D'||route_stat=='C'" v-model="physician_selected.value" @change="physician_changed()" label="Physician" :prefix="physicianprefix" :items="physicians" item-text="text" item-value="value" dense outlined hide-details></v-select>
+                              <v-select class="my-2" clearable @click:clear="clearPhysician" :disabled="route_stat=='D'||route_stat=='C'" v-model="physician_selected.value" @change="physician_changed()" label="Physician" :prefix="physicianprefix" :items="physicians" item-text="text" item-value="value" dense outlined hide-details></v-select>
                               <v-select class="mb-2" clearable @click:clear="clearDiscount" :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_selected.id" @change="discount_changed()" :readonly="route_stat!=''" label="Discount Type" :items="discount" item-text="text" item-value="id" dense outlined hide-details></v-select>
                               <v-text-field class="mb-2" v-model="discount_selected.percent"  :readonly="discount_selected.id == 3 ? false : true" dense outlined hide-details type="number" label="Disc. %"></v-text-field>
-                              <v-text-field class="mb-2" :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_rmks" clearable dense outlined hide-details label=" Discount Remarks"></v-text-field>
+                              <v-text-field :disabled="route_stat=='D'||route_stat=='C'" v-model="discount_rmks" clearable dense outlined hide-details label=" Discount Remarks"></v-text-field>
                             </v-col>
                           </v-row>
                         </v-card-text>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="primary" block @click="dialog_phy=false">SAVE</v-btn>
+                        </v-card-actions>
                       </v-card>
                     </v-dialog>
                   </v-col>
@@ -198,9 +229,9 @@
                 <v-row no-gutters class="mb-2">
                   <v-spacer></v-spacer>
                   <v-dialog v-model="lab_dialog" persistent scrollable width="90%">
-                    <template v-slot:activator="on,attrs">
+                    <!-- <template v-slot:activator="on,attrs">
                       <v-btn :disabled="route_stat=='D'||route_stat=='C'||active_item.patient_id==''" :dark="active_item.patient_id!=''" color="green" block v-bind="attrs" v-on="on" @click="btn_add_lab_test()"><v-icon left>mdi-plus</v-icon>ADD LABORATORY TEST</v-btn>
-                    </template>
+                    </template> -->
                     <v-card>
                       <v-card-title>
                         <span>Add Laboratory Test</span>
@@ -242,7 +273,9 @@
                     </v-card>
                   </v-dialog>
                 </v-row>
-              <v-divider></v-divider>
+              <!-- <v-divider></v-divider> -->
+                      <v-card id="offcard" outlined flat :height="screenHeight-228" class="overflow-auto">
+
                       <v-data-table :headers="table_headers" :items="table_items" :items-per-page="-1" dense hide-default-footer>
                         <template v-slot:[`item.title`]="{item}">
                           {{ item.title }} {{ item.send_out==1 ? "(SEND OUT)" : ''  }}
@@ -273,7 +306,10 @@
                           </template>
                         </template>
                       </v-data-table>
+
+                      </v-card>
                       <v-btn v-if="btn_s==true" small block color="primary" class="mt-2" @click="btn_save()">SAVE</v-btn>
+
               </v-card-text>
               <!-- <v-divider></v-divider>
               <v-card-actions>
@@ -294,20 +330,23 @@
             </v-card>
           </v-container>
         </v-col>
-        <v-col cols="3" style="padding: 0;">
+        <!-- <v-col cols="3" style="padding: 0;">
           <v-container fluid>
-            <v-card flat outlined>
-              <v-card-title>
+            <v-card flat outlined> -->
+              <!-- <v-card-title>
                 <v-btn :disabled="route_stat=='D'||route_stat=='C'||table_items.length==0" block small text outlined color="info" @click="payment_dialog=true">ADD PAYMENT</v-btn>
-              </v-card-title>
-              <v-card-text no-gutters class="my-2">
-                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" dense append-icon="mdi-currency-php" label="TOTAL LAB FEE" value="0.00" v-model="total_fee" reverse readonly></v-text-field>
-                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" dense append-icon="mdi-currency-php" label="DISCOUNT" value="0.00" v-model="total_disc" reverse readonly></v-text-field>
-                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" dense append-icon="mdi-currency-php" label="CASH" value="0.00" v-model="total_cash" reverse readonly :error="cash_err"></v-text-field>
-                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" dense append-icon="mdi-currency-php" label="CHANGE" value="0.00" v-model="total_change" reverse readonly></v-text-field>
+              </v-card-title> -->
+              <!-- <v-card-text no-gutters class="my-2">
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" filled hide-details dense append-icon="mdi-currency-php" label="CASH" value="0.00" v-model="total_cash" reverse readonly :error="cash_err"></v-text-field>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" filled hide-details dense append-icon="mdi-currency-php" label="CHANGE" value="0.00" v-model="total_change" reverse readonly></v-text-field>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" filled hide-details dense append-icon="mdi-currency-php" label="TOTAL LAB FEE" value="0.00" v-model="total_fee" reverse readonly></v-text-field>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" filled hide-details dense append-icon="mdi-currency-php" label="DISCOUNT" value="0.00" v-model="total_disc" reverse readonly></v-text-field>
               </v-card-text>
               <v-card-actions>
-                <v-text-field hide-details :disabled="route_stat=='D'||route_stat=='C'" success outlined append-icon="mdi-currency-php" label="TOTAL AMOUNT" value="0.00" v-model="total_amount" reverse readonly></v-text-field>
+                <v-col cols="12">
+                  <v-text-field class="mb-4" hide-details :disabled="route_stat=='D'||route_stat=='C'" success outlined append-icon="mdi-currency-php" label="TOTAL AMOUNT" value="0.00" v-model="total_amount" reverse readonly></v-text-field>
+                  <v-btn :disabled="route_stat=='D'||route_stat=='C'||table_items.length==0" block small text outlined color="info" @click="payment_dialog=true">ADD PAYMENT</v-btn>
+                </v-col>
               </v-card-actions>
             </v-card>
           </v-container>
@@ -319,6 +358,30 @@
                 <v-btn class="mt-2" block color="info" text outlined @click="btn_back()">BACK</v-btn>
             </template>
           </v-container>
+        </v-col> -->
+
+        <v-col cols="3">
+          <v-card outlined>
+            <div class="right_column" :style="'height:'+screenHeight + 'px'">
+              <v-card flat>
+                <v-btn class="mb-2" :disabled="route_stat=='D'||route_stat=='C'||table_items.length==0" block small color="info" @click="payment_dialog=true">ADD PAYMENT</v-btn>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" filled hide-details dense append-icon="mdi-currency-php" label="CASH" value="0.00" v-model="total_cash" reverse readonly :error="cash_err"></v-text-field>
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" filled hide-details dense append-icon="mdi-currency-php" label="CHANGE" value="0.00" v-model="total_change" reverse readonly></v-text-field>
+                <v-text-field class="mb-8" :disabled="route_stat=='D'||route_stat=='C'" filled hide-details dense append-icon="mdi-currency-php" label="BALANCE" value="0.00" v-model="total_balance" reverse readonly></v-text-field>
+                
+                <v-text-field :disabled="route_stat=='D'||route_stat=='C'" filled hide-details dense append-icon="mdi-currency-php" label="TOTAL LAB FEE" value="0.00" v-model="total_fee" reverse readonly></v-text-field>
+                <v-text-field class="mb-4" :disabled="route_stat=='D'||route_stat=='C'" filled hide-details dense append-icon="mdi-currency-php" label="DISCOUNT" value="0.00" v-model="total_disc" reverse readonly></v-text-field>
+                <v-text-field hide-details :disabled="route_stat=='D'||route_stat=='C'" success outlined append-icon="mdi-currency-php" label="TOTAL AMOUNT" value="0.00" v-model="total_amount" reverse readonly></v-text-field>
+              </v-card>
+              <v-card flat>
+                <template v-if="route_stat=='P'||route_stat==''" >
+                  <v-btn v-if="for_posting" block color="info" text outlined @click="btn_post()">POST</v-btn>
+                  <v-btn v-else block color="error" text outlined @click="btn_cancel()">CANCEL</v-btn>
+                  <v-btn class="mt-2" block color="info" text outlined @click="btn_back()">BACK</v-btn>
+              </template>
+              </v-card>
+            </div>
+          </v-card>
         </v-col>
       </v-row>
 
@@ -572,6 +635,7 @@ export default {
       item_id: '',
       item_title: '',
       btn_s: false,
+      screenHeight: screen.availHeight - 200
     }
   },
 
@@ -639,6 +703,12 @@ export default {
     table_items_helper(){
       return JSON.parse(JSON.stringify(this.table_items));
     },
+    total_balance(){
+      var cash = parseFloat(this.total_cash);
+      var amount = parseFloat(this.total_amount);
+      var balance = cash >= amount ? 0 : amount - cash;
+      return balance.toFixed(2)
+    }
   },
 
   created(){
@@ -722,6 +792,8 @@ export default {
         this.pageLength = this.paginationLength(res.data.total, limit)
       })
       .catch(err =>{ console.log(err) })
+
+      this.dialog = true
     },
 
     btn_patient(item){
@@ -1063,5 +1135,11 @@ ul li{
 }
 ul {
   padding-left: 0;
+}
+.right_column{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: .5rem;
 }
 </style>

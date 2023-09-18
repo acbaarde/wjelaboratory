@@ -286,8 +286,6 @@ export default {
     },
 
     created(){
-        console.log(screen.availHeight)
-        console.log(screen.height)
         this.$guest.get('/api/menu/moduleMenu')
         .then(res => {
             this.mod_menus = res.data

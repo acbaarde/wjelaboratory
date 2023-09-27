@@ -449,7 +449,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="sendout_dialog" persistent scrollable width="30%">
+    <v-dialog v-model="sendout_dialog" persistent scrollable width="40%">
       <v-card>
         <v-card-title>
           <span>Send Out</span>
@@ -461,7 +461,7 @@
           <v-form>
             <v-text-field dense outlined v-model="send_out.clinic" label="To Clinic"></v-text-field>
             <v-text-field dense outlined v-model="send_out.remarks" label="Remarks"></v-text-field>
-            <v-select dense outlined label="Status" v-model="send_out.status" :items="send_out_items" item-text="text" item-value="value"></v-select>
+            <v-select hint="* PENDING = SENDOUT DISPATCH, RECEIVED = SENDOUT RETURNED" persistent-hint dense outlined label="Status" v-model="send_out.status" :items="send_out_items" item-text="text" item-value="value"></v-select>
           </v-form>
         </v-card-text>
         <v-divider></v-divider>

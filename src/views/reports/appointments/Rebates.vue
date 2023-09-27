@@ -33,9 +33,16 @@
                 <v-card-title>Rebates Details</v-card-title>
                 <v-divider></v-divider>
                 <v-card-text class="pa-2">
-                    <v-container fluid>
+                    <v-container fluid id="print-form">
+                        <v-row class="mb-n6">
+                            <v-col>
+                                <h3>Physician: {{ this.active_item.lastname + ", " + this.active_item.firstname + " " + this.active_item.middlename }}</h3>
+                                <h4>Date From: {{ formatDate(this.dateFrom) }}</h4>
+                                <h4>Date To: {{ formatDate(this.dateTo) }}</h4>
+                            </v-col>
+                        </v-row>
                         <v-row>
-                            <v-col cols="8" id="print-form">
+                            <v-col cols="8">
                                 <table style="width:100%;">
                                     <thead>
                                         <tr>

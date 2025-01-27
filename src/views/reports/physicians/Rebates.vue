@@ -90,7 +90,7 @@
                                         </tr>
                                         <tr>
                                             <td style="min-width: 80%; text-align: right;"><strong>REBATES:</strong></td>
-                                            <td colspan="2" style="color: #1976d2;"><strong>{{ active_item.total + " * 0.10% = " +  (active_item.total * .10)}}</strong></td>
+                                            <td colspan="2" style="color: #1976d2;"><strong>{{ active_item.total + " * 0.10% = " +  active_item.total_rebates}}</strong></td>
                                         </tr>
                                     </tfoot>
                                 </table>

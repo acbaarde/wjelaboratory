@@ -137,10 +137,10 @@ const router = new VueRouter({
                 import ("@/views/reports/appointments/Census.vue"),
         },
         {
-            path: '/reports/appointments/rebates',
+            path: '/reports/physicians/rebates',
             name: 'Rebates',
             component: () => 
-                import ("@/views/reports/appointments/Rebates.vue"),
+                import ("@/views/reports/physicians/Rebates.vue"),
         },
         {
             path: '/reports/appointments/sales',

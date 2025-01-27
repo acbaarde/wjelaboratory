@@ -21,7 +21,7 @@
                 <v-row dense>
                   <v-col cols="8">
                     <v-card-title class="mb-2">
-                      <span><h1>{{ item.count }}</h1></span>
+                      <span><h1>{{ formatAmount(item.count) }}</h1></span>
                     </v-card-title>
                     <v-card-subtitle><span>{{ item.title }}</span></v-card-subtitle>
                   </v-col>
@@ -49,7 +49,7 @@
                 <v-row dense>
                   <v-col cols="8">
                     <v-card-title class="mb-2">
-                      <span><h2>{{ item.count }}</h2></span>
+                      <span><h2>{{ formatAmountWDec(item.count) }}</h2></span>
                     </v-card-title>
                     <v-card-subtitle><span>{{ item.title }}</span></v-card-subtitle>
                   </v-col>
@@ -73,7 +73,7 @@
                 <v-row dense>
                   <v-col cols="8">
                     <v-card-title class="mb-2">
-                      <span><h3>{{ item.count }}</h3></span>
+                      <span><h3>{{ formatAmount(item.count) }}</h3></span>
                     </v-card-title>
                     <v-card-subtitle><span>{{ item.title }}</span></v-card-subtitle>
                   </v-col>
@@ -350,7 +350,7 @@ export default {
       },
       all_table_headers(){
         return this.table_headers.filter(e=> e.value != 'approved')
-      }
+      },
     },
     methods:{
       generatechartData(){
@@ -446,6 +446,21 @@ export default {
             })
             .catch(err => { console.log(err) })
         },
+
+      formatAmount(value){
+        var valueString = value;
+        var amount = parseFloat(valueString);
+        var formatAmount = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        
+        return formatAmount;
+      },
+      formatAmountWDec(value){
+        var valueString = value;
+        var amount = parseFloat(valueString).toFixed(2);
+        var formatAmount = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        
+        return formatAmount;
+      }
     }
 }
 </script>

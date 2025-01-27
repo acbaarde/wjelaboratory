@@ -181,14 +181,14 @@
                 <template v-for="menu in menus">
                     <v-list-group v-if="menu.mod_lvl == 1" :key="menu.id" :prepend-icon="menu.mod_icon" no-action>
                         <template v-slot:activator>
-                            <v-list-item-title v-text="menu.mod_title"></v-list-item-title>
+                            <v-list-item-title>{{menu.mod_title}}</v-list-item-title>
                         </template>
 
                         <template v-for="submenu in menus">
                             <template v-if="submenu.mod_lvl == 2">
                                 <v-list-item v-if="menu.id == submenu.mod_parent" :key="submenu.id" :to="submenu.mod_path">
                                     <v-list-item-title>{{submenu.mod_title}}</v-list-item-title>
-                                    <v-list-item-icon><v-icon v-text="submenu.mod_icon"></v-icon></v-list-item-icon>
+                                    <v-list-item-icon><v-icon>{{submenu.mod_icon}}</v-icon></v-list-item-icon>
                                 </v-list-item>
                             </template>
 
@@ -203,9 +203,9 @@
                                     <template v-for="subsubmenu in menus">
                                         <template v-if="submenu.id == subsubmenu.mod_parent">
                                             <v-list-item :key="subsubmenu.id" link :to="subsubmenu.mod_path">
-                                                <v-list-item-title v-text="subsubmenu.mod_title"></v-list-item-title>
+                                                <v-list-item-title>{{subsubmenu.mod_title}}</v-list-item-title>
                                                 <v-list-item-icon>
-                                                    <v-icon v-text="subsubmenu.mod_icon"></v-icon>
+                                                    <v-icon>{{subsubmenu.mod_icon}}</v-icon>
                                                 </v-list-item-icon>
                                             </v-list-item>
                                         </template>
